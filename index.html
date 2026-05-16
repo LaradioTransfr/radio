@@ -61,7 +61,7 @@
         
         <div style="text-align: center; margin-bottom: 25px;">
             <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD DIRECTEUR</h2>
-            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● TABLE DE MIXAGE ACTIVE</span>
+            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● SYSTÈME DE VUMÈTRE INTÉGRÉ</span>
         </div>
 
         <!-- Section Contrôles de l'antenne -->
@@ -82,7 +82,6 @@
                     🟢 OUVRIR LE MICRO
                 </button>
                 
-                <!-- BOUTON PAUSE MICRO -->
                 <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none; margin-bottom: 8px;">
                     ⏸️ METTRE EN PAUSE
                 </button>
@@ -91,16 +90,23 @@
                     🛑 FERMER L'ANTENNE
                 </button>
 
-                <div id="statut-micro-live" style="margin-top: 10px; font-weight: bold; color: #ffa502; font-size: 13px;">
+                <div id="statut-micro-live" style="margin-top: 10px; font-weight: bold; color: #ffa502; font-size: 13px; margin-bottom: 10px;">
                     Micro fermé
+                </div>
+
+                <!-- NOUVEAU : LA BARRE DE NIVEAU DU MICRO (VUMÈTRE) -->
+                <div style="text-align: left; font-size: 11px; color: #aaa; margin-bottom: 4px;">Niveau du signal :</div>
+                <div style="background: #12121a; width: 100%; height: 12px; border-radius: 6px; border: 1px solid #333; overflow: hidden;">
+                    <div id="barre-vumetre" style="background: linear-gradient(to right, #2ed573, #ffa502, #ff4757); width: 0%; height: 100%; transition: width 0.05s ease;"></div>
                 </div>
             </div>
 
         </div>
 
-        <!-- NOUVEAU : LA TABLE DE MIXAGE (BARRES DE VOLUME) -->
+        <!-- LA TABLE DE MIXAGE (BARRES DE VOLUME) -->
         <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 25px;">
-            <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES DE LA TABLE DE MIXAGE</h4>
+            <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 5px;">🎛️ VOLUMES DE LA TABLE DE MIXAGE</h4>
+            <p style="font-size: 11px; color: #666; margin-top: 0; margin-bottom: 15px;">✨ Filtre "Voix Claire" activé (Suppression des bruits de fond automatique)</p>
             
             <!-- Barre Micro -->
             <div style="margin-bottom: 15px;">
@@ -150,11 +156,14 @@
     let modeAdminActif = false;
     let microEnPause = false;
 
-    // Gestion du volume du micro (Web Audio API)
     let audioContext = null;
     let gainNode = null;
     let sourceNode = null;
     let fluxMixe = null;
+    
+    // Variables pour l'analyseur de volume (Vumètre)
+    let boucleVumetre = null;
+    let analyserNode = null;
 
     function ouvrirConnexion() {
         const zone = document.getElementById('zone-connexion');
@@ -231,13 +240,10 @@
         document.getElementById('admin-chat-message').value = "";
     }
 
-    // --- LOGIQUE DU STUDIO (BARRES DE VOLUME ET PAUSE) ---
-    
+    // --- LOGIQUE DU STUDIO ---
     function ajusterVolumeMicro() {
         const pourcentage = document.getElementById('slider-vol-micro').value;
         document.getElementById('val-vol-micro').innerText = pourcentage + "%";
-        
-        // Si la table de mixage audio est active, on change le gain (le volume)
         if (gainNode && !microEnPause) {
             gainNode.gain.value = pourcentage / 100;
         }
@@ -246,10 +252,8 @@
     function ajusterVolumePC() {
         const pourcentage = document.getElementById('slider-vol-pc').value;
         document.getElementById('val-vol-pc').innerText = pourcentage + "%";
-        // Note technologique : Le contrôle global du son PC dépend des réglages système de l'ordinateur de l'utilisateur.
     }
 
-    // Fonction Pause / Reprendre le micro
     function basculerPause() {
         if (!monFluxMicro) return;
 
@@ -257,21 +261,48 @@
         const pisteMicro = monFluxMicro.getAudioTracks()[0];
 
         if (microEnPause) {
-            pisteMicro.enabled = false; // Coupe la capture du micro
+            pisteMicro.enabled = false;
             document.getElementById('btn-pause-live').innerText = "▶️ REPRENDRE MICRO";
             document.getElementById('btn-pause-live').style.background = "#2ed573";
             document.getElementById('btn-pause-live').style.color = "white";
             document.getElementById('statut-micro-live').innerText = "⏸️ MICRO EN PAUSE";
             document.getElementById('statut-micro-live').style.color = "#ffa502";
+            document.getElementById('barre-vumetre').style.width = "0%"; // Force la barre à zéro
         } else {
-            pisteMicro.enabled = true; // Relance la capture du micro
+            pisteMicro.enabled = true;
             document.getElementById('btn-pause-live').innerText = "⏸️ METTRE EN PAUSE";
             document.getElementById('btn-pause-live').style.background = "#ffa502";
             document.getElementById('btn-pause-live').style.color = "#1e1e2f";
-            document.getElementById('statut-micro-live').innerText = "🎙️ MICRO OUVERT (EN DIRECT)";
+            document.getElementById('statut-micro-live').innerText = "🎙️ MICRO NETTOYÉ (EN DIRECT)";
             document.getElementById('statut-micro-live').style.color = "#2ed573";
-            ajusterVolumeMicro(); // Remet le volume choisi sur la barre
+            ajusterVolumeMicro();
         }
+    }
+
+    // Fonction magique pour animer le vumètre en temps réel
+    function animerVumetre() {
+        if (!analyserNode || microEnPause) {
+            document.getElementById('barre-vumetre').style.width = "0%";
+            boucleVumetre = requestAnimationFrame(animerVumetre);
+            return;
+        }
+
+        const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+        analyserNode.getByteFrequencyData(dataArray);
+
+        // On calcule le volume moyen capté par le micro
+        let total = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+            total += dataArray[i];
+        }
+        let moyenne = total / dataArray.length;
+        
+        // On transforme ça en pourcentage pour la taille de la barre (multiplié par 2 pour donner du dynamisme)
+        let pourcentageVolume = Math.min(moyenne * 2, 100);
+        
+        document.getElementById('barre-vumetre').style.width = pourcentageVolume + "%";
+
+        boucleVumetre = requestAnimationFrame(animerVumetre);
     }
 
     function mettreAJourCompteur() {
@@ -293,19 +324,31 @@
     }
 
     function lancerLive() {
-        navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        const configurationsAudio = {
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true
+            },
+            video: false
+        };
+
+        navigator.mediaDevices.getUserMedia(configurationsAudio)
             .then(stream => {
                 monFluxMicro = stream;
 
-                // Configuration de la table de mixage Web Audio
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 gainNode = audioContext.createGain();
                 sourceNode = audioContext.createMediaStreamSource(stream);
                 
-                // On connecte le micro à notre bouton de volume virtuel
-                sourceNode.connect(gainNode);
+                // AJOUT DE L'ANALYSEUR POUR LE VUMÈTRE
+                analyserNode = audioContext.createAnalyser();
+                analyserNode.fftSize = 256;
                 
-                // Création du flux final mixé à envoyer aux auditeurs
+                // On connecte le micro à l'analyseur PUIS au contrôle de volume
+                sourceNode.connect(analyserNode);
+                analyserNode.connect(gainNode);
+                
                 const destination = audioContext.createMediaStreamDestination();
                 gainNode.connect(destination);
                 fluxMixe = destination.stream;
@@ -316,11 +359,14 @@
                     document.getElementById('btn-lancer-live').style.display = "none";
                     document.getElementById('btn-pause-live').style.display = "inline-block";
                     document.getElementById('btn-couper-live').style.display = "inline-block";
-                    document.getElementById('statut-micro-live').innerText = "🎙️ MICRO OUVERT (EN DIRECT)";
+                    document.getElementById('statut-micro-live').innerText = "🎙️ MICRO NETTOYÉ (EN DIRECT)";
                     document.getElementById('statut-micro-live').style.color = "#2ed573";
                     
                     microEnPause = false;
-                    ajusterVolumeMicro(); // Applique le volume initial de la barre
+                    ajusterVolumeMicro();
+                    
+                    // On lance l'animation de la barre
+                    animerVumetre();
                     
                     connexionsAuditeurs = {};
                     mettreAJourCompteur();
@@ -329,7 +375,6 @@
                 monPeer.on('connection', (conn) => {
                     conn.on('data', (data) => {
                         if (data && data.type === 'connexion') {
-                            // On envoie le flux mixé avec gestion du volume à l'auditeur !
                             const call = monPeer.call(conn.peer, fluxMixe);
                             connexionsAuditeurs[conn.peer] = call;
                             mettreAJourCompteur();
@@ -361,6 +406,10 @@
         if (monPeer) {
             monPeer.destroy();
         }
+        if (boucleVumetre) {
+            cancelAnimationFrame(boucleVumetre);
+        }
+        document.getElementById('barre-vumetre').style.width = "0%";
         connexionsAuditeurs = {};
         document.getElementById('btn-lancer-live').style.display = "inline-block";
         document.getElementById('btn-pause-live').style.display = "none";
