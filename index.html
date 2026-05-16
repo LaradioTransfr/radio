@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transfr Studio - Radio Live</title>
+    
+    <!-- SECTION STYLE (CSS) : Pour faire un joli site -->
     <style>
+        /* Style général du fond de la page */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e1e2f, #252542);
+            background: linear-gradient(135deg, #1e1e2f, #252542); /* Joli dégradé bleu/violet */
             color: white;
             display: flex;
             flex-direction: column;
@@ -16,7 +19,10 @@
             min-height: 100vh;
             margin: 0;
             position: relative;
+            padding: 20px 0;
         }
+
+        /* La boîte centrale (le lecteur de la radio) */
         .radio-container {
             background: rgba(255, 255, 255, 0.1);
             padding: 30px;
@@ -27,8 +33,12 @@
             width: 350px;
             margin-bottom: 20px;
         }
+
+        /* Style des textes (Titre et sous-titre) */
         h1 { margin-bottom: 5px; color: #00ffcc; font-size: 28px; letter-spacing: 2px; }
         p { color: #bbb; font-size: 14px; margin-bottom: 20px; }
+
+        /* Le petit badge qui clignote (HORS LIGNE, EN DIRECT...) */
         .status {
             display: inline-block;
             padding: 6px 12px;
@@ -37,13 +47,17 @@
             font-weight: bold;
             font-size: 12px;
             margin-bottom: 25px;
-            animation: pulse 1.5s infinite;
+            animation: pulse 1.5s infinite; /* Crée l'effet de clignotement */
         }
+
+        /* L'animation pour faire clignoter le badge de statut */
         @keyframes pulse {
             0% { opacity: 0.6; }
             50% { opacity: 1; }
             100% { opacity: 0.6; }
         }
+
+        /* Le gros bouton principal pour le public */
         .main-btn {
             background: #00ffcc;
             color: #1e1e2f;
@@ -55,12 +69,28 @@
             cursor: pointer;
             transition: 0.3s;
             width: 100%;
+            margin-bottom: 20px;
         }
         .main-btn:hover { background: #00ccaa; transform: scale(1.03); }
 
+        /* LE CHAT EN DIRECT POUR LES AUDITEURS */
+        .chat-container {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #151522;
+        }
+        .chat-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
         /* TABLEAU DE BORD SECRET DE TRANSFR */
         .dashboard {
-            display: none; /* Caché au début */
+            display: none; /* Reste caché au début, s'affiche uniquement avec le code */
             background: #151522;
             border: 2px solid #00ffcc;
             border-radius: 15px;
@@ -68,6 +98,7 @@
             width: 350px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             text-align: center;
+            margin-top: 20px;
         }
         .dashboard h2 {
             font-size: 18px;
@@ -76,6 +107,8 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
             padding-bottom: 10px;
         }
+
+        /* La boîte qui affiche le nombre d'auditeurs */
         .stats-box {
             background: rgba(255,255,255,0.05);
             padding: 10px;
@@ -85,11 +118,15 @@
             font-weight: bold;
             color: #ffcc00;
         }
+
+        /* Grille pour ranger les boutons du tableau de bord 2 par 2 */
         .dash-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
+
+        /* Style de base des boutons du tableau de bord */
         .dash-btn {
             padding: 10px;
             font-size: 12px;
@@ -100,165 +137,181 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .btn-start { background-color: #2ecc71; }
+        .btn-start { background-color: #2ecc71; } /* Vert */
         .btn-start:hover { background-color: #27ae60; }
-        .btn-pause { background-color: #f1c40f; color: #1e1e2f; }
+        .btn-pause { background-color: #f1c40f; color: #1e1e2f; } /* Jaune */
         .btn-pause:hover { background-color: #f39c12; }
-        .btn-stop { background-color: #e74c3c; }
+        .btn-stop { background-color: #e74c3c; } /* Rouge */
         .btn-stop:hover { background-color: #c0392b; }
-        .btn-mic { background-color: #9b59b6; grid-column: span 2; }
+        
+        /* Bouton micro prend toute la largeur de la grille (2 colonnes) */
+        .btn-mic { background-color: #9b59b6; grid-column: span 2; } /* Violet */
         .btn-mic:hover { background-color: #8e44ad; }
 
-        /* LE BOUTON PETIT DANS LE COIN DISCRET */
+        /* TON PETIT BOUTON SECRET DISCRET (En bas à droite de l'écran) */
         .secret-mic-btn {
             position: absolute !important;
             bottom: 10px !important;
             right: 10px !important;
-            width: 15px !important;
+            width: 15px !important; /* Tout petit carré de 15 pixels */
             height: 15px !important;
             padding: 0 !important;
-            background: #ff4757 !important;
+            background: #ff4757 !important; /* Rouge discret */
             border: none !important;
             border-radius: 3px !important;
             cursor: pointer !important;
-            opacity: 0.4;
+            opacity: 0.4; /* Translucide pour que les auditeurs ne le remarquent pas */
             z-index: 9999;
         }
-        .secret-mic-btn:hover { opacity: 1; }
+        .secret-mic-btn:hover { opacity: 1; } /* S'allume quand ta souris passe dessus */
     </style>
 </head>
 <body>
 
-<div class="radio-container">
-    <h1>TRANSFR RADIO</h1>
-    <p>Le son libre de droits en direct</p>
-    <div class="status" id="publicStatus">HORS LIGNE</div>
+    <!-- BOÎTE PRINCIPALE : Ce que voit le public -->
+    <div class="radio-container">
+        <h1>TRANSFR RADIO</h1>
+        <p>Le son libre de droits en direct</p>
+        <div class="status" id="publicStatus">HORS LIGNE</div>
 
-    <!-- Lecteur audio -->
-    <audio id="radioPlayer" src="https://stream.zeno.fm/f9u672v70wzuv"></audio>
+        <!-- Le lecteur qui va chercher la musique de ta radio Zeno FM -->
+        <audio id="radioPlayer" src="https://stream.zeno.fm/f9u672v70wzuv"></audio>
 
-    <!-- Bouton public -->
-    <button class="main-btn" id="playBtn" onclick="togglePlay()">ÉCOUTER LE DIRECT</button>
-</div>
+        <!-- Bouton d'écoute public -->
+        <button class="main-btn" id="playBtn" onclick="togglePlay()">ÉCOUTER LE DIRECT</button>
 
-<!-- LE TABLEAU DE BORD DE CONTRÔLE (S'OUVRE AVEC LE CODE) -->
-<div class="dashboard" id="studioDashboard">
-    <h2>STUDIO TRANSFR - TABLEAU DE BORD</h2>
-    
-    <div class="stats-box">
-        👥 Auditeurs en direct : <span id="listenerCount">0</span>
+        <!-- LE CHAT TRANSFR INTÉGRÉ (Gratuit, sécurisé et anonyme pour tes auditeurs) -->
+        <div class="chat-container">
+            <iframe src="https://minnit.chat/TransfrRadio?embed&nickname="></iframe>
+        </div>
     </div>
 
-    <div class="dash-buttons">
-        <button class="dash-btn btn-start" onclick="controlStream('start')">▶️ LANCER</button>
-        <button class="dash-btn btn-pause" onclick="controlStream('pause')">⏸️ PAUSE</button>
-        <button class="dash-btn btn-stop" onclick="controlStream('stop')">⏹️ ARRÊTER</button>
-        <button class="dash-btn btn-mic" id="dashMicBtn" onclick="toggleDashboardMic()">🎙️ ACTIVER LE MICRO</button>
+    <!-- LE TABLEAU DE BORD DE CONTRÔLE (S'ouvre uniquement après le mot de passe) -->
+    <div class="dashboard" id="studioDashboard">
+        <h2>STUDIO TRANSFR - TABLEAU DE BORD</h2>
+        
+        <!-- Compteur d'auditeurs -->
+        <div class="stats-box">
+            👥 Auditeurs en direct : <span id="listenerCount">0</span>
+        </div>
+
+        <!-- Boutons d'action du directeur -->
+        <div class="dash-buttons">
+            <button class="dash-btn btn-start" onclick="controlStream('start')">▶️ LANCER</button>
+            <button class="dash-btn btn-pause" onclick="controlStream('pause')">⏸️ PAUSE</button>
+            <button class="dash-btn btn-stop" onclick="controlStream('stop')">⏹️ ARRÊTER</button>
+            <button class="dash-btn btn-mic" id="dashMicBtn" onclick="toggleDashboardMic()">🎙️ ACTIVER LE MICRO</button>
+        </div>
     </div>
-</div>
 
-<!-- Petit bouton rouge secret caché dans le coin -->
-<button class="secret-mic-btn" id="micBtn" onclick="openSecretStudio()"></button>
+    <!-- Le petit déclencheur secret caché tout en bas à droite -->
+    <button class="secret-mic-btn" id="micBtn" onclick="openSecretStudio()"></button>
 
-<script>
-    const player = document.getElementById('radioPlayer');
-    const playBtn = document.getElementById('playBtn');
-    const publicStatus = document.getElementById('publicStatus');
-    const dashboard = document.getElementById('studioDashboard');
-    const listenerCount = document.getElementById('listenerCount');
-    const dashMicBtn = document.getElementById('dashMicBtn');
-    
-    let isPlaying = false;
-    let micStream = null;
-    let auditeursInterval = null;
+    <!-- SECTION LOGIQUE (JAVASCRIPT) : Pour faire fonctionner les boutons -->
+    <script>
+        // Récupération des éléments HTML pour pouvoir les modifier avec les fonctions
+        const player = document.getElementById('radioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const publicStatus = document.getElementById('publicStatus');
+        const dashboard = document.getElementById('studioDashboard');
+        const listenerCount = document.getElementById('listenerCount');
+        const dashMicBtn = document.getElementById('dashMicBtn');
+        
+        let isPlaying = false; // Variable pour savoir si la radio joue du son
+        let micStream = null;  // Variable pour stocker le flux de ton micro
+        let auditeursInterval = null; // Variable pour gérer le temps du compteur d'auditeurs
 
-    const MOT_DE_PASSE_SECRET = "1944"; 
+        // TON CODE SECRET D'ADMINISTRATEUR
+        const MOT_DE_PASSE_SECRET = "1944"; 
 
-    // Lecture pour les auditeurs
-    function togglePlay() {
-        if (!isPlaying) {
-            player.play().then(() => {
-                playBtn.innerText = "PAUSE";
+        // FONCTION 1 : Pour lancer ou mettre en pause la radio côté auditeur
+        function togglePlay() {
+            if (!isPlaying) {
+                player.play().then(() => {
+                    playBtn.innerText = "PAUSE";
+                    publicStatus.innerText = "EN DIRECT";
+                    publicStatus.style.background = "#00ff66"; // Vert en direct
+                    isPlaying = true;
+                }).catch(err => console.log("Erreur de lecture :", err));
+            } else {
+                player.pause();
+                playBtn.innerText = "ÉCOUTER LE DIRECT";
+                publicStatus.innerText = "PAUSE";
+                publicStatus.style.background = "#ffcc00"; // Jaune en pause
+                isPlaying = false;
+            }
+        }
+
+        // FONCTION 2 : Ouvre le panneau secret si le code est bon
+        function openSecretStudio() {
+            let codeEntre = prompt("Entrez le code d'administration Transfr :");
+            
+            if (codeEntre === MOT_DE_PASSE_SECRET) {
+                dashboard.style.display = "block"; // Affiche le tableau de bord
+                alert("🎛️ Bienvenue sur ton Tableau de Bord Transfr, Chef !");
+                startSimulatingListeners(); // Lance le faux compteur d'auditeurs
+            } else {
+                alert("Code incorrect. Accès refusé.");
+            }
+        }
+
+        // FONCTION 3 : Change les messages sur le site depuis le tableau de bord
+        function controlStream(action) {
+            if (action === 'start') {
                 publicStatus.innerText = "EN DIRECT";
                 publicStatus.style.background = "#00ff66";
-                isPlaying = true;
-            }).catch(err => console.log("Erreur de lecture :", err));
-        } else {
-            player.pause();
-            playBtn.innerText = "ÉCOUTER LE DIRECT";
-            publicStatus.innerText = "PAUSE";
-            publicStatus.style.background = "#ffcc00";
-            isPlaying = false;
-        }
-    }
-
-    // Ouvrir le tableau de bord secret
-    function openSecretStudio() {
-        let codeEntre = prompt("Entrez le code d'administration Transfr :");
-        
-        if (codeEntre === MOT_DE_PASSE_SECRET) {
-            dashboard.style.display = "block"; // Affiche le tableau de bord !
-            alert("🎛️ Bienvenue sur ton Tableau de Bord Transfr, Chef !");
-            startSimulatingListeners();
-        } else {
-            alert("Code incorrect. Accès refusé.");
-        }
-    }
-
-    // Contrôler le stream depuis le tableau de bord
-    function controlStream(action) {
-        if (action === 'start') {
-            publicStatus.innerText = "EN DIRECT";
-            publicStatus.style.background = "#00ff66";
-            alert("📢 Flux lancé sur les ondes de Transfr !");
-        } else if (action === 'pause') {
-            publicStatus.innerText = "PAUSE";
-            publicStatus.style.background = "#ffcc00";
-            alert("⏸️ Flux mis en pause.");
-        } else if (action === 'stop') {
-            publicStatus.innerText = "HORS LIGNE";
-            publicStatus.style.background = "#ff3366";
-            alert("⏹️ Flux arrêté.");
-        }
-    }
-
-    // Gérer le micro depuis le tableau de bord
-    async function toggleDashboardMic() {
-        if (!micStream) {
-            try {
-                micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                dashMicBtn.innerText = "🛑 COUPER LE MICRO";
-                dashMicBtn.style.background = "#e74c3c";
-                alert("🎙️ Ton micro est ouvert en direct !");
-            } catch (err) {
-                alert("Erreur micro : " + err);
+                alert("📢 Flux lancé sur les ondes de Transfr !");
+            } else if (action === 'pause') {
+                publicStatus.innerText = "PAUSE";
+                publicStatus.style.background = "#ffcc00";
+                alert("⏸️ Flux mis en pause.");
+            } else if (action === 'stop') {
+                publicStatus.innerText = "HORS LIGNE";
+                publicStatus.style.background = "#ff3366";
+                alert("⏹️ Flux arrêté.");
             }
-        } else {
-            micStream.getTracks().forEach(track => track.stop());
-            micStream = null;
-            dashMicBtn.innerText = "🎙️ ACTIVER LE MICRO";
-            dashMicBtn.style.background = "#9b59b6";
-            alert("🎙️ Micro fermé.");
         }
-    }
 
-    // Simulation du nombre d'auditeurs
-    function startSimulatingListeners() {
-        if (auditeursInterval) clearInterval(auditeursInterval);
-        
-        // Donne un nombre de départ au hasard entre 10 et 50
-        listenerCount.innerText = Math.floor(Math.random() * 40) + 10;
-        
-        // Fait bouger le nombre d'auditeurs toutes les 5 secondes
-        auditeursInterval = setInterval(() => {
-            let actuels = parseInt(listenerCount.innerText);
-            let changement = Math.floor(Math.random() * 5) - 2; // Gagne ou perd un peu d'auditeurs
-            let nouveaux = actuels + changement;
-            if (nouveaux < 0) nouveaux = 0;
-            listenerCount.innerText = nouveaux;
-        }, 5000);
-    }
-</script>
+        // FONCTION 4 : Allumer ou éteindre le micro du studio
+        async function toggleDashboardMic() {
+            if (!micStream) {
+                try {
+                    // Demande l'autorisation d'utiliser le micro de l'ordinateur
+                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    dashMicBtn.innerText = "🛑 COUPER LE MICRO";
+                    dashMicBtn.style.background = "#e74c3c"; // Devient rouge
+                    alert("🎙️ Ton micro est ouvert en direct !");
+                } catch (err) {
+                    alert("Erreur micro : " + err);
+                }
+            } else {
+                // Arrête proprement le micro
+                micStream.getTracks().forEach(track => track.stop());
+                micStream = null;
+                dashMicBtn.innerText = "🎙️ ACTIVER LE MICRO";
+                dashMicBtn.style.background = "#9b59b6"; // Reprend sa couleur violette
+                alert("🎙️ Micro fermé.");
+            }
+        }
+
+        // FONCTION 5 : Fait bouger le nombre d'auditeurs de façon aléatoire (simulation)
+        function startSimulatingListeners() {
+            if (auditeursInterval) clearInterval(auditeursInterval);
+            
+            // Donne un chiffre de départ au hasard entre 10 et 50 auditeurs
+            listenerCount.innerText = Math.floor(Math.random() * 40) + 10;
+            
+            // Modifie le chiffre toutes les 5 secondes (5000 millisecondes)
+            auditeursInterval = setInterval(() => {
+                let actuels = parseInt(listenerCount.innerText);
+                // Crée une petite variation (ex: +2 auditeurs, -1 auditeur...)
+                let changement = Math.floor(Math.random() * 5) - 2; 
+                let nouveaux = actuels + changement;
+                if (nouveaux < 0) nouveaux = 0; // Empêche d'avoir un nombre négatif d'auditeurs
+                listenerCount.innerText = nouveaux;
+            }, 5000);
+        }
+    </script>
 
 </body>
 </html>
