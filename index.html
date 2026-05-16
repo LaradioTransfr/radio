@@ -41,7 +41,7 @@
                 <p style="color: #555; margin: 0; font-style: italic;">Connecte-toi au direct pour voir les messages...</p>
             </div>
 
-            <input type="text" id="chat-pseudo" placeholder="Ton pseudo (ex: Lucia)..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px;">
+            <input type="text" id="chat-pseudo" placeholder="Ton pseudo..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px;">
             <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 50px; resize: none;"></textarea>
             <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
         </div>
@@ -68,7 +68,7 @@
             <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
                 <div style="text-align: center; margin-bottom: 25px;">
                     <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD STUDIO CO-LIVE</h2>
-                    <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● STUDIO MULTI-ANIMATEURS ACTIF</span>
+                    <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE ACTIVE</span>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
@@ -81,7 +81,7 @@
                     <!-- Boutons Antenne -->
                     <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center;">
                         <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px;">🎙️ BOUTONS ANTENNE</h4>
-                        <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">🟢 PRÉPARER / REJOINDRE LE STUDIO</button>
+                        <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">🟢 1. ALLUMER LA CONSOLE & LE MICRO</button>
                         <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none; margin-bottom: 8px;">⏸️ METTRE EN PAUSE</button>
                         <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none;">🛑 QUITTER LE STUDIO</button>
 
@@ -92,7 +92,7 @@
                     </div>
                 </div>
 
-                <!-- TABLE DE MIXAGE COMPLÈTE AVEC LE RETOUR PC/MUSIQUE -->
+                <!-- TABLE DE MIXAGE -->
                 <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 25px;">
                     <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES DE LA TABLE DE MIXAGE</h4>
                     
@@ -101,9 +101,8 @@
                         <input type="range" id="slider-vol-micro" min="0" max="100" value="100" oninput="ajusterVolumeMicro()" style="width: 100%; accent-color: #2ed573; cursor: pointer;">
                     </div>
                     
-                    <!-- LE CURSEUR PC / MUSIQUE EST DE RETOUR ICI -->
                     <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>💻 Volume des sons PC / Musique externe :</span><span id="val-vol-pc" style="color: #ffa502; font-weight: bold;">100%</span></div>
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>💻 Volume des sons PC / Musiques :</span><span id="val-vol-pc" style="color: #ffa502; font-weight: bold;">100%</span></div>
                         <input type="range" id="slider-vol-pc" min="0" max="100" value="100" oninput="ajusterVolumePC()" style="width: 100%; accent-color: #ffa502; cursor: pointer;">
                     </div>
 
@@ -126,30 +125,31 @@
                 </div>
             </div>
 
-            <!-- COLONNE DROITE : PLAYLIST MULTI-GENRES -->
+            <!-- COLONNE DROITE : PLAYLIST MULTI-GENRES (CORRIGÉE) -->
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
                 <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
                 
-                <audio id="lecteur-musique-studio" loop></audio>
+                <!-- Balise audio masquée modifiée avec crossOrigin pour éviter les blocages -->
+                <audio id="lecteur-musique-studio" loop crossorigin="anonymous"></audio>
 
                 <!-- POP ROCK / MÅNESKIN STYLE -->
                 <div style="margin-bottom: 20px;">
                     <h4 style="color: #ff4757; margin-bottom: 8px; font-size: 14px;">🎸 POP ROCK / STYLE MÅNESKIN</h4>
-                    <button onclick="jouerMusique('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', 'Måneskin Vibes - Track 1')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Rythmé - Piste 1</button>
-                    <button onclick="jouerMusique('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', 'Disto Guitar - Track 2')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Guitare Solo - Piste 2</button>
+                    <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Gros Rock Classique Énergique')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Classique - Piste 1</button>
+                    <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Guitare Solo - Piste 2</button>
                 </div>
 
                 <!-- RAP / HIP-HOP -->
                 <div style="margin-bottom: 20px;">
                     <h4 style="color: #00d2ff; margin-bottom: 8px; font-size: 14px;">🎤 RAP / HIP-HOP BEATS</h4>
-                    <button onclick="jouerMusique('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', 'Rap Synth Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
-                    <button onclick="jouerMusique('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', 'Lofi Heavy Rap')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 BoomBap Beat - Piste 4</button>
+                    <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
                 </div>
 
-                <!-- DIFFUSER UN MP3 DEPUIS SON PC -->
+                <!-- DIFFUSER UN MP3 DEPUIS SON PC (LE PLUS FIABLE !) -->
                 <div style="background: rgba(255,165,0,0.05); padding: 12px; border-radius: 8px; border: 1px dashed #ffa502; text-align: center;">
                     <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 8px; font-size: 13px;">📂 DIFFUSER UN MP3 DE TON PC</h4>
-                    <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa;">
+                    <p style="font-size: 11px; color: #aaa; margin-top:0;">Prends directement un fichier (ex: Måneskin ou Rap) de ton ordinateur :</p>
+                    <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; cursor: pointer;">
                 </div>
 
                 <div id="statut-musique" style="margin-top: 15px; background: #12121a; padding: 10px; border-radius: 6px; font-size: 12px; color: #2ed573; text-align: center; border: 1px solid #222;">📴 Aucune musique en cours</div>
@@ -159,7 +159,6 @@
         </div>
     </div>
 
-    <!-- ELEMENT AUDIO POUR ENTENDRE LES AUTRES CO-DIRECTEURS SUR TON PC -->
     <div id="co-directeurs-audio-container"></div>
 
     <!-- ====================================================== -->
@@ -177,7 +176,7 @@
     let audioContext = null;
     let gainNodeMicro = null;
     let gainNodePlaylist = null;
-    let gainNodePC = null; // Noeud pour les sons système / PC
+    let gainNodePC = null; 
     let sourceNodeMicro = null;
     let sourceNodePlaylist = null;
     let destinationMixee = null;
@@ -245,7 +244,6 @@
     function envoyerCommentaire() {
         const pseudo = document.getElementById('chat-pseudo').value.trim();
         const message = document.getElementById('chat-message').value.trim();
-        
         if (!pseudo || !message) return;
 
         if (connexionAuStudio && connexionAuStudio.open) {
@@ -295,7 +293,7 @@
         }
     }
 
-    // --- LOGIQUE DU STUDIO & MIXAGE DU DIRECTEUR ---
+    // --- LOGIQUE DE MIXAGE DU STUDIO ---
     function ajusterVolumeMicro() {
         const pourcentage = document.getElementById('slider-vol-micro').value;
         document.getElementById('val-vol-micro').innerText = pourcentage + "%";
@@ -315,11 +313,23 @@
     }
 
     function jouerMusique(urlOuBlob, titre) {
+        // SÉCURITÉ : On vérifie si la console est allumée !
+        if (!audioContext) {
+            alert("⚠️ Clique d'abord sur le gros bouton vert '1. ALLUMER LA CONSOLE & LE MICRO' avant de lancer une musique !");
+            return;
+        }
+        
         const lecteur = document.getElementById('lecteur-musique-studio');
         lecteur.src = urlOuBlob;
-        lecteur.play();
-        document.getElementById('statut-musique').innerText = "📻 En diffusion : " + titre;
-        document.getElementById('statut-musique').style.color = "#00d2ff";
+        lecteur.play()
+            .then(() => {
+                document.getElementById('statut-musique').innerText = "📻 En diffusion : " + titre;
+                document.getElementById('statut-musique').style.color = "#00d2ff";
+            })
+            .catch(err => {
+                console.error("Erreur de lecture : ", err);
+                alert("Le morceau met du temps à charger ou est bloqué. Essaye de charger un MP3 depuis ton PC avec le bouton juste en dessous !");
+            });
     }
 
     function chargerMusiquePerso() {
@@ -332,7 +342,8 @@
 
     function arreterMusique() {
         const lecteur = document.getElementById('lecteur-musique-studio');
-        lecteur.pause(); lecteur.src = "";
+        lecteur.pause(); 
+        lecteur.src = "";
         document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours";
         document.getElementById('statut-musique').style.color = "#2ed573";
     }
@@ -376,7 +387,6 @@
         document.getElementById('admin-compteur').innerText = nombreAuditeurs;
     }
 
-    // FONCTION MAGIQUE : GÈRE LE FAIT QU'IL Y AIT PLUSIEURS DIRECTEURS
     function lancerLive() {
         const configurationsAudio = {
             audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
@@ -414,26 +424,19 @@
 
                 fluxMixe = destinationMixee.stream;
 
-                // TENTATIVE DE CONNEXION : Si le studio principal est libre, on le prend, sinon on devient Co-Directeur !
                 monPeer = new Peer(ID_RADIO_PRINCIPALE);
                 
                 monPeer.on('open', () => {
-                    // On est l'animateur principal !
                     configurerEvenementsStudio();
                 });
 
                 monPeer.on('error', (err) => {
                     if (err.type === 'unavailable-id') {
-                        // Le studio principal est déjà pris ! On se connecte en tant que Co-Directeur
-                        console.log("Studio principal occupé, connexion en Co-Directeur...");
-                        monPeer = new Peer(); // On prend un ID libre au hasard
-                        
+                        monPeer = new Peer(); 
                         monPeer.on('open', () => {
                             let appelStudio = monPeer.call(ID_RADIO_PRINCIPALE, fluxMixe);
                             configurerEvenementsStudio();
-                            
                             appelStudio.on('stream', (fluxRetourStudio) => {
-                                // On reçoit la voix de l'autre directeur ! On la met dans les haut-parleurs
                                 diffuserVoixCoDirecteur(fluxRetourStudio);
                             });
                         });
@@ -456,16 +459,10 @@
         ajusterVolumePlaylist();
         animerVumetre();
 
-        // Écoute les connexions des auditeurs OU d'autres co-directeurs
         monPeer.on('call', (call) => {
-            // On lui envoie notre flux mixé
             call.answer(fluxMixe);
-            
-            // Si c'est un autre Directeur qui appelle, on récupère son micro pour le mixer dans l'antenne
             call.on('stream', (fluxCoDirecteur) => {
                 diffuserVoixCoDirecteur(fluxCoDirecteur);
-                
-                // On réinjecte la voix du Co-Directeur dans le flux général envoyé aux auditeurs
                 let sourceCoDirecteur = audioContext.createMediaStreamSource(fluxCoDirecteur);
                 sourceCoDirecteur.connect(destinationMixee);
             });
@@ -480,7 +477,6 @@
                 }
                 if (data && data.type === 'chat') {
                     ajouterMessageAuTchatGlobal(data.pseudo, data.message);
-                    // On diffuse le message à tout le monde
                     Object.keys(connexionsAuditeurs).forEach(pId => {
                         if (monPeer.connections[pId]) {
                             monPeer.connections[pId].forEach(c => { if (c.open) c.send({ type: 'chat-diffuse', auteur: data.pseudo, message: data.message }); });
