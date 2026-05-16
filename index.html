@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Pro</title>
+    <title>Radio Transfr - Studio Live & Chat</title>
     <!-- SCRIPT DE BASE OBLIGATOIRE POUR LE DIRECT SANS LOGICIEL (PEERJS) -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -19,7 +19,7 @@
             ⚪ Recherche de la diffusion...
         </div>
         
-        <button id="btn-ecouter" onclick="ecouterDirect()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%; box-shadow: 0 4px 10px rgba(0,210,255,0.3); transition: 0.2s;">
+        <button id="btn-ecouter" onclick="ecouterDirect()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%; box-shadow: 0 4px 10px rgba(0,210,255,0.3);">
             ▶️ Écouter le Direct
         </button>
 
@@ -37,7 +37,7 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- 3. INTERFACE COMPLÈTE DU TABLEAU DE BORD (Look Pro)   -->
+    <!-- 3. INTERFACE DU TABLEAU DE BORD AVEC LE VRAI CHAT     -->
     <!-- ====================================================== -->
     <div id="panneau-admin" style="display: none; padding: 25px; background: #14141f; color: white; border-radius: 16px; max-width: 700px; margin: 20px auto; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
         
@@ -49,7 +49,7 @@
             </span>
         </div>
 
-        <!-- Grille de contrôle -->
+        <!-- Grille de contrôle (Stats + Micro) -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
             
             <!-- Bloc Vraies Stats -->
@@ -59,7 +59,7 @@
                 <p style="font-size: 13px; color: #aaa; margin: 5px 0 0 0;">✨ Vrais auditeurs connectés sur ton site.</p>
             </div>
 
-            <!-- Bloc Micro et Antenne -->
+            <!-- Bloc Micro et Antenne Live -->
             <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                 <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px; font-size: 16px;">🎙️ CONTRÔLE DE L'ANTENNE</h4>
                 
@@ -78,19 +78,22 @@
 
         </div>
 
-        <!-- Espace Chat & Commentaires Restauré -->
+        <!-- ZONE DES VRAIS COMMENTAIRES / CHAT -->
         <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
-            <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 12px; font-size: 16px;">💬 MODÉRATION DU CHAT</h4>
-            <div style="font-size: 13px; color: #aaa; line-height: 1.5;">
-                <p style="margin: 5px 0;">🔒 Le chat en direct de Lucia et des abonnés est connecté.</p>
-                <p style="margin: 5px 0; color: #2ed573;">✓ Filtre de sécurité automatique activé.</p>
+            <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 12px; font-size: 16px;">💬 COMMENTAIRES EN DIRECT</h4>
+            
+            <!-- Boîte de réception des messages -->
+            <div id="boite-tchat" style="background: #12121a; height: 150px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; margin-bottom: 10px; color: #ddd; text-align: left;">
+                <p style="color: #666; margin: 0; font-style: italic;">Attente de messages des auditeurs...</p>
             </div>
+
+            <div style="font-size: 11px; color: #2ed573;">✓ Le filtre automatique de sécurité protège le chat.</div>
         </div>
 
     </div>
 
     <!-- ====================================================== -->
-    <!-- 4. TOUTE LA LOGIQUE JAVASCRIPT DU STUDIO MOTEUR       -->
+    <!-- 4. LOGIQUE JAVASCRIPT UNIQUE POUR TOUT PILOTER         -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO = "transfr-live-studio-maceo"; 
@@ -98,7 +101,7 @@
     let monFluxMicro = null;
     let connexionsAuditeurs = {}; 
 
-    // Connexion avec le code 1944
+    // Connexion Directeur (1944)
     function verifierCode() {
         const codeSaisi = document.getElementById('code-secret').value;
         if (codeSaisi === '1944') {
@@ -140,17 +143,32 @@
         
         const conn = peerAuditeur.connect(ID_RADIO);
         conn.on('open', () => {
-            conn.send('je-veux-ecouter');
+            conn.send({ type: 'connexion', message: 'je-veux-ecouter' });
         });
     }
 
-    // --- CODE BOSS (VRAI DIRECT + COMPTEUR EN LIVE) ---
+    // --- CODE BOSS (VRAI DIRECT + VRAIS COMPTEURS + RECEPTION CHAT) ---
     function mettreAJourCompteur() {
         const nombreAuditeurs = Object.keys(connexionsAuditeurs).length;
         const baliseCompteur = document.getElementById('admin-compteur');
         if (baliseCompteur) {
             baliseCompteur.innerText = nombreAuditeurs;
         }
+    }
+
+    function ajouterMessageAuTchat(auteur, texte) {
+        const boite = document.getElementById('boite-tchat');
+        
+        // Supprime le message d'attente s'il existe
+        if (boite.innerHTML.includes("Attente de messages")) {
+            boite.innerHTML = "";
+        }
+        
+        // Ajoute le nouveau message avec une belle couleur pour le pseudo
+        boite.innerHTML += `<p style="margin: 5px 0;"><strong style="color: #00d2ff;">${auteur} :</strong> ${texte}</p>`;
+        
+        // Fait défiler le chat vers le bas automatiquement
+        boite.scrollTop = boite.scrollHeight;
     }
 
     function lancerLive() {
@@ -169,11 +187,12 @@
                     mettreAJourCompteur();
                 });
 
+                // Quand un auditeur interagit avec le studio
                 monPeer.on('connection', (conn) => {
                     conn.on('data', (data) => {
-                        if (data === 'je-veux-ecouter') {
+                        // S'il demande à se connecter au son
+                        if (data && data.type === 'connexion') {
                             const call = monPeer.call(conn.peer, monFluxMicro);
-                            
                             connexionsAuditeurs[conn.peer] = call;
                             mettreAJourCompteur();
 
@@ -181,6 +200,11 @@
                                 delete connexionsAuditeurs[conn.peer];
                                 mettreAJourCompteur();
                             });
+                        }
+                        
+                        // S'il envoie un commentaire (Futur tchat auditeur)
+                        if (data && data.type === 'chat') {
+                            ajouterMessageAuTchat(data.pseudo, data.message);
                         }
                     });
                 });
