@@ -1,409 +1,144 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#E24B4A">
-  <meta name="description" content="Transfr — Radio scolaire live, podcasts et interviews">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Transfr">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="icon" type="image/png" href="icons/icon-192.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <title>Transfr</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --red: #E24B4A; --red-dark: #A32D2D; --red-light: #FCEBEB;
-      --amber: #EF9F27; --green: #1D9E75;
-      --bg: #0f0f0f; --bg2: #1a1a1a; --bg3: #242424;
-      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
-      --txt: #f0f0f0; --txt2: #888; --txt3: #555;
-    }
-    html, body { height: 100%; background: var(--bg); color: var(--txt); font-family: 'Syne', sans-serif; overscroll-behavior: none; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfr Studio - Radio Live</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #252542);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative; /* Pour pouvoir cacher le bouton tout en bas */
+        }
+        .radio-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            width: 350px;
+        }
+        h1 { margin-bottom: 5px; color: #00ffcc; font-size: 28px; letter-spacing: 2px; }
+        p { color: #bbb; font-size: 14px; margin-bottom: 20px; }
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #ff3366;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 25px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        button {
+            background: #00ffcc;
+            color: #1e1e2f;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+        button:hover { background: #00ccaa; transform: scale(1.03); }
 
-    /* SPLASH */
-    #splash { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 999; transition: opacity 0.5s ease; }
-    #splash.hide { opacity: 0; pointer-events: none; }
-    .splash-logo { width: 80px; height: 80px; background: var(--red); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 36px; animation: sbounce 1s ease infinite alternate; }
-    @keyframes sbounce { from{transform:scale(1)} to{transform:scale(1.08)} }
-    .splash-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
-    .splash-sub { font-size: 12px; color: var(--txt2); letter-spacing: 3px; text-transform: uppercase; font-family: 'DM Mono', monospace; }
-
-    /* LAYOUT */
-    #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
-
-    /* HEADER */
-    .header { padding: 14px 20px 12px; display: flex; align-items: center; gap: 12px; border-bottom: 0.5px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }
-    .logo-badge { background: var(--red); color: white; font-size: 10px; font-weight: 800; padding: 5px 8px; border-radius: 6px; letter-spacing: 1.5px; }
-    #station-display { font-size: 20px; font-weight: 800; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.5px; }
-    .live-badge { font-family: 'DM Mono', monospace; font-size: 11px; display: flex; align-items: center; gap: 5px; color: var(--txt2); }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--txt3); flex-shrink: 0; }
-    .live-dot.on { background: var(--red); animation: blink 1s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-    .live-badge.on { color: var(--red); }
-
-    /* SCROLL */
-    .scroll-area { flex: 1; overflow-y: auto; padding: 20px 16px 8px; -webkit-overflow-scrolling: touch; }
-
-    /* LABELS */
-    .lbl { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--txt3); margin-bottom: 10px; }
-
-    /* FORMAT */
-    .fmt-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 22px; }
-    .fmt-btn { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 13px 6px 10px; text-align: center; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--txt2); transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
-    .fmt-btn .fi { font-size: 22px; display: block; margin-bottom: 5px; }
-    .fmt-btn.on { background: rgba(226,75,74,0.12); border-color: var(--red); color: var(--red); }
-
-    /* MIC CARD */
-    .mic-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 16px; padding: 24px 16px; display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 22px; }
-    #timer { font-family: 'DM Mono', monospace; font-size: 38px; font-weight: 500; letter-spacing: 3px; }
-    #timer.rec { color: var(--red); }
-    #mic-btn { width: 96px; height: 96px; border-radius: 50%; background: var(--bg3); border: 2px solid var(--border2); font-size: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; -webkit-tap-highlight-color: transparent; user-select: none; }
-    #mic-btn:active { transform: scale(0.93); }
-    #mic-btn.rec { background: rgba(226,75,74,0.15); border-color: var(--red); animation: ring 1.4s infinite; }
-    @keyframes ring { 0%{box-shadow:0 0 0 0 rgba(226,75,74,0.4)} 70%{box-shadow:0 0 0 22px rgba(226,75,74,0)} 100%{box-shadow:0 0 0 0 rgba(226,75,74,0)} }
-    #mic-status { font-size: 13px; color: var(--txt2); font-family: 'DM Mono', monospace; }
-    #mic-status.rec { color: var(--red); }
-    #viz { width: 100%; height: 52px; display: flex; align-items: center; justify-content: center; gap: 3px; }
-    .vbar { width: 4px; border-radius: 2px; background: var(--bg3); height: 6px; flex-shrink: 0; transition: height 0.08s ease; }
-    .vbar.on { background: var(--red); }
-
-    /* INFO CARD */
-    .info-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 16px; padding: 4px 16px; margin-bottom: 22px; }
-    .info-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 0.5px solid var(--border); }
-    .info-row:last-child { border-bottom: none; }
-    .info-row label { font-size: 11px; color: var(--txt2); min-width: 95px; font-weight: 700; letter-spacing: 0.5px; }
-    .info-row input { flex: 1; background: transparent; border: none; outline: none; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--txt); padding: 0; }
-    .info-row input::placeholder { color: var(--txt3); font-weight: 400; }
-
-    /* SESSIONS */
-    .sess-list { display: flex; flex-direction: column; gap: 8px; }
-    .empty-hint { font-size: 13px; color: var(--txt3); text-align: center; padding: 32px 0; font-family: 'DM Mono', monospace; line-height: 1.8; }
-    .sess-item { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
-    .sess-item.playing { border-color: var(--green); }
-    .sess-item.playing .sess-name { color: var(--green); }
-    .sess-icon { font-size: 20px; flex-shrink: 0; }
-    .sess-info { flex: 1; min-width: 0; }
-    .sess-name { font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .sess-meta { font-size: 11px; color: var(--txt2); font-family: 'DM Mono', monospace; margin-top: 2px; }
-    .sess-dur { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--txt2); flex-shrink: 0; }
-    .sess-actions { display: flex; gap: 6px; }
-    .ibtn { width: 32px; height: 32px; border-radius: 50%; border: 0.5px solid var(--border); background: var(--bg3); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; color: var(--txt2); transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
-    .ibtn:active { transform: scale(0.88); }
-    .ibtn.play:active { background: rgba(29,158,117,0.2); border-color: var(--green); color: var(--green); }
-    .ibtn.dl:active { background: rgba(239,159,39,0.2); border-color: var(--amber); color: var(--amber); }
-    .ibtn.del:active { background: rgba(226,75,74,0.2); border-color: var(--red); color: var(--red); }
-
-    /* TOAST */
-    #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--bg3); border: 0.5px solid var(--border2); border-radius: 24px; padding: 10px 20px; font-size: 13px; font-family: 'DM Mono', monospace; color: var(--txt); transition: transform 0.3s ease; z-index: 200; white-space: nowrap; pointer-events: none; }
-    #toast.show { transform: translateX(-50%) translateY(0); }
-
-    /* BOTTOM NAV */
-    .bottom-nav { display: flex; border-top: 0.5px solid var(--border); background: var(--bg); padding: 8px 0 env(safe-area-inset-bottom, 8px); flex-shrink: 0; }
-    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; cursor: pointer; -webkit-tap-highlight-color: transparent; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--txt3); transition: color 0.15s; border: none; background: none; font-family: 'Syne', sans-serif; }
-    .nav-btn .ni { font-size: 20px; }
-    .nav-btn.active { color: var(--red); }
-
-    /* PAGES */
-    .page { display: none; }
-    .page.active { display: block; }
-
-    /* SETTINGS */
-    .settings-section { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
-    .settings-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--txt3); margin-bottom: 14px; }
-    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
-    .setting-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .setting-row span { font-size: 14px; }
-    .setting-row .val { color: var(--txt2); font-size: 13px; font-family: 'DM Mono', monospace; }
-    .big-btn { width: 100%; padding: 14px; border-radius: 10px; border: 0.5px solid var(--border); background: var(--bg3); color: var(--txt); font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all 0.15s; margin-bottom: 8px; }
-    .big-btn:active { transform: scale(0.98); opacity: 0.8; }
-    .big-btn.danger { color: var(--red); border-color: rgba(226,75,74,0.3); }
-    .install-hint { background: rgba(226,75,74,0.07); border: 0.5px solid rgba(226,75,74,0.25); border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: var(--txt2); line-height: 1.7; }
-    .install-hint strong { color: var(--txt); display: block; margin-bottom: 4px; font-size: 14px; }
-    .about-center { text-align: center; padding: 20px 0 16px; }
-    .about-icon { width: 72px; height: 72px; background: var(--red); border-radius: 18px; font-size: 32px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-    .about-name { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
-    .about-version { font-size: 12px; color: var(--txt3); font-family: 'DM Mono', monospace; margin-top: 4px; }
-  </style>
+        /* LE BOUTON SECRET DE MACÉO (1mm x 1mm, transparent, en bas à droite) */
+        .secret-mic-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 2px;
+            height: 2px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: default;
+            overflow: hidden;
+            opacity: 0.1; /* Presque invisible */
+        }
+    </style>
 </head>
 <body>
 
-<div id="splash">
-  <div class="splash-logo">🎙</div>
-  <div class="splash-title">Transfr</div>
-  <div class="splash-sub">Radio Scolaire</div>
+<div class="radio-container">
+    <h1>TRANSFR RADIO</h1>
+    <p>Le son libre de droits en direct</p>
+    <div class="status">HORS LIGNE</div>
+
+    <!-- Lecteur audio pour le flux de la radio -->
+    <audio id="radioPlayer" src="https://stream.zeno.fm/f9u672v70wzuv"></audio>
+
+    <!-- Bouton public pour les auditeurs -->
+    <button id="playBtn" onclick="togglePlay()">ÉCOUTER LE DIRECT</button>
 </div>
 
-<div id="app" style="opacity:0;transition:opacity 0.4s">
-
-  <div class="header">
-    <span class="logo-badge">FM</span>
-    <span id="station-display">Transfr</span>
-    <div class="live-badge" id="live-badge">
-      <div class="live-dot" id="live-dot"></div>
-      <span id="live-txt">HORS ANTENNE</span>
-    </div>
-  </div>
-
-  <div class="scroll-area">
-
-    <!-- STUDIO -->
-    <div class="page active" id="page-studio">
-      <div class="lbl">Format de l'émission</div>
-      <div class="fmt-grid">
-        <button class="fmt-btn on" data-f="live" onclick="setFmt(this)"><span class="fi">📡</span>Direct Live</button>
-        <button class="fmt-btn" data-f="podcast" onclick="setFmt(this)"><span class="fi">🎙</span>Podcast</button>
-        <button class="fmt-btn" data-f="interview" onclick="setFmt(this)"><span class="fi">🎤</span>Interview</button>
-        <button class="fmt-btn" data-f="reportage" onclick="setFmt(this)"><span class="fi">📰</span>Reportage</button>
-        <button class="fmt-btn" data-f="chrono" onclick="setFmt(this)"><span class="fi">🎵</span>Chronique</button>
-        <button class="fmt-btn" data-f="special" onclick="setFmt(this)"><span class="fi">⭐</span>Spécial</button>
-      </div>
-
-      <div class="lbl">Micro</div>
-      <div class="mic-card">
-        <div id="timer">00:00</div>
-        <button id="mic-btn" onclick="toggleRec()">🎙</button>
-        <div id="mic-status">Appuie pour démarrer</div>
-        <div id="viz"></div>
-      </div>
-
-      <div class="lbl">Infos de l'émission</div>
-      <div class="info-card">
-        <div class="info-row">
-          <label>Station</label>
-          <input id="inp-station" type="text" placeholder="Transfr" value="Transfr">
-        </div>
-        <div class="info-row">
-          <label>Émission</label>
-          <input id="inp-show" type="text" placeholder="Titre de l'émission">
-        </div>
-        <div class="info-row">
-          <label>Animateur·rice</label>
-          <input id="inp-host" type="text" placeholder="Ton prénom">
-        </div>
-      </div>
-    </div>
-
-    <!-- BIBLIOTHÈQUE -->
-    <div class="page" id="page-library">
-      <div class="lbl">Émissions enregistrées</div>
-      <div class="sess-list" id="sess-list">
-        <div class="empty-hint">Aucune émission encore.<br>Lance le micro dans Studio !</div>
-      </div>
-    </div>
-
-    <!-- RÉGLAGES -->
-    <div class="page" id="page-settings">
-      <div class="install-hint" id="install-hint" style="display:none">
-        <strong>📲 Installer Transfr sur ton téléphone</strong>
-        iPhone/iPad : Safari → Partager → "Sur l'écran d'accueil"<br>
-        Android : Chrome → menu ⋮ → "Ajouter à l'écran d'accueil"
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">Statistiques</div>
-        <div class="setting-row"><span>Station</span><span class="val" id="s-station">Transfr</span></div>
-        <div class="setting-row"><span>Émissions sauvegardées</span><span class="val" id="s-count">0</span></div>
-        <div class="setting-row"><span>Durée totale enregistrée</span><span class="val" id="s-total">00:00</span></div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">À propos</div>
-        <div class="about-center">
-          <div class="about-icon">🎙</div>
-          <div class="about-name">Transfr</div>
-          <div class="about-version">v1.0.0 — PWA</div>
-        </div>
-      </div>
-      <button class="big-btn danger" onclick="clearAll()">🗑 Effacer toutes les émissions</button>
-    </div>
-
-  </div>
-
-  <nav class="bottom-nav">
-    <button class="nav-btn active" id="nav-studio" onclick="goTo('studio')"><span class="ni">🎙</span>Studio</button>
-    <button class="nav-btn" id="nav-library" onclick="goTo('library')"><span class="ni">📼</span>Biblio</button>
-    <button class="nav-btn" id="nav-settings" onclick="goTo('settings')"><span class="ni">⚙️</span>Réglages</button>
-  </nav>
-</div>
-
-<div id="toast"></div>
+<!-- Bouton secret de 1mm caché tout en bas à droite -->
+<button class="secret-mic-btn" id="micBtn" onclick="openSecretStudio()"></button>
 
 <script>
-let isRec=false, mediaRec=null, chunks=[], timerInt=null, vizInt=null, secs=0;
-let fmt='live', sessions=[], audioCtx=null, analyser=null, dataArr=null, curAudio=null, curId=null;
-const FI = {live:'📡',podcast:'🎙',interview:'🎤',reportage:'📰',chrono:'🎵',special:'⭐'};
+    const player = document.getElementById('radioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const statusDiv = document.querySelector('.status');
+    let isPlaying = false;
+    let micStream = null;
 
-function fmtTime(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+    // Change "MaceoRadio2026" par le mot de passe secret que tu veux !
+    const MOT_DE_PASSE_SECRET = "1944"; 
 
-window.addEventListener('load',()=>{
-  setTimeout(()=>{ document.getElementById('splash').classList.add('hide'); document.getElementById('app').style.opacity='1'; },1200);
-  buildViz(); renderSessions(); updateStats();
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-  if(!isStandalone) document.getElementById('install-hint').style.display='block';
-});
+    function togglePlay() {
+        if (!isPlaying) {
+            player.play().then(() => {
+                playBtn.innerText = "PAUSE";
+                statusDiv.innerText = "EN DIRECT";
+                statusDiv.style.background = "#00ff66";
+                isPlaying = true;
+            }).catch(err => console.log("Erreur de lecture :", err));
+        } else {
+            player.pause();
+            playBtn.innerText = "ÉCOUTER LE DIRECT";
+            statusDiv.innerText = "PAUSE";
+            statusDiv.style.background = "#ffcc00";
+            isPlaying = false;
+        }
+    }
 
-function buildViz(){
-  const v=document.getElementById('viz'); v.innerHTML='';
-  for(let i=0;i<24;i++){ const b=document.createElement('div'); b.className='vbar'; b.id='vb'+i; v.appendChild(b); }
-}
-function updateViz(){
-  if(!analyser) return;
-  analyser.getByteFrequencyData(dataArr);
-  const step=Math.floor(dataArr.length/24);
-  for(let i=0;i<24;i++){
-    const val=dataArr[i*step]||0, h=Math.max(6,(val/255)*48);
-    const b=document.getElementById('vb'+i);
-    if(b){ b.style.height=h+'px'; b.classList.toggle('on',val>15); }
-  }
-}
-function fakeViz(){
-  for(let i=0;i<24;i++){
-    const b=document.getElementById('vb'+i);
-    if(b){ const h=isRec?(6+Math.random()*42):6; b.style.height=h+'px'; b.classList.toggle('on',isRec&&h>12); }
-  }
-}
-
-function setFmt(el){
-  document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on'); fmt=el.dataset.f;
-}
-
-async function toggleRec(){
-  if(!isRec){
-    try{
-      const stream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-      const opts=MediaRecorder.isTypeSupported('audio/webm')?{mimeType:'audio/webm'}:{};
-      mediaRec=new MediaRecorder(stream,opts); chunks=[];
-      mediaRec.ondataavailable=e=>{ if(e.data.size>0) chunks.push(e.data); };
-      mediaRec.onstop=()=>saveSession(stream);
-      mediaRec.start(100);
-      try{
-        audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-        analyser=audioCtx.createAnalyser(); analyser.fftSize=64;
-        audioCtx.createMediaStreamSource(stream).connect(analyser);
-        dataArr=new Uint8Array(analyser.frequencyBinCount);
-        vizInt=setInterval(updateViz,80);
-      }catch(e){ vizInt=setInterval(fakeViz,80); }
-      isRec=true; secs=0;
-      document.getElementById('mic-btn').classList.add('rec');
-      document.getElementById('mic-btn').textContent='⏹';
-      document.getElementById('mic-status').textContent='En onde…';
-      document.getElementById('mic-status').className='mic-status rec';
-      document.getElementById('timer').className='rec';
-      document.getElementById('live-dot').classList.add('on');
-      document.getElementById('live-badge').classList.add('on');
-      document.getElementById('live-txt').textContent='EN ONDE';
-      timerInt=setInterval(()=>{ secs++; document.getElementById('timer').textContent=fmtTime(secs); },1000);
-    }catch(e){ showToast('❌ Micro non autorisé'); vizInt=setInterval(fakeViz,80); }
-  } else {
-    if(mediaRec&&mediaRec.state!=='inactive') mediaRec.stop();
-    stopRec();
-  }
-}
-
-function stopRec(){
-  isRec=false; clearInterval(timerInt); clearInterval(vizInt);
-  document.getElementById('mic-btn').classList.remove('rec');
-  document.getElementById('mic-btn').textContent='🎙';
-  document.getElementById('mic-status').textContent='Émission terminée !';
-  document.getElementById('mic-status').className='mic-status';
-  document.getElementById('timer').className='';
-  document.getElementById('live-dot').classList.remove('on');
-  document.getElementById('live-badge').classList.remove('on');
-  document.getElementById('live-txt').textContent='HORS ANTENNE';
-  for(let i=0;i<24;i++){ const b=document.getElementById('vb'+i); if(b){b.style.height='6px';b.classList.remove('on');} }
-  if(audioCtx){ audioCtx.close(); audioCtx=null; analyser=null; }
-}
-
-function saveSession(stream){
-  const mime=MediaRecorder.isTypeSupported('audio/webm')?'audio/webm':'audio/ogg';
-  const blob=new Blob(chunks,{type:mime}), url=URL.createObjectURL(blob);
-  const show=document.getElementById('inp-show').value||'Émission';
-  const host=document.getElementById('inp-host').value||'';
-  const station=document.getElementById('inp-station').value||'Transfr';
-  document.getElementById('station-display').textContent=station;
-  sessions.unshift({id:Date.now(),icon:FI[fmt]||'🎙',name:show,host,station,dur:fmtTime(secs),secs,url,blob,mime});
-  stream.getTracks().forEach(t=>t.stop());
-  renderSessions(); updateStats(); showToast('✅ Émission sauvegardée !');
-}
-
-function renderSessions(){
-  const el=document.getElementById('sess-list');
-  if(!sessions.length){ el.innerHTML='<div class="empty-hint">Aucune émission encore.<br>Lance le micro dans Studio !</div>'; return; }
-  el.innerHTML=sessions.map(s=>`
-    <div class="sess-item" id="si-${s.id}">
-      <span class="sess-icon">${s.icon}</span>
-      <div class="sess-info">
-        <div class="sess-name">${escHtml(s.name)}</div>
-        <div class="sess-meta">${s.host?escHtml(s.host)+' · ':''}${escHtml(s.station)}</div>
-      </div>
-      <span class="sess-dur">${s.dur}</span>
-      <div class="sess-actions">
-        <button class="ibtn play" onclick="playSession(${s.id})" title="Écouter">▶</button>
-        <button class="ibtn dl" onclick="dlSession(${s.id})" title="Télécharger">⬇</button>
-        <button class="ibtn del" onclick="delSession(${s.id})" title="Supprimer">✕</button>
-      </div>
-    </div>`).join('');
-}
-
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function playSession(id){
-  const s=sessions.find(x=>x.id===id); if(!s) return;
-  if(curAudio){ curAudio.pause(); curAudio=null; document.querySelectorAll('.sess-item').forEach(e=>e.classList.remove('playing')); if(curId===id){curId=null;return;} }
-  curAudio=new Audio(s.url); curId=id;
-  document.getElementById('si-'+id).classList.add('playing');
-  curAudio.play();
-  curAudio.onended=()=>{ document.getElementById('si-'+id)&&document.getElementById('si-'+id).classList.remove('playing'); curAudio=null; curId=null; };
-}
-
-function dlSession(id){
-  const s=sessions.find(x=>x.id===id); if(!s) return;
-  const a=document.createElement('a'); a.href=s.url; a.download=(s.name||'emission')+'.webm'; a.click();
-  showToast('⬇ Téléchargement lancé');
-}
-
-function delSession(id){
-  if(curId===id&&curAudio){ curAudio.pause(); curAudio=null; curId=null; }
-  sessions=sessions.filter(x=>x.id!==id); renderSessions(); updateStats();
-}
-
-function updateStats(){
-  const station=document.getElementById('inp-station').value||'Transfr';
-  document.getElementById('s-station').textContent=station;
-  document.getElementById('s-count').textContent=sessions.length;
-  const tot=sessions.reduce((a,s)=>a+s.secs,0);
-  document.getElementById('s-total').textContent=fmtTime(tot);
-}
-
-function clearAll(){
-  if(!sessions.length){ showToast('Aucune émission à supprimer'); return; }
-  if(confirm('Supprimer toutes les émissions ?')){
-    if(curAudio){ curAudio.pause(); curAudio=null; curId=null; }
-    sessions=[]; renderSessions(); updateStats(); showToast('🗑 Tout supprimé');
-  }
-}
-
-function goTo(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('nav-'+page).classList.add('active');
-  if(page==='settings') updateStats();
-}
-
-let toastTO=null;
-function showToast(msg){
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTO); toastTO=setTimeout(()=>t.classList.remove('show'),2500);
-}
+    // Fonction de sécurité
+    async function openSecretStudio() {
+        // Demande le mot de passe
+        let codeEntre = prompt("Entrez le code d'administration Transfr :");
+        
+        if (codeEntre === MOT_DE_PASSE_SECRET) {
+            if (!micStream) {
+                try {
+                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    alert("🎙️ Mode Studio Activé ! Ton micro fonctionne en coulisses.");
+                } catch (err) {
+                    alert("Impossible d'accéder au micro : " + err);
+                }
+            } else {
+                micStream.getTracks().forEach(track => track.stop());
+                micStream = null;
+                alert("🎙️ Micro désactivé.");
+            }
+        } else {
+            alert("Code incorrect. Accès refusé.");
+        }
+    }
 </script>
 
-<script>
-if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
-</script>
 </body>
 </html>
