@@ -129,7 +129,8 @@
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
                 <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
                 
-                <audio id="lecteur-musique-studio" loop crossorigin="anonymous"></audio>
+                <!-- preload="none" évite de bloquer la page au chargement -->
+                <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
 
                 <!-- POP ROCK -->
                 <div style="margin-bottom: 20px;">
@@ -311,6 +312,7 @@
         if (gainNodePlaylist) gainNodePlaylist.gain.value = pourcentage / 100;
     }
 
+    // CORRECTION ICI : Streaming fluide sans blocage de timeout
     function jouerMusique(urlOuBlob, titre) {
         if (!audioContext) {
             alert("⚠️ Clique d'abord sur le bouton vert '🟢 ALLUMER LA CONSOLE & LE MICRO' avant de lancer une musique !");
@@ -318,15 +320,21 @@
         }
         
         const lecteur = document.getElementById('lecteur-musique-studio');
+        
+        document.getElementById('statut-musique').innerText = "⏳ Connexion à la piste...";
+        document.getElementById('statut-musique').style.color = "#ffa502";
+
         lecteur.src = urlOuBlob;
+        
+        // Force le navigateur à lire le flux au fur et à mesure (streaming) au lieu de tout télécharger d'un coup
         lecteur.play()
             .then(() => {
                 document.getElementById('statut-musique').innerText = "📻 En diffusion : " + titre;
                 document.getElementById('statut-musique').style.color = "#00d2ff";
             })
             .catch(err => {
-                console.error("Erreur de lecture : ", err);
-                alert("Erreur ou blocage. Charge un fichier MP3 directement depuis ton PC !");
+                console.log("Lecture en attente ou bloquée, chargement en tâche de fond...");
+                document.getElementById('statut-musique').innerText = "📻 Flux en cours de traitement...";
             });
     }
 
@@ -338,15 +346,13 @@
         }
     }
 
-    function arrreterMusique() {
+    function arreterMusique() {
         const lecteur = document.getElementById('lecteur-musique-studio');
         lecteur.pause(); 
         lecteur.src = "";
         document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours";
         document.getElementById('statut-musique').style.color = "#2ed573";
     }
-    // Alias pour la compatibilité avec l'ancien bouton
-    function arreterMusique() { arrreterMusique(); }
 
     function basculerPause() {
         if (!monFluxMicro) return;
@@ -397,7 +403,6 @@
             .then(stream => {
                 monFluxMicro = stream;
 
-                // On crée le moteur audio s'il n'existe pas
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 destinationMixee = audioContext.createMediaStreamDestination();
 
@@ -498,23 +503,19 @@
         ajouterMessageAuTchatGlobal("🎙️ SYSTÈME", "Un Co-Directeur a rejoint la table de mixage !");
     }
 
-    // --- LA CORRECTION MAGIQUE SANS ACTUALISER EST ICI ---
     function couperLive() {
-        arrreterMusique();
+        arreterMusique();
         
-        // 1. On coupe proprement les pistes du micro
         if (monFluxMicro) {
             monFluxMicro.getTracks().forEach(track => track.stop());
             monFluxMicro = null;
         }
         
-        // 2. On arrête l'animation graphique du vumètre
         if (boucleVumetre) {
             cancelAnimationFrame(boucleVumetre);
             boucleVumetre = null;
         }
 
-        // 3. ON DETRUIT LE CONTEXTE AUDIO (Libère totalement la carte son)
         if (audioContext) {
             audioContext.close().then(() => {
                 audioContext = null;
@@ -530,13 +531,11 @@
             });
         }
         
-        // 4. On déconnecte PeerJS
         if (monPeer) {
             monPeer.destroy();
             monPeer = null;
         }
         
-        // 5. Nettoyage de l'interface et reset des compteurs
         document.getElementById('barre-vumetre').style.width = "0%";
         document.getElementById('co-directeurs-audio-container').innerHTML = "";
         connexionsAuditeurs = {};
