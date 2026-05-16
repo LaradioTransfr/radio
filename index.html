@@ -76,7 +76,7 @@
                     <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE ACTIVE</span>
                 </div>
 
-                <!-- NOUVELLE ZONE : PROGRAMMATION DU PROCHAIN DIRECT (MODE DIRECTEUR) -->
+                <!-- ZONE : PROGRAMMATION DU PROCHAIN DIRECT (MODE DIRECTEUR) -->
                 <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #00d2ff; margin-bottom: 20px;">
                     <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">📅 ANNONCER LE PROCHAIN DIRECT</h4>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
@@ -176,7 +176,7 @@
     <div id="co-directeurs-audio-container"></div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT NETTOYÉE ET CORRIGÉE                -->
+    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET OPTIMISÉE               -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
@@ -211,17 +211,19 @@
             document.getElementById('panneau-admin').style.display = 'block';
             modeAdminActif = true;
             
-            // Charger la date sauvegardée localement si elle existe
+            // Met l'ancienne valeur dans les cases pour t'aider
             const dateSauvegardee = localStorage.getItem('planning-transfr');
-            if (dateSauvegardee) {
-                document.getElementById('texte-planning-auditeur').innerText = dateSauvegardee;
+            if (dateSauvegardee && dateSauvegardee.includes(" à ")) {
+                const parties = dateSauvegardee.split(" à ");
+                document.getElementById('admin-date-direct').value = parties[0];
+                document.getElementById('admin-heure-direct').value = "à " + parties[1];
             }
         } else {
             alert('Code secret incorrect !');
         }
     }
 
-    // --- FONCTION DE DIFFUSION DU PLANNING ---
+    // --- FONCTION DE DIFFUSION DU PLANNING (CORRIGÉE) ---
     function diffuserPlanning() {
         const dateInput = document.getElementById('admin-date-direct').value.trim();
         const heureInput = document.getElementById('admin-heure-direct').value.trim();
@@ -233,25 +235,26 @@
 
         const texteComplet = `${dateInput} ${heureInput}`;
         
-        // Mettre à jour sur le navigateur actuel et sauvegarder
+        // CORRECTION : On met à jour l'affichage sur la page TOUT DE SUITE
         document.getElementById('texte-planning-auditeur').innerText = texteComplet;
+        
+        // On sauvegarde dans le navigateur
         localStorage.setItem('planning-transfr', texteComplet);
 
-        // Envoyer l'information en temps réel à tous les auditeurs connectés
+        // Si le réseau radio est allumé, on transmet aux auditeurs connectés
         Object.keys(connexionsAuditeurs).forEach(peerId => {
-            if (monPeer && monPeer.connections[peerId]) {
-                monPeer.connections[peerId].forEach(conn => {
-                    if (conn.open) {
-                        conn.send({ type: 'planning-update', texte: texteComplet });
-                    }
-                });
+            if (connexionsAuditeurs[peerId] && connexionsAuditeurs[peerId].dataConn) {
+                let conn = connexionsAuditeurs[peerId].dataConn;
+                if (conn.open) {
+                    conn.send({ type: 'planning-update', texte: texteComplet });
+                }
             }
         });
         
-        alert("📢 Date envoyée aux auditeurs !");
+        alert("📢 Date enregistrée et mise à jour sur l'écran !");
     }
 
-    // Charger le planning sauvegardé automatiquement pour les auditeurs aussi
+    // CHARGEMENT AUTOMATIQUE AU DÉMARRAGE DE LA PAGE
     window.addEventListener('DOMContentLoaded', () => {
         const dateSauvegardee = localStorage.getItem('planning-transfr');
         if (dateSauvegardee) {
@@ -270,7 +273,6 @@
             document.getElementById('statut-diffusion').style.color = "#2ed573";
             document.getElementById('btn-ecouter').style.display = "block";
             
-            // Demander au studio s'il y a un planning à jour
             connexionAuStudio.send({ type: 'demande-planning' });
         });
         
@@ -561,7 +563,6 @@
                     connexionsAuditeurs[conn.peer] = { call: call, dataConn: conn };
                     mettreAJourCompteur();
                     
-                    // Quand un nouvel auditeur se connecte en plein live, on lui envoie aussi le planning actuel
                     const dateSauvegardee = localStorage.getItem('planning-transfr');
                     if (dateSauvegardee) {
                         conn.send({ type: 'planning-update', texte: dateSauvegardee });
