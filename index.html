@@ -81,7 +81,7 @@
                     <!-- Boutons Antenne -->
                     <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center;">
                         <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px;">🎙️ BOUTONS ANTENNE</h4>
-                        <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">🟢 1. ALLUMER LA CONSOLE & LE MICRO</button>
+                        <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">🟢 ALLUMER LA CONSOLE & LE MICRO</button>
                         <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none; margin-bottom: 8px;">⏸️ METTRE EN PAUSE</button>
                         <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none;">🛑 QUITTER LE STUDIO</button>
 
@@ -125,14 +125,13 @@
                 </div>
             </div>
 
-            <!-- COLONNE DROITE : PLAYLIST MULTI-GENRES (CORRIGÉE) -->
+            <!-- COLONNE DROITE : PLAYLIST MULTI-GENRES -->
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
                 <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
                 
-                <!-- Balise audio masquée modifiée avec crossOrigin pour éviter les blocages -->
                 <audio id="lecteur-musique-studio" loop crossorigin="anonymous"></audio>
 
-                <!-- POP ROCK / MÅNESKIN STYLE -->
+                <!-- POP ROCK -->
                 <div style="margin-bottom: 20px;">
                     <h4 style="color: #ff4757; margin-bottom: 8px; font-size: 14px;">🎸 POP ROCK / STYLE MÅNESKIN</h4>
                     <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Gros Rock Classique Énergique')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Classique - Piste 1</button>
@@ -145,10 +144,10 @@
                     <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
                 </div>
 
-                <!-- DIFFUSER UN MP3 DEPUIS SON PC (LE PLUS FIABLE !) -->
+                <!-- DIFFUSER UN MP3 DEPUIS SON PC -->
                 <div style="background: rgba(255,165,0,0.05); padding: 12px; border-radius: 8px; border: 1px dashed #ffa502; text-align: center;">
                     <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 8px; font-size: 13px;">📂 DIFFUSER UN MP3 DE TON PC</h4>
-                    <p style="font-size: 11px; color: #aaa; margin-top:0;">Prends directement un fichier (ex: Måneskin ou Rap) de ton ordinateur :</p>
+                    <p style="font-size: 11px; color: #aaa; margin-top:0;">Prends directement un fichier de ton ordinateur :</p>
                     <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; cursor: pointer;">
                 </div>
 
@@ -162,7 +161,7 @@
     <div id="co-directeurs-audio-container"></div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT COMPLÈTE                            -->
+    <!-- LOGIQUE JAVASCRIPT NETTOYÉE ET CORRIGÉE                -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
@@ -313,9 +312,8 @@
     }
 
     function jouerMusique(urlOuBlob, titre) {
-        // SÉCURITÉ : On vérifie si la console est allumée !
         if (!audioContext) {
-            alert("⚠️ Clique d'abord sur le gros bouton vert '1. ALLUMER LA CONSOLE & LE MICRO' avant de lancer une musique !");
+            alert("⚠️ Clique d'abord sur le bouton vert '🟢 ALLUMER LA CONSOLE & LE MICRO' avant de lancer une musique !");
             return;
         }
         
@@ -328,7 +326,7 @@
             })
             .catch(err => {
                 console.error("Erreur de lecture : ", err);
-                alert("Le morceau met du temps à charger ou est bloqué. Essaye de charger un MP3 depuis ton PC avec le bouton juste en dessous !");
+                alert("Erreur ou blocage. Charge un fichier MP3 directement depuis ton PC !");
             });
     }
 
@@ -340,13 +338,15 @@
         }
     }
 
-    function arreterMusique() {
+    function arrreterMusique() {
         const lecteur = document.getElementById('lecteur-musique-studio');
         lecteur.pause(); 
         lecteur.src = "";
         document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours";
         document.getElementById('statut-musique').style.color = "#2ed573";
     }
+    // Alias pour la compatibilité avec l'ancien bouton
+    function arreterMusique() { arrreterMusique(); }
 
     function basculerPause() {
         if (!monFluxMicro) return;
@@ -397,11 +397,11 @@
             .then(stream => {
                 monFluxMicro = stream;
 
-                // Création du moteur de mixage
+                // On crée le moteur audio s'il n'existe pas
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 destinationMixee = audioContext.createMediaStreamDestination();
 
-                // 1. Noeud Micro de cet admin
+                // 1. Noeud Micro
                 sourceNodeMicro = audioContext.createMediaStreamSource(stream);
                 gainNodeMicro = audioContext.createGain();
                 analyserNode = audioContext.createAnalyser();
@@ -418,7 +418,7 @@
                 gainNodePlaylist.connect(destinationMixee);
                 gainNodePlaylist.connect(audioContext.destination);
 
-                // 3. Réactivation du Noeud Son PC
+                // 3. Noeud Son PC
                 gainNodePC = audioContext.createGain();
                 gainNodePC.connect(destinationMixee);
 
@@ -463,8 +463,10 @@
             call.answer(fluxMixe);
             call.on('stream', (fluxCoDirecteur) => {
                 diffuserVoixCoDirecteur(fluxCoDirecteur);
-                let sourceCoDirecteur = audioContext.createMediaStreamSource(fluxCoDirecteur);
-                sourceCoDirecteur.connect(destinationMixee);
+                if (audioContext && destinationMixee) {
+                    let sourceCoDirecteur = audioContext.createMediaStreamSource(fluxCoDirecteur);
+                    sourceCoDirecteur.connect(destinationMixee);
+                }
             });
         });
 
@@ -496,16 +498,49 @@
         ajouterMessageAuTchatGlobal("🎙️ SYSTÈME", "Un Co-Directeur a rejoint la table de mixage !");
     }
 
+    // --- LA CORRECTION MAGIQUE SANS ACTUALISER EST ICI ---
     function couperLive() {
-        arreterMusique();
-        if (monFluxMicro) monFluxMicro.getTracks().forEach(track => track.stop());
-        if (audioContext) audioContext.close();
-        if (monPeer) monPeer.destroy();
-        if (boucleVumetre) cancelAnimationFrame(boucleVumetre);
+        arrreterMusique();
         
+        // 1. On coupe proprement les pistes du micro
+        if (monFluxMicro) {
+            monFluxMicro.getTracks().forEach(track => track.stop());
+            monFluxMicro = null;
+        }
+        
+        // 2. On arrête l'animation graphique du vumètre
+        if (boucleVumetre) {
+            cancelAnimationFrame(boucleVumetre);
+            boucleVumetre = null;
+        }
+
+        // 3. ON DETRUIT LE CONTEXTE AUDIO (Libère totalement la carte son)
+        if (audioContext) {
+            audioContext.close().then(() => {
+                audioContext = null;
+                gainNodeMicro = null;
+                gainNodePlaylist = null;
+                gainNodePC = null;
+                sourceNodeMicro = null;
+                sourceNodePlaylist = null;
+                destinationMixee = null;
+                fluxMixe = null;
+                analyserNode = null;
+                console.log("Moteur audio réinitialisé avec succès !");
+            });
+        }
+        
+        // 4. On déconnecte PeerJS
+        if (monPeer) {
+            monPeer.destroy();
+            monPeer = null;
+        }
+        
+        // 5. Nettoyage de l'interface et reset des compteurs
         document.getElementById('barre-vumetre').style.width = "0%";
         document.getElementById('co-directeurs-audio-container').innerHTML = "";
         connexionsAuditeurs = {};
+        
         document.getElementById('btn-lancer-live').style.display = "inline-block";
         document.getElementById('btn-pause-live').style.display = "none";
         document.getElementById('btn-couper-live').style.display = "none";
