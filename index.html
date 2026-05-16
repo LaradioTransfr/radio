@@ -3,97 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Live & Chat</title>
-    <!-- SCRIPT DE BASE OBLIGATOIRE POUR LE DIRECT SANS LOGICIEL (PEERJS) -->
+    <title>Radio Transfr</title>
+    <!-- SCRIPT DE BASE OBLIGATOIRE POUR LE DIRECT (PEERJS) -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
-<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; position: relative; min-height: 90vh;">
 
     <!-- ====================================================== -->
-    <!-- 1. INTERFACE AUDITEUR : LE LECTEUR DE LA RADIO        -->
+    <!-- PETIT BOUTON D'ADMINISTRATION CACHÉ DANS LE COIN      -->
     <!-- ====================================================== -->
-    <div id="lecteur-auditeur" style="text-align: center; padding: 25px; background: linear-gradient(135deg, #1e1e2f, #252538); color: white; border-radius: 12px; max-width: 500px; margin: 20px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        <h2 style="color: #00d2ff; margin-top: 0; letter-spacing: 1px;">📻 RADIO TRANSFR EN DIRECT</h2>
+    <button onclick="ouvrirConnexion()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+        ⚙️ Admin
+    </button>
+
+    <!-- ====================================================== -->
+    <!-- INTERFACE PRINCIPALE DE LA RADIO (CE QUE TOUT LE MONDE VOIT) -->
+    <!-- ====================================================== -->
+    <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 60px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
+        <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
+        <p style="color: #aaa; font-size: 14px; margin-bottom: 25px;">Bienvenue sur la radio officielle de Macéo !</p>
         
-        <div id="statut-diffusion" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-weight: bold; color: #ff4757; margin-bottom: 20px; border: 1px solid rgba(255,47,87,0.2);">
-            ⚪ Recherche de la diffusion...
+        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #ff4757; margin-bottom: 20px; border: 1px solid rgba(255,47,87,0.2);">
+            ⚪ Recherche de la diffusion de Transfr...
         </div>
         
-        <button id="btn-ecouter" onclick="ecouterDirect()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 14px 28px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%; box-shadow: 0 4px 10px rgba(0,210,255,0.3);">
+        <button id="btn-ecouter" onclick="ecouterDirect()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%; box-shadow: 0 4px 15px rgba(0,210,255,0.3);">
             ▶️ Écouter le Direct
         </button>
 
         <audio id="audio-live" autoplay></audio>
     </div>
 
+
     <!-- ====================================================== -->
-    <!-- 2. ZONE DE CONNEXION CACHÉE POUR LE DIRECTEUR         -->
+    <!-- FENÊTRE DE CONNEXION (S'OUVRE QUAND ON CLIQUE SUR LE COIN) -->
     <!-- ====================================================== -->
-    <div id="zone-connexion" style="text-align: center; padding: 25px; background: #1e1e2f; color: white; border-radius: 12px; max-width: 400px; margin: 20px auto; border: 1px solid #3d3d5c;">
-        <h3 style="color: #00d2ff; margin-top: 0;">🔑 Studio Secret Transfr</h3>
-        <input type="password" id="code-secret" placeholder="Entrez le code secret..." style="padding: 12px; width: 85%; border-radius: 8px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center; font-size: 16px;">
+    <div id="zone-connexion" style="display: none; text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; margin: 20px auto; border: 1px solid #3d3d5c; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+        <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
+        <input type="password" id="code-secret" placeholder="Entrez le code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center; font-size: 14px;">
         <br>
-        <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 12px 25px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 90%; font-size: 15px;">Connexion au Studio</button>
+        <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;">Valider</button>
     </div>
 
+
     <!-- ====================================================== -->
-    <!-- 3. INTERFACE DU TABLEAU DE BORD AVEC LE VRAI CHAT     -->
+    <!-- INTERFACE COMPLÈTE DU PANNEAU SECRET (MOTEUR EN DIRECT)-->
     <!-- ====================================================== -->
-    <div id="panneau-admin" style="display: none; padding: 25px; background: #14141f; color: white; border-radius: 16px; max-width: 700px; margin: 20px auto; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
+    <div id="panneau-admin" style="display: none; padding: 25px; background: #14141f; border-radius: 16px; max-width: 700px; margin: 20px auto; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
         
-        <!-- En-tête -->
         <div style="text-align: center; margin-bottom: 25px;">
-            <h2 style="color: #00d2ff; margin: 0; letter-spacing: 1px; font-size: 26px;">🚀 TABLEAU DE BORD TRANSFR</h2>
-            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; display: inline-block; margin-top: 8px; border: 1px solid rgba(46, 213, 115, 0.2);">
-                ● MODE DIRECTEUR ACTIF
-            </span>
+            <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD DIRECTEUR</h2>
+            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● ANTENNE PRÊTE</span>
         </div>
 
-        <!-- Grille de contrôle (Stats + Micro) -->
+        <!-- Deux Blocs : Compteur et Micro -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
             
-            <!-- Bloc Vraies Stats -->
+            <!-- Compteur Réel -->
             <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
-                <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px; font-size: 16px;">📊 STATISTIQUES</h4>
-                <p style="font-size: 15px; margin: 8px 0;">Auditeurs en ligne : <span id="admin-compteur" style="color: #ffa502; font-weight: bold; font-size: 22px;">0</span></p>
-                <p style="font-size: 13px; color: #aaa; margin: 5px 0 0 0;">✨ Vrais auditeurs connectés sur ton site.</p>
+                <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">📊 STATISTIQUES</h4>
+                <p style="font-size: 15px; margin: 8px 0;">Auditeurs connectés : <span id="admin-compteur" style="color: #ffa502; font-weight: bold; font-size: 22px;">0</span></p>
+                <p style="font-size: 12px; color: #aaa; margin: 0;">Mise à jour automatique des vraies personnes.</p>
             </div>
 
-            <!-- Bloc Micro et Antenne Live -->
+            <!-- Micro Vrai Direct -->
             <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px; font-size: 16px;">🎙️ CONTRÔLE DE L'ANTENNE</h4>
+                <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px;">🎙️ CONTRÔLE MICRO</h4>
                 
-                <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 12px 18px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 14px; box-shadow: 0 3px 8px rgba(46,213,115,0.2);">
-                    🎤 LANCER LE DIRECT
+                <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 12px 18px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px;">
+                    🎤 OUVRIR LE MICRO
                 </button>
                 
-                <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 12px 18px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 14px; display: none; box-shadow: 0 3px 8px rgba(255,71,87,0.2);">
-                    🛑 COUPER L'ANTENNE
+                <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 12px 18px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none;">
+                    🛑 PARLER EN HORS LIGNE
                 </button>
 
-                <div id="statut-micro-live" style="margin-top: 12px; font-weight: bold; color: #ffa502; font-size: 13px;">
-                    Hors antenne
+                <div id="statut-micro-live" style="margin-top: 10px; font-weight: bold; color: #ffa502; font-size: 13px;">
+                    Micro fermé
                 </div>
             </div>
 
         </div>
 
-        <!-- ZONE DES VRAIS COMMENTAIRES / CHAT -->
+        <!-- Zone d'affichage des commentaires des auditeurs -->
         <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
-            <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 12px; font-size: 16px;">💬 COMMENTAIRES EN DIRECT</h4>
+            <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 12px;">💬 ESPACE DES COMMENTAIRES</h4>
             
-            <!-- Boîte de réception des messages -->
-            <div id="boite-tchat" style="background: #12121a; height: 150px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; margin-bottom: 10px; color: #ddd; text-align: left;">
-                <p style="color: #666; margin: 0; font-style: italic;">Attente de messages des auditeurs...</p>
+            <div id="boite-tchat" style="background: #12121a; height: 150px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; text-align: left;">
+                <p style="color: #555; margin: 0; font-style: italic;">En attente de messages de Lucia et de tes abonnés...</p>
             </div>
-
-            <div style="font-size: 11px; color: #2ed573;">✓ Le filtre automatique de sécurité protège le chat.</div>
         </div>
 
     </div>
 
     <!-- ====================================================== -->
-    <!-- 4. LOGIQUE JAVASCRIPT UNIQUE POUR TOUT PILOTER         -->
+    <!-- SCRIPTS DE LOGIQUE JAVASCRIPT                          -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO = "transfr-live-studio-maceo"; 
@@ -101,7 +105,13 @@
     let monFluxMicro = null;
     let connexionsAuditeurs = {}; 
 
-    // Connexion Directeur (1944)
+    // Affiche la zone de mot de passe quand on clique sur le petit bouton dans le coin
+    function ouvrirConnexion() {
+        const zone = document.getElementById('zone-connexion');
+        zone.style.display = zone.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Vérifie le code secret 1944
     function verifierCode() {
         const codeSaisi = document.getElementById('code-secret').value;
         if (codeSaisi === '1944') {
@@ -112,7 +122,7 @@
         }
     }
 
-    // --- CODE AUDITEUR ---
+    // --- LOGIQUE AUDITEUR ---
     const peerAuditeur = new Peer();
     peerAuditeur.on('open', () => {
         const conn = peerAuditeur.connect(ID_RADIO);
@@ -147,7 +157,7 @@
         });
     }
 
-    // --- CODE BOSS (VRAI DIRECT + VRAIS COMPTEURS + RECEPTION CHAT) ---
+    // --- LOGIQUE BOSS (MICRO + COMPTEUR + CHAT) ---
     function mettreAJourCompteur() {
         const nombreAuditeurs = Object.keys(connexionsAuditeurs).length;
         const baliseCompteur = document.getElementById('admin-compteur');
@@ -158,16 +168,10 @@
 
     function ajouterMessageAuTchat(auteur, texte) {
         const boite = document.getElementById('boite-tchat');
-        
-        // Supprime le message d'attente s'il existe
-        if (boite.innerHTML.includes("Attente de messages")) {
+        if (boite.innerHTML.includes("En attente de messages")) {
             boite.innerHTML = "";
         }
-        
-        // Ajoute le nouveau message avec une belle couleur pour le pseudo
         boite.innerHTML += `<p style="margin: 5px 0;"><strong style="color: #00d2ff;">${auteur} :</strong> ${texte}</p>`;
-        
-        // Fait défiler le chat vers le bas automatiquement
         boite.scrollTop = boite.scrollHeight;
     }
 
@@ -180,17 +184,15 @@
                 monPeer.on('open', (id) => {
                     document.getElementById('btn-lancer-live').style.display = "none";
                     document.getElementById('btn-couper-live').style.display = "inline-block";
-                    document.getElementById('statut-micro-live').innerText = "🎙️ EN DIRECT !";
+                    document.getElementById('statut-micro-live').innerText = "🎙️ MICRO OUVERT (EN DIRECT)";
                     document.getElementById('statut-micro-live').style.color = "#2ed573";
                     
                     connexionsAuditeurs = {};
                     mettreAJourCompteur();
                 });
 
-                // Quand un auditeur interagit avec le studio
                 monPeer.on('connection', (conn) => {
                     conn.on('data', (data) => {
-                        // S'il demande à se connecter au son
                         if (data && data.type === 'connexion') {
                             const call = monPeer.call(conn.peer, monFluxMicro);
                             connexionsAuditeurs[conn.peer] = call;
@@ -202,7 +204,6 @@
                             });
                         }
                         
-                        // S'il envoie un commentaire (Futur tchat auditeur)
                         if (data && data.type === 'chat') {
                             ajouterMessageAuTchat(data.pseudo, data.message);
                         }
@@ -212,14 +213,11 @@
                 monPeer.on('error', (err) => {
                     if (err.type === 'unavailable-id') {
                         alert("Le direct est déjà lancé dans un autre onglet !");
-                    } else {
-                        console.error(err);
                     }
                 });
             })
             .catch(err => {
-                alert("Impossible d'accéder au micro ! Vérifie les autorisations.");
-                console.error(err);
+                alert("Impossible d'accéder au micro !");
             });
     }
 
@@ -235,13 +233,9 @@
         
         document.getElementById('btn-lancer-live').style.display = "inline-block";
         document.getElementById('btn-couper-live').style.display = "none";
-        document.getElementById('statut-micro-live').innerText = "Hors antenne";
+        document.getElementById('statut-micro-live').innerText = "Micro fermé";
         document.getElementById('statut-micro-live').style.color = "#ffa502";
-        
-        const baliseCompteur = document.getElementById('admin-compteur');
-        if (baliseCompteur) {
-            baliseCompteur.innerText = "0";
-        }
+        mettreAJourCompteur();
     }
     </script>
 </body>
