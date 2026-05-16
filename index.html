@@ -14,7 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            position: relative; /* Pour pouvoir cacher le bouton tout en bas */
+            position: relative;
         }
         .radio-container {
             background: rgba(255, 255, 255, 0.1);
@@ -56,19 +56,23 @@
         }
         button:hover { background: #00ccaa; transform: scale(1.03); }
 
-        /* LE BOUTON SECRET DE MACÉO (1mm x 1mm, transparent, en bas à droite) */
+        /* TON BOUTON PETIT DANS LE COIN ET LÉGÈREMENT VISIBLE */
         .secret-mic-btn {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 2px;
-            height: 2px;
-            padding: 0;
-            background: transparent;
-            border: none;
-            cursor: default;
-            overflow: hidden;
-            opacity: 0.1; /* Presque invisible */
+            position: absolute !important;
+            bottom: 10px !important;
+            right: 10px !important;
+            width: 15px !important; /* Petit carré */
+            height: 15px !important;
+            padding: 0 !important;
+            background: #ff4757 !important; /* Rouge pour que tu le voies */
+            border: none !important;
+            border-radius: 3px !important;
+            cursor: pointer !important;
+            opacity: 0.4; /* Translucide pour rester discret */
+            z-index: 9999;
+        }
+        .secret-mic-btn:hover {
+            opacity: 1; /* Il s'allume quand tu passes la souris dessus */
         }
     </style>
 </head>
@@ -86,7 +90,7 @@
     <button id="playBtn" onclick="togglePlay()">ÉCOUTER LE DIRECT</button>
 </div>
 
-<!-- Bouton secret de 1mm caché tout en bas à droite -->
+<!-- Le petit bouton secret rouge dans le coin en bas à droite -->
 <button class="secret-mic-btn" id="micBtn" onclick="openSecretStudio()"></button>
 
 <script>
@@ -96,7 +100,7 @@
     let isPlaying = false;
     let micStream = null;
 
-    // Change "MaceoRadio2026" par le mot de passe secret que tu veux !
+    // Ton code secret d'administrateur
     const MOT_DE_PASSE_SECRET = "1944"; 
 
     function togglePlay() {
@@ -116,9 +120,8 @@
         }
     }
 
-    // Fonction de sécurité
+    // Fonction pour activer le micro avec le code secret
     async function openSecretStudio() {
-        // Demande le mot de passe
         let codeEntre = prompt("Entrez le code d'administration Transfr :");
         
         if (codeEntre === MOT_DE_PASSE_SECRET) {
