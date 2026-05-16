@@ -129,6 +129,7 @@
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
                 <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
                 
+                <!-- CORRECTION : Ajout de l'attribut anonyme pour autoriser le streaming PC -->
                 <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
 
                 <!-- POP ROCK -->
@@ -200,7 +201,7 @@
         }
     }
 
-    // --- LOGIQUE DE L'AUDITEUR CORRIGÉE ---
+    // --- LOGIQUE DE L'AUDITEUR ---
     const peerAuditeur = new Peer();
     
     function connecterAuStudio() {
@@ -216,13 +217,11 @@
             if (data && data.type === 'chat-diffuse') {
                 ajouterMessageAuTchatGlobal(data.auteur, data.message);
             }
-            // Détection automatique quand l'admin coupe le live volontairement
             if (data && data.type === 'studio-deconnexion') {
                 forcerDeconnexionAuditeur();
             }
         });
 
-        // Détection si le flux réseau coupe brutalement
         connexionAuStudio.on('close', () => {
             forcerDeconnexionAuditeur();
         });
@@ -257,7 +256,6 @@
                 document.getElementById('btn-ecouter').disabled = true;
             });
             
-            // Si l'appel audio se coupe
             call.on('close', () => {
                 forcerDeconnexionAuditeur();
             });
@@ -339,6 +337,7 @@
         if (gainNodePlaylist) gainNodePlaylist.gain.value = pourcentage / 100;
     }
 
+    // CORRECTION ICI : "crossOrigin" forcé en JavaScript pour bypasser le blocage PC
     function jouerMusique(urlOuBlob, titre) {
         if (!audioContext) {
             alert("⚠️ Clique d'abord sur le bouton vert '🟢 ALLUMER LA CONSOLE & LE MICRO' avant de lancer une musique !");
@@ -347,6 +346,14 @@
         const lecteur = document.getElementById('lecteur-musique-studio');
         document.getElementById('statut-musique').innerText = "⏳ Connexion à la piste...";
         document.getElementById('statut-musique').style.color = "#ffa502";
+        
+        // Sécurité CORS forcée pour les PC
+        if (typeof urlOuBlob === 'string') {
+            lecteur.crossOrigin = "anonymous";
+        } else {
+            lecteur.removeAttribute('crossOrigin');
+        }
+        
         lecteur.src = urlOuBlob;
         
         lecteur.play()
@@ -516,11 +523,9 @@
         ajouterMessageAuTchatGlobal("🎙️ SYSTÈME", "Un Co-Directeur a rejoint la table de mixage !");
     }
 
-    // CORRECTION : Alerte automatique envoyée aux auditeurs avant fermeture
     function couperLive() {
         arreterMusique();
 
-        // Alerte tous les auditeurs connectés que le studio ferme
         Object.keys(connexionsAuditeurs).forEach(peerId => {
             let conn = connexionsAuditeurs[peerId].dataConn;
             let call = connexionsAuditeurs[peerId].call;
@@ -570,7 +575,6 @@
         document.getElementById('statut-micro-live').style.color = "#ffa502";
         mettreAJourCompteur();
 
-        // Reconnecte l'auditeur local à la recherche
         setTimeout(() => { connecterAuStudio(); }, 1000);
     }
     </script>
