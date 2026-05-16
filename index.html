@@ -61,10 +61,10 @@
         
         <div style="text-align: center; margin-bottom: 25px;">
             <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD DIRECTEUR</h2>
-            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● SYSTÈME DE VUMÈTRE INTÉGRÉ</span>
+            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● ACCÈS SÉCURISÉ MICRO</span>
         </div>
 
-        <!-- Section Contrôles de l'antenne -->
+        <!-- Section Controls de l'antenne -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
             
             <!-- Compteur Réel -->
@@ -94,7 +94,7 @@
                     Micro fermé
                 </div>
 
-                <!-- NOUVEAU : LA BARRE DE NIVEAU DU MICRO (VUMÈTRE) -->
+                <!-- LA BARRE DE NIVEAU DU MICRO (VUMÈTRE) -->
                 <div style="text-align: left; font-size: 11px; color: #aaa; margin-bottom: 4px;">Niveau du signal :</div>
                 <div style="background: #12121a; width: 100%; height: 12px; border-radius: 6px; border: 1px solid #333; overflow: hidden;">
                     <div id="barre-vumetre" style="background: linear-gradient(to right, #2ed573, #ffa502, #ff4757); width: 0%; height: 100%; transition: width 0.05s ease;"></div>
@@ -106,7 +106,7 @@
         <!-- LA TABLE DE MIXAGE (BARRES DE VOLUME) -->
         <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 25px;">
             <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 5px;">🎛️ VOLUMES DE LA TABLE DE MIXAGE</h4>
-            <p style="font-size: 11px; color: #666; margin-top: 0; margin-bottom: 15px;">✨ Filtre "Voix Claire" activé (Suppression des bruits de fond automatique)</p>
+            <p style="font-size: 11px; color: #666; margin-top: 0; margin-bottom: 15px;">✨ Filtre "Voix Claire" actif (Suppression des bruits de fond automatique)</p>
             
             <!-- Barre Micro -->
             <div style="margin-bottom: 15px;">
@@ -135,7 +135,7 @@
                 <p style="color: #555; margin: 0; font-style: italic;">En attente de messages de tes abonnés...</p>
             </div>
 
-            <!-- Boîte d'envoi Admin -->
+            <!-- Boite d'envoi Admin -->
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="admin-chat-message" placeholder="Écris une réponse en tant qu'Admin..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
                 <button onclick="envoyerCommentaireAdmin()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 14px;">Répondre</button>
@@ -161,7 +161,6 @@
     let sourceNode = null;
     let fluxMixe = null;
     
-    // Variables pour l'analyseur de volume (Vumètre)
     let boucleVumetre = null;
     let analyserNode = null;
 
@@ -267,7 +266,7 @@
             document.getElementById('btn-pause-live').style.color = "white";
             document.getElementById('statut-micro-live').innerText = "⏸️ MICRO EN PAUSE";
             document.getElementById('statut-micro-live').style.color = "#ffa502";
-            document.getElementById('barre-vumetre').style.width = "0%"; // Force la barre à zéro
+            document.getElementById('barre-vumetre').style.width = "0%";
         } else {
             pisteMicro.enabled = true;
             document.getElementById('btn-pause-live').innerText = "⏸️ METTRE EN PAUSE";
@@ -279,7 +278,6 @@
         }
     }
 
-    // Fonction magique pour animer le vumètre en temps réel
     function animerVumetre() {
         if (!analyserNode || microEnPause) {
             document.getElementById('barre-vumetre').style.width = "0%";
@@ -290,18 +288,14 @@
         const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
         analyserNode.getByteFrequencyData(dataArray);
 
-        // On calcule le volume moyen capté par le micro
         let total = 0;
         for (let i = 0; i < dataArray.length; i++) {
             total += dataArray[i];
         }
         let moyenne = total / dataArray.length;
-        
-        // On transforme ça en pourcentage pour la taille de la barre (multiplié par 2 pour donner du dynamisme)
         let pourcentageVolume = Math.min(moyenne * 2, 100);
         
         document.getElementById('barre-vumetre').style.width = pourcentageVolume + "%";
-
         boucleVumetre = requestAnimationFrame(animerVumetre);
     }
 
@@ -333,19 +327,19 @@
             video: false
         };
 
+        // CORRECTION ICI : On demande d'abord l'autorisation au navigateur
         navigator.mediaDevices.getUserMedia(configurationsAudio)
             .then(stream => {
+                // Si l'utilisateur ACCEPTE, alors on configure tout le reste
                 monFluxMicro = stream;
 
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 gainNode = audioContext.createGain();
                 sourceNode = audioContext.createMediaStreamSource(stream);
                 
-                // AJOUT DE L'ANALYSEUR POUR LE VUMÈTRE
                 analyserNode = audioContext.createAnalyser();
                 analyserNode.fftSize = 256;
                 
-                // On connecte le micro à l'analyseur PUIS au contrôle de volume
                 sourceNode.connect(analyserNode);
                 analyserNode.connect(gainNode);
                 
@@ -353,6 +347,7 @@
                 gainNode.connect(destination);
                 fluxMixe = destination.stream;
 
+                // On lance PeerJS seulement une fois que le micro est validé et prêt
                 monPeer = new Peer(ID_RADIO);
                 
                 monPeer.on('open', (id) => {
@@ -364,8 +359,6 @@
                     
                     microEnPause = false;
                     ajusterVolumeMicro();
-                    
-                    // On lance l'animation de la barre
                     animerVumetre();
                     
                     connexionsAuditeurs = {};
@@ -392,7 +385,9 @@
                 });
             })
             .catch(err => {
-                alert("Impossible d'accéder au micro !");
+                // Si l'utilisateur REFUSE ou s'il y a un bug de périphérique
+                alert("Erreur : Tu dois autoriser l'accès au micro en haut de ton navigateur pour lancer le direct de Transfr !");
+                console.error(err);
             });
     }
 
