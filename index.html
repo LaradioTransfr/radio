@@ -1,65 +1,81 @@
-<!-- ========================================== -->
-<!-- SECTION PANNEAU DE CONTRÔLE SECRET (1944) -->
-<!-- ========================================== -->
+<!-- ====================================================== -->
+<!-- 1. SCRIPT DE BASE POUR LE DIRECT (PEERJS)              -->
+<!-- ====================================================== -->
+<!-- Ce script obligatoire permet de connecter les micros sans logiciel -->
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
-<!-- Zone de connexion (visible au début) -->
+
+<!-- ====================================================== -->
+<!-- 2. CÔTÉ AUDITEUR : LE LECTEUR DE LA RADIO TRANSFR      -->
+<!-- ====================================================== -->
+<div id="lecteur-auditeur" style="text-align: center; padding: 20px; background: #222; color: white; border-radius: 10px; max-width: 500px; margin: 20px auto; border: 2px solid #1e90ff;">
+    <h2 style="color: #1e90ff; margin-top: 0;">📻 RADIO TRANSFR EN DIRECT</h2>
+    <div id="statut-diffusion" style="background: #333; padding: 10px; border-radius: 5px; font-weight: bold; color: #ff4757; margin-bottom: 15px;">
+        ⚪ Recherche de la diffusion...
+    </div>
+    
+    <!-- Bouton pour écouter -->
+    <button id="btn-ecouter" onclick="ecouterDirect()" style="background: #1e90ff; color: white; border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; display: none; width: 100%;">
+        ▶️ Écouter le Direct
+    </button>
+
+    <!-- Balise audio cachée qui va jouer ta voix -->
+    <audio id="audio-live" autoplay></audio>
+</div>
+
+
+<!-- ====================================================== -->
+<!-- 3. CÔTÉ BOSS : ZONE DE CONNEXION SECRET (1944)          -->
+<!-- ====================================================== -->
 <div id="zone-connexion" style="text-align: center; padding: 20px; background: #222; color: white; border-radius: 10px; max-width: 400px; margin: 20px auto; border: 1px solid #444;">
     <h3>🔑 Studio Secret Transfr</h3>
-    <input type="password" id="code-secret" placeholder="Entrez le code..." style="padding: 10px; width: 80%; border-radius: 5px; border: none; margin-bottom: 10px; text-align: center;">
+    <input type="password" id="code-secret" placeholder="Entrez le code..." style="padding: 10px; width: 80://; border-radius: 5px; border: none; margin-bottom: 10px; text-align: center;">
     <br>
     <button onclick="verifierCode()" style="background: #1e90ff; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 85%;">Connexion</button>
 </div>
 
-<!-- Le Panneau d'Administration Caché (s'affiche si le code est 1944) -->
-<div id="panneau-admin" style="display: none; padding: 20px; background: #1a1a1a; color: white; border-radius: 10px; max-width: 600px; margin: 20px auto; border: 2px solid #1e90ff;">
-    <h2 style="color: #1e90ff; text-align: center; margin-top: 0;">🚀 TABLEAU DE BORD TRANSFR</h2>
-    <p style="text-align: center; color: #2ed573; font-weight: bold;">Statut : Connecté en tant que Directeur</p>
 
+<!-- ====================================================== -->
+<!-- 4. CÔTÉ BOSS : PANNEAU D'ADMINISTRATION & LIVE MICRO    -->
+<!-- ====================================================== -->
+<div id="panneau-admin" style="display: none; padding: 20px; background: #1a1a1a; color: white; border-radius: 10px; max-width: 600px; margin: 20px auto; border: 2px solid #ff4757;">
+    <h2 style="color: #ff4757; text-align: center; margin-top: 0;">🔴 STUDIO DE DIFFUSION EN DIRECT</h2>
+    <p style="text-align: center; color: #2ed573; font-weight: bold;">Statut : Connecté en tant que Directeur</p>
+    
     <hr style="border: 1px solid #333; margin: 20px 0;">
 
-    <!-- 1. LE COMPTEUR ET LE CHAT (Ce que tu avais déjà) -->
-    <div style="background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-        <h4>📊 Stats & Modération</h4>
-        <p>Auditeurs en direct : <span id="admin-compteur" style="color: #ffa502; font-weight: bold;">337</span> (Faux compteur Pro)</p>
-        <p style="font-size: 14px; color: #aaa;">💬 Le chat en direct est activé et sécurisé pour Lucia et tes copains.</p>
-    </div>
-
-    <!-- 2. LE NOUVEAU STUDIO D'ENREGISTREMENT SANS LOGICIEL -->
-    <div id="studio-diffusion" style="padding: 15px; background: #222; border-radius: 8px; border: 2px solid #ff4757; text-align: center;">
-        <h3 style="color: #ff4757; margin-top: 0;">🔴 STUDIO D'ENREGISTREMENT MICRO</h3>
-        <p style="color: #aaa; font-size: 14px;">Parle dans ton micro pour créer la prochaine diffusion !</p>
+    <div style="text-align: center; background: #222; padding: 20px; border-radius: 8px;">
+        <p style="font-size: 15px; color: #aaa;">Clique sur le bouton pour ouvrir ton micro et diffuser instantanément sur le site !</p>
         
-        <!-- Boutons micro -->
-        <button id="btn-start-micro" onclick="demarrerEnregistrement()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px;">
-            🎤 Ouvrir le Micro
+        <!-- Boutons du vrai direct -->
+        <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 10px; width: 80%;">
+            🎤 COMMENCER LE LIVE (VRAI DIRECT)
         </button>
-        <button id="btn-stop-micro" onclick="arreterEnregistrement()" style="background: #ff4757; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px;" disabled>
-            🛑 Arrêter & Sauvegarder
+        
+        <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 12px 25px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 10px; display: none; width: 80%;">
+            🛑 ARRÊTER LE DIRECT
         </button>
 
-        <!-- Statut du Micro -->
-        <div id="statut-micro" style="margin-top: 10px; font-weight: bold; color: #ffa502;">Micro éteint</div>
-        
-        <!-- Zone de téléchargement du fichier direct.mp3 -->
-        <div id="zone-telechargement" style="margin-top: 15px; display: none; background: #1b3a24; padding: 10px; border-radius: 5px;">
-            <p style="color: #2ed573; margin: 0 0 10px 0;">🎉 Émission enregistrée avec succès !</p>
-            <a id="lien-audio" download="direct.mp3" style="background: #1e90ff; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                💾 Télécharger "direct.mp3"
-            </a>
-            <p style="font-size: 11px; color: #bbb; margin-top: 10px; margin-bottom: 0;">
-                ℹ️ Glisse ensuite ce fichier dans ton dossier GitHub pour le diffuser sur le site !
-            </p>
+        <div id="statut-micro-live" style="margin-top: 15px; font-weight: bold; color: #ffa502; font-size: 16px;">
+            Studio actuellement hors ligne
         </div>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- SCRIPT JAVASCRIPT POUR FAIRE MARCHER LE TOUT -->
-<!-- ========================================== -->
+
+<!-- ====================================================== -->
+<!-- 5. LA LOGIQUE JAVASCRIPT UNIQUE POUR TOUT CONNECTER    -->
+<!-- ====================================================== -->
 <script>
-// 1. Logique de connexion pour le code 1944
+// --- CONFIGURATION UNIQUE DE TA RADIO ---
+const ID_RADIO = "transfr-live-studio-maceo"; // Identifiant unique pour ta radio
+let monPeer = null;
+let monFluxMicro = null;
+let connexionsAuditeurs = [];
+
+// --- VERIFICATION DU MOT DE PASSE ---
 function verifierCode() {
-    const code Saisi = document.getElementById('code-secret').value;
+    const codeSaisi = document.getElementById('code-secret').value;
     if (codeSaisi === '1944') {
         document.getElementById('zone-connexion').style.display = 'none';
         document.getElementById('panneau-admin').style.display = 'block';
@@ -68,50 +84,102 @@ function verifierCode() {
     }
 }
 
-// 2. Logique du Studio Micro (Enregistrement)
-let mediaRecorder;
-let morceauxAudio = [];
+// --- LOGIQUE CÔTÉ AUDITEUR (RECHERCHE DU DIRECT) ---
+// Crée une connexion pour voir si le boss parle
+const peerAuditeur = new Peer();
+peerAuditeur.on('open', () => {
+    // On vérifie si la station existe sur le réseau gratuit
+    const conn = peerAuditeur.connect(ID_RADIO);
+    conn.on('open', () => {
+        document.getElementById('statut-diffusion').innerText = "🔴 TRANSFR EST EN DIRECT !";
+        document.getElementById('statut-diffusion').style.color = "#2ed573";
+        document.getElementById('btn-ecouter').style.display = "block";
+    });
+});
 
-function demarrerEnregistrement() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
+peerAuditeur.on('error', (err) => {
+    // Si la station n'est pas lancée, elle est hors ligne
+    document.getElementById('statut-diffusion').innerText = "⚫ Station Hors Ligne (Pas d'émission)";
+    document.getElementById('statut-diffusion').style.color = "#aaa";
+    document.getElementById('btn-ecouter').style.display = "none";
+});
+
+function ecouterDirect() {
+    // L'auditeur demande à recevoir le son en direct
+    peerAuditeur.on('call', (call) => {
+        call.answer(); // Répondre à l'appel de la radio
+        call.on('stream', (streamAuditeur) => {
+            const baliseAudio = document.getElementById('audio-live');
+            baliseAudio.srcObject = streamAuditeur;
+            baliseAudio.play();
+            document.getElementById('btn-ecouter').innerText = "🔊 ÉCOUTE EN COURS...";
+            document.getElementById('btn-ecouter').disabled = true;
+        });
+    });
+    
+    // Alerte le studio qu'un nouvel auditeur veut écouter
+    const conn = peerAuditeur.connect(ID_RADIO);
+    conn.on('open', () => {
+        conn.send('je-veux-ecouter');
+    });
+}
+
+// --- LOGIQUE CÔTÉ BOSS (LANCER LE VRAI DIRECT) ---
+function lancerLive() {
+    // 1. Demander le micro du PC
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
         .then(stream => {
-            mediaRecorder = new MediaRecorder(stream);
-            morceauxAudio = [];
-
-            mediaRecorder.ondataavailable = function(evenement) {
-                morceauxAudio.push(evenement.data);
-            };
-
-            mediaRecorder.onstop = function() {
-                const blocAudio = new Blob(morceauxAudio, { type: 'audio/mp3' });
-                const urlAudio = URL.createObjectURL(blocAudio);
-                
-                const lien = document.getElementById('lien-audio');
-                lien.href = urlAudio;
-                
-                document.getElementById('zone-telechargement').style.display = 'block';
-                document.getElementById('statut-micro').innerText = "✅ Enregistrement terminé !";
-                document.getElementById('statut-micro').style.color = "#2ed573";
-            };
-
-            mediaRecorder.start();
+            monFluxMicro = stream;
             
-            document.getElementById('btn-start-micro').disabled = true;
-            document.getElementById('btn-stop-micro').disabled = false;
-            document.getElementById('statut-micro').innerText = "🔴 EN DIRECT (Enregistrement en cours...)";
-            document.getElementById('statut-micro').style.color = "#ff4757";
+            // 2. Ouvrir l'antenne sur le serveur PeerJS avec l'ID unique
+            monPeer = new Peer(ID_RADIO);
+            
+            monPeer.on('open', (id) => {
+                document.getElementById('btn-lancer-live').style.display = "none";
+                document.getElementById('btn-couper-live').style.display = "inline-block";
+                document.getElementById('statut-micro-live').innerText = "🎙️ EN DIRECT ! Tout le monde peut t'entendre !";
+                document.getElementById('statut-micro-live').style.color = "#2ed573";
+            });
+
+            // 3. Quand un auditeur se connecte et demande le son
+            monPeer.on('connection', (conn) => {
+                conn.on('data', (data) => {
+                    if (data === 'je-veux-ecouter') {
+                        // On lui envoie le flux du micro en direct !
+                        const call = monPeer.call(conn.peer, monFluxMicro);
+                        connexionsAuditeurs.push(call);
+                    }
+                });
+            });
+
+            monPeer.on('error', (err) => {
+                if (err.type === 'unavailable-id') {
+                    alert("Le direct est déjà lancé dans un autre onglet !");
+                } else {
+                    console.error(err);
+                }
+            });
         })
-        .catch(erreur => {
-            alert("Mince ! Clique bien sur 'Autoriser' pour que le site puisse utiliser le micro !");
-            console.error(erreur);
+        .catch(err => {
+            alert("Impossible d'accéder au micro. Vérifie les autorisations de ton navigateur !");
+            console.error(err);
         });
 }
 
-function arreterEnregistrement() {
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
-        mediaRecorder.stop();
-        document.getElementById('btn-start-micro').disabled = false;
-        document.getElementById('btn-stop-micro').disabled = true;
+function couperLive() {
+    // On coupe le micro
+    if (monFluxMicro) {
+        monFluxMicro.getTracks().forEach(track => track.stop());
     }
+    // On ferme l'antenne serveur
+    if (monPeer) {
+        monPeer.destroy();
+    }
+    
+    // Réinitialisation des boutons
+    document.getElementById('btn-lancer-live').style.display = "inline-block";
+    document.getElementById('btn-couper-live').style.display = "none";
+    document.getElementById('statut-micro-live').innerText = "Studio actuellement hors ligne";
+    document.getElementById('statut-micro-live').style.color = "#ffa502";
 }
 </script>
