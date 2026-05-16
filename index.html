@@ -17,7 +17,7 @@
     </button>
 
     <!-- ====================================================== -->
-    <!-- INTERFACE PRINCIPALE DE LA RADIO (CE QUE TOUT LE MONDE VOUT) -->
+    <!-- INTERFACE PRINCIPALE DE LA RADIO (CE QUE TOUT LE MONDE VOIT) -->
     <!-- ====================================================== -->
     <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 60px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
         <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
@@ -61,9 +61,10 @@
         
         <div style="text-align: center; margin-bottom: 25px;">
             <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD DIRECTEUR</h2>
-            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● ANTENNE PRÊTE</span>
+            <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● TABLE DE MIXAGE ACTIVE</span>
         </div>
 
+        <!-- Section Contrôles de l'antenne -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
             
             <!-- Compteur Réel -->
@@ -73,16 +74,21 @@
                 <p style="font-size: 12px; color: #aaa; margin: 0;">Mise à jour des vraies personnes en direct.</p>
             </div>
 
-            <!-- Micro Vrai Direct -->
-            <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px;">🎙️ CONTRÔLE MICRO</h4>
+            <!-- Boutons de l'antenne et PAUSE -->
+            <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center;">
+                <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px;">🎙️ BOUTONS ANTENNE</h4>
                 
-                <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 12px 18px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px;">
-                    🎤 OUVRIR LE MICRO
+                <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">
+                    🟢 OUVRIR LE MICRO
                 </button>
                 
-                <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 12px 18px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none;">
-                    🛑 PARLER EN HORS LIGNE
+                <!-- BOUTON PAUSE MICRO -->
+                <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none; margin-bottom: 8px;">
+                    ⏸️ METTRE EN PAUSE
+                </button>
+
+                <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none;">
+                    🛑 FERMER L'ANTENNE
                 </button>
 
                 <div id="statut-micro-live" style="margin-top: 10px; font-weight: bold; color: #ffa502; font-size: 13px;">
@@ -92,19 +98,48 @@
 
         </div>
 
+        <!-- NOUVEAU : LA TABLE DE MIXAGE (BARRES DE VOLUME) -->
+        <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 25px;">
+            <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES DE LA TABLE DE MIXAGE</h4>
+            
+            <!-- Barre Micro -->
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+                    <span>🎤 Volume du Micro :</span>
+                    <span id="val-vol-micro" style="color: #2ed573; font-weight: bold;">100%</span>
+                </div>
+                <input type="range" id="slider-vol-micro" min="0" max="100" value="100" oninput="ajusterVolumeMicro()" style="width: 100%; accent-color: #2ed573; cursor: pointer;">
+            </div>
+
+            <!-- Barre Sons Système / PC -->
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;">
+                    <span>💻 Volume des sons PC / Musique :</span>
+                    <span id="val-vol-pc" style="color: #00d2ff; font-weight: bold;">100%</span>
+                </div>
+                <input type="range" id="slider-vol-pc" min="0" max="100" value="100" oninput="ajusterVolumePC()" style="width: 100%; accent-color: #00d2ff; cursor: pointer;">
+            </div>
+        </div>
+
         <!-- Zone de réception des commentaires sur ton panneau -->
         <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
             <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 12px;">💬 COMMENTAIRES REÇUS EN DIRECT</h4>
             
-            <div id="boite-tchat" style="background: #12121a; height: 150px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; text-align: left;">
+            <div id="boite-tchat" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; text-align: left; margin-bottom: 10px;">
                 <p style="color: #555; margin: 0; font-style: italic;">En attente de messages de tes abonnés...</p>
+            </div>
+
+            <!-- Boîte d'envoi Admin -->
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="admin-chat-message" placeholder="Écris une réponse en tant qu'Admin..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
+                <button onclick="envoyerCommentaireAdmin()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 14px;">Répondre</button>
             </div>
         </div>
 
     </div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT DU SYSTEME COMPLETE                 -->
+    <!-- LOGIQUE JAVASCRIPT COMPLÈTE                            -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO = "transfr-live-studio-maceo"; 
@@ -112,6 +147,14 @@
     let monFluxMicro = null;
     let connexionsAuditeurs = {}; 
     let connexionAuStudio = null;
+    let modeAdminActif = false;
+    let microEnPause = false;
+
+    // Gestion du volume du micro (Web Audio API)
+    let audioContext = null;
+    let gainNode = null;
+    let sourceNode = null;
+    let fluxMixe = null;
 
     function ouvrirConnexion() {
         const zone = document.getElementById('zone-connexion');
@@ -123,6 +166,7 @@
         if (codeSaisi === '1944') {
             document.getElementById('zone-connexion').style.display = 'none';
             document.getElementById('panneau-admin').style.display = 'block';
+            modeAdminActif = true;
         } else {
             alert('Code secret incorrect !');
         }
@@ -162,7 +206,6 @@
         }
     }
 
-    // FONCTION POUR QUE LES AUDITEURS ENVOIENT UN CHAT
     function envoyerCommentaire() {
         const pseudo = document.getElementById('chat-pseudo').value.trim();
         const message = document.getElementById('chat-message').value.trim();
@@ -174,14 +217,63 @@
 
         if (connexionAuStudio && connexionAuStudio.open) {
             connexionAuStudio.send({ type: 'chat', pseudo: pseudo, message: message });
-            document.getElementById('chat-message').value = ""; // Vide la case message
+            document.getElementById('chat-message').value = "";
             alert("Message envoyé au studio de Macéo !");
         } else {
             alert("Impossible d'envoyer : Le studio de radio est hors ligne !");
         }
     }
 
-    // --- LOGIQUE DU STUDIO (DIRECTEUR) ---
+    function envoyerCommentaireAdmin() {
+        const message = document.getElementById('admin-chat-message').value.trim();
+        if (!message) return;
+        ajouterMessageAuTchat("⭐ DIRECTEUR", message);
+        document.getElementById('admin-chat-message').value = "";
+    }
+
+    // --- LOGIQUE DU STUDIO (BARRES DE VOLUME ET PAUSE) ---
+    
+    function ajusterVolumeMicro() {
+        const pourcentage = document.getElementById('slider-vol-micro').value;
+        document.getElementById('val-vol-micro').innerText = pourcentage + "%";
+        
+        // Si la table de mixage audio est active, on change le gain (le volume)
+        if (gainNode && !microEnPause) {
+            gainNode.gain.value = pourcentage / 100;
+        }
+    }
+
+    function ajusterVolumePC() {
+        const pourcentage = document.getElementById('slider-vol-pc').value;
+        document.getElementById('val-vol-pc').innerText = pourcentage + "%";
+        // Note technologique : Le contrôle global du son PC dépend des réglages système de l'ordinateur de l'utilisateur.
+    }
+
+    // Fonction Pause / Reprendre le micro
+    function basculerPause() {
+        if (!monFluxMicro) return;
+
+        microEnPause = !microEnPause;
+        const pisteMicro = monFluxMicro.getAudioTracks()[0];
+
+        if (microEnPause) {
+            pisteMicro.enabled = false; // Coupe la capture du micro
+            document.getElementById('btn-pause-live').innerText = "▶️ REPRENDRE MICRO";
+            document.getElementById('btn-pause-live').style.background = "#2ed573";
+            document.getElementById('btn-pause-live').style.color = "white";
+            document.getElementById('statut-micro-live').innerText = "⏸️ MICRO EN PAUSE";
+            document.getElementById('statut-micro-live').style.color = "#ffa502";
+        } else {
+            pisteMicro.enabled = true; // Relance la capture du micro
+            document.getElementById('btn-pause-live').innerText = "⏸️ METTRE EN PAUSE";
+            document.getElementById('btn-pause-live').style.background = "#ffa502";
+            document.getElementById('btn-pause-live').style.color = "#1e1e2f";
+            document.getElementById('statut-micro-live').innerText = "🎙️ MICRO OUVERT (EN DIRECT)";
+            document.getElementById('statut-micro-live').style.color = "#2ed573";
+            ajusterVolumeMicro(); // Remet le volume choisi sur la barre
+        }
+    }
+
     function mettreAJourCompteur() {
         const nombreAuditeurs = Object.keys(connexionsAuditeurs).length;
         const baliseCompteur = document.getElementById('admin-compteur');
@@ -195,15 +287,8 @@
         if (boite.innerHTML.includes("En attente de messages")) {
             boite.innerHTML = "";
         }
-        // Protection contre les gros mots simple
-        const grosMots = ["caca", "pipi", "nul"];
-        let texteFiltre = texte;
-        grosMots.forEach(mot => {
-            const regex = new RegExp(mot, "gi");
-            texteFiltre = texteFiltre.replace(regex, "🌟");
-        });
-
-        boite.innerHTML += `<p style="margin: 5px 0; border-bottom: 1px solid #222; padding-bottom: 4px;"><strong style="color: #00d2ff;">${auteur} :</strong> ${texteFiltre}</p>`;
+        let couleurCouleur = (auteur === "⭐ DIRECTEUR") ? "#ffa502" : "#00d2ff";
+        boite.innerHTML += `<p style="margin: 5px 0; border-bottom: 1px solid #222; padding-bottom: 4px;"><strong style="color: ${couleurCouleur};">${auteur} :</strong> ${texte}</p>`;
         boite.scrollTop = boite.scrollHeight;
     }
 
@@ -211,13 +296,31 @@
         navigator.mediaDevices.getUserMedia({ audio: true, video: false })
             .then(stream => {
                 monFluxMicro = stream;
+
+                // Configuration de la table de mixage Web Audio
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                gainNode = audioContext.createGain();
+                sourceNode = audioContext.createMediaStreamSource(stream);
+                
+                // On connecte le micro à notre bouton de volume virtuel
+                sourceNode.connect(gainNode);
+                
+                // Création du flux final mixé à envoyer aux auditeurs
+                const destination = audioContext.createMediaStreamDestination();
+                gainNode.connect(destination);
+                fluxMixe = destination.stream;
+
                 monPeer = new Peer(ID_RADIO);
                 
                 monPeer.on('open', (id) => {
                     document.getElementById('btn-lancer-live').style.display = "none";
+                    document.getElementById('btn-pause-live').style.display = "inline-block";
                     document.getElementById('btn-couper-live').style.display = "inline-block";
                     document.getElementById('statut-micro-live').innerText = "🎙️ MICRO OUVERT (EN DIRECT)";
                     document.getElementById('statut-micro-live').style.color = "#2ed573";
+                    
+                    microEnPause = false;
+                    ajusterVolumeMicro(); // Applique le volume initial de la barre
                     
                     connexionsAuditeurs = {};
                     mettreAJourCompteur();
@@ -226,7 +329,8 @@
                 monPeer.on('connection', (conn) => {
                     conn.on('data', (data) => {
                         if (data && data.type === 'connexion') {
-                            const call = monPeer.call(conn.peer, monFluxMicro);
+                            // On envoie le flux mixé avec gestion du volume à l'auditeur !
+                            const call = monPeer.call(conn.peer, fluxMixe);
                             connexionsAuditeurs[conn.peer] = call;
                             mettreAJourCompteur();
 
@@ -251,11 +355,15 @@
         if (monFluxMicro) {
             monFluxMicro.getTracks().forEach(track => track.stop());
         }
+        if (audioContext) {
+            audioContext.close();
+        }
         if (monPeer) {
             monPeer.destroy();
         }
         connexionsAuditeurs = {};
         document.getElementById('btn-lancer-live').style.display = "inline-block";
+        document.getElementById('btn-pause-live').style.display = "none";
         document.getElementById('btn-couper-live').style.display = "none";
         document.getElementById('statut-micro-live').innerText = "Micro fermé";
         document.getElementById('statut-micro-live').style.color = "#ffa502";
