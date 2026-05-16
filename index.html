@@ -129,7 +129,6 @@
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
                 <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
                 
-                <!-- preload="none" évite de bloquer la page au chargement -->
                 <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
 
                 <!-- POP ROCK -->
@@ -201,10 +200,12 @@
         }
     }
 
-    // --- LOGIQUE DE L'AUDITEUR ---
+    // --- LOGIQUE DE L'AUDITEUR CORRIGÉE ---
     const peerAuditeur = new Peer();
-    peerAuditeur.on('open', () => {
+    
+    function connecterAuStudio() {
         connexionAuStudio = peerAuditeur.connect(ID_RADIO_PRINCIPALE);
+        
         connexionAuStudio.on('open', () => {
             document.getElementById('statut-diffusion').innerText = "🔴 TRANSFR EST EN DIRECT !";
             document.getElementById('statut-diffusion').style.color = "#2ed573";
@@ -215,14 +216,35 @@
             if (data && data.type === 'chat-diffuse') {
                 ajouterMessageAuTchatGlobal(data.auteur, data.message);
             }
+            // Détection automatique quand l'admin coupe le live volontairement
+            if (data && data.type === 'studio-deconnexion') {
+                forcerDeconnexionAuditeur();
+            }
         });
+
+        // Détection si le flux réseau coupe brutalement
+        connexionAuStudio.on('close', () => {
+            forcerDeconnexionAuditeur();
+        });
+    }
+
+    peerAuditeur.on('open', () => {
+        connecterAuStudio();
     });
 
     peerAuditeur.on('error', (err) => {
+        forcerDeconnexionAuditeur();
+    });
+
+    function forcerDeconnexionAuditeur() {
         document.getElementById('statut-diffusion').innerText = "⚫ Station Hors Ligne (Pas d'émission)";
         document.getElementById('statut-diffusion').style.color = "#aaa";
         document.getElementById('btn-ecouter').style.display = "none";
-    });
+        document.getElementById('btn-ecouter').innerText = "▶️ Écouter le Direct";
+        document.getElementById('btn-ecouter').disabled = false;
+        const baliseAudio = document.getElementById('audio-live');
+        baliseAudio.srcObject = null;
+    }
 
     function ecouterDirect() {
         peerAuditeur.on('call', (call) => {
@@ -233,6 +255,11 @@
                 baliseAudio.play();
                 document.getElementById('btn-ecouter').innerText = "🔊 ÉCOUTE EN COURS...";
                 document.getElementById('btn-ecouter').disabled = true;
+            });
+            
+            // Si l'appel audio se coupe
+            call.on('close', () => {
+                forcerDeconnexionAuditeur();
             });
         });
         
@@ -312,28 +339,22 @@
         if (gainNodePlaylist) gainNodePlaylist.gain.value = pourcentage / 100;
     }
 
-    // CORRECTION ICI : Streaming fluide sans blocage de timeout
     function jouerMusique(urlOuBlob, titre) {
         if (!audioContext) {
             alert("⚠️ Clique d'abord sur le bouton vert '🟢 ALLUMER LA CONSOLE & LE MICRO' avant de lancer une musique !");
             return;
         }
-        
         const lecteur = document.getElementById('lecteur-musique-studio');
-        
         document.getElementById('statut-musique').innerText = "⏳ Connexion à la piste...";
         document.getElementById('statut-musique').style.color = "#ffa502";
-
         lecteur.src = urlOuBlob;
         
-        // Force le navigateur à lire le flux au fur et à mesure (streaming) au lieu de tout télécharger d'un coup
         lecteur.play()
             .then(() => {
                 document.getElementById('statut-musique').innerText = "📻 En diffusion : " + titre;
                 document.getElementById('statut-musique').style.color = "#00d2ff";
             })
             .catch(err => {
-                console.log("Lecture en attente ou bloquée, chargement en tâche de fond...");
                 document.getElementById('statut-musique').innerText = "📻 Flux en cours de traitement...";
             });
     }
@@ -402,11 +423,9 @@
         navigator.mediaDevices.getUserMedia(configurationsAudio)
             .then(stream => {
                 monFluxMicro = stream;
-
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 destinationMixee = audioContext.createMediaStreamDestination();
 
-                // 1. Noeud Micro
                 sourceNodeMicro = audioContext.createMediaStreamSource(stream);
                 gainNodeMicro = audioContext.createGain();
                 analyserNode = audioContext.createAnalyser();
@@ -415,7 +434,6 @@
                 analyserNode.connect(gainNodeMicro);
                 gainNodeMicro.connect(destinationMixee);
 
-                // 2. Noeud Musique / Playlist
                 const baliseMusique = document.getElementById('lecteur-musique-studio');
                 sourceNodePlaylist = audioContext.createMediaElementSource(baliseMusique);
                 gainNodePlaylist = audioContext.createGain();
@@ -423,12 +441,10 @@
                 gainNodePlaylist.connect(destinationMixee);
                 gainNodePlaylist.connect(audioContext.destination);
 
-                // 3. Noeud Son PC
                 gainNodePC = audioContext.createGain();
                 gainNodePC.connect(destinationMixee);
 
                 fluxMixe = destinationMixee.stream;
-
                 monPeer = new Peer(ID_RADIO_PRINCIPALE);
                 
                 monPeer.on('open', () => {
@@ -466,30 +482,27 @@
 
         monPeer.on('call', (call) => {
             call.answer(fluxMixe);
-            call.on('stream', (fluxCoDirecteur) => {
-                diffuserVoixCoDirecteur(fluxCoDirecteur);
-                if (audioContext && destinationMixee) {
-                    let sourceCoDirecteur = audioContext.createMediaStreamSource(fluxCoDirecteur);
-                    sourceCoDirecteur.connect(destinationMixee);
-                }
-            });
         });
 
         monPeer.on('connection', (conn) => {
             conn.on('data', (data) => {
                 if (data && data.type === 'connexion') {
                     const call = monPeer.call(conn.peer, fluxMixe);
-                    connexionsAuditeurs[conn.peer] = call;
+                    connexionsAuditeurs[conn.peer] = { call: call, dataConn: conn };
                     mettreAJourCompteur();
                 }
                 if (data && data.type === 'chat') {
                     ajouterMessageAuTchatGlobal(data.pseudo, data.message);
                     Object.keys(connexionsAuditeurs).forEach(pId => {
-                        if (monPeer.connections[pId]) {
-                            monPeer.connections[pId].forEach(c => { if (c.open) c.send({ type: 'chat-diffuse', auteur: data.pseudo, message: data.message }); });
-                        }
+                        let c = connexionsAuditeurs[pId].dataConn;
+                        if (c && c.open) c.send({ type: 'chat-diffuse', auteur: data.pseudo, message: data.message });
                     });
                 }
+            });
+            
+            conn.on('close', () => {
+                delete connexionsAuditeurs[conn.peer];
+                mettreAJourCompteur();
             });
         });
     }
@@ -503,8 +516,19 @@
         ajouterMessageAuTchatGlobal("🎙️ SYSTÈME", "Un Co-Directeur a rejoint la table de mixage !");
     }
 
+    // CORRECTION : Alerte automatique envoyée aux auditeurs avant fermeture
     function couperLive() {
         arreterMusique();
+
+        // Alerte tous les auditeurs connectés que le studio ferme
+        Object.keys(connexionsAuditeurs).forEach(peerId => {
+            let conn = connexionsAuditeurs[peerId].dataConn;
+            let call = connexionsAuditeurs[peerId].call;
+            if (conn && conn.open) {
+                conn.send({ type: 'studio-deconnexion' });
+                setTimeout(() => { conn.close(); if(call) call.close(); }, 200);
+            }
+        });
         
         if (monFluxMicro) {
             monFluxMicro.getTracks().forEach(track => track.stop());
@@ -527,7 +551,6 @@
                 destinationMixee = null;
                 fluxMixe = null;
                 analyserNode = null;
-                console.log("Moteur audio réinitialisé avec succès !");
             });
         }
         
@@ -546,6 +569,9 @@
         document.getElementById('statut-micro-live').innerText = "Studio déconnecté";
         document.getElementById('statut-micro-live').style.color = "#ffa502";
         mettreAJourCompteur();
+
+        // Reconnecte l'auditeur local à la recherche
+        setTimeout(() => { connecterAuStudio(); }, 1000);
     }
     </script>
 </body>
