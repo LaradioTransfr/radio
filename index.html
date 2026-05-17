@@ -3,269 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio</title>
+    <title>Transfr Studio</title>
     <style>
-        /* Design général de la page (style sombre et propre) */
+        /* Design sombre, épuré et super fluide sur téléphone */
         body {
-            background-color: #1a1a1a;
+            background-color: #121212;
             color: #ffffff;
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            font-family: sans-serif;
             margin: 0;
-        }
-
-        header {
-            border-bottom: 2px solid #333;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .statut-mode {
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 4px;
-            background-color: #333;
-        }
-
-        /* Bouton ON AIR */
-        .btn-on-air {
-            font-size: 1.2rem;
-            font-weight: bold;
-            padding: 12px 24px;
-            background-color: #555;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        /* Conteneur des éléments */
-        .flex-container {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .bloc {
-            background-color: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 20px;
-            flex: 1;
-            min-width: 280px;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #ffcd1e;
-            font-size: 1.3rem;
-        }
-
-        /* Zone de Chat */
-        .zone-chat {
-            background-color: #111;
-            border-radius: 5px;
-            height: 180px;
-            overflow-y: auto;
-            padding: 10px;
-            font-family: monospace;
-        }
-
-        .msg-auditeur {
-            margin: 5px 0;
-            border-bottom: 1px solid #222;
-            padding-bottom: 5px;
-        }
-
-        /* Chronomètre */
-        .affichage-chrono {
-            font-size: 2.5rem;
-            font-family: monospace;
+            padding: 15px;
             text-align: center;
-            margin: 15px 0;
-            color: #00ff66;
+            transition: background-color 0.2s; /* Pour le flash de censure */
         }
 
-        .btn-chrono {
-            width: 100%;
-            padding: 10px;
-            background-color: #00ff66;
-            color: black;
-            border: none;
+        h1 {
+            margin: 5px 0;
+            font-size: 1.6rem;
+        }
+
+        .info-bar {
+            font-size: 0.9rem;
+            color: #aaaaaa;
+            margin-bottom: 20px;
+        }
+
+        /* Boutons simples et tactiles pour le téléphone */
+        .btn {
+            background-color: #222222;
+            color: white;
+            border: 2px solid #444444;
+            padding: 12px 20px;
+            margin: 5px;
+            font-size: 1rem;
             font-weight: bold;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
+            display: inline-block;
+        }
+
+        /* Couleurs des boutons quand ils sont actifs */
+        #onAirBtn.active {
+            background-color: #ff3333;
+            border-color: #ff3333;
+            box-shadow: 0 0 10px #ff3333;
+        }
+
+        #censureBtn {
+            background-color: #3a1515;
+            border-color: #662222;
+        }
+
+        /* Zone de texte minuscule et discrète pour le chat en bas */
+        .mini-chat {
+            margin-top: 25px;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-align: left;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .msg {
+            margin: 4px 0;
+            border-bottom: 1px solid #252525;
+            padding-bottom: 4px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div>
-            <h1 style="margin:0;">📻 Radio Transfr</h1>
-            <div style="margin-top: 5px;">Statut : <span id="txtMode" class="statut-mode">Vérification...</span></div>
-        </div>
-        <!-- Bouton ON AIR -->
-        <button id="onAirBtn" class="btn-on-air" onclick="toggleOnAir()">⚪ OFF AIR</button>
-    </header>
-
-    <div class="flex-container">
-
-        <!-- BLOC 1 : LE CHRONOMÈTRE -->
-        <div class="bloc">
-            <h2>⏱️ Temps Chronique (3 min)</h2>
-            <div id="chronoDisplay" class="affichage-chrono">03:00</div>
-            <button id="chronoBtn" class="btn-chrono" onclick="gererChrono()">DÉMARRER</button>
-        </div>
-
-        <!-- BLOC 2 : LE CHAT DES AUDITEURS -->
-        <div class="bloc">
-            <h2>💬 Flux des Auditeurs</h2>
-            <div id="monChatRadio" class="zone-chat">
-                <p style="color: gray; margin: 0;">[En attente du passage ON AIR pour recevoir les messages...]</p>
-            </div>
-        </div>
-
+    <!-- TITRE ET INFOS DISCRETES -->
+    <h1>📻 Transfr Studio</h1>
+    <div class="info-bar">
+        <span id="txtMode">Vérification...</span> | 
+        👥 Auditeurs : <strong id="nbAuditeurs" style="color: #00ff66;">0</strong>
     </div>
 
-    <!-- SCRIPT JAVASCRIPT (LES FONCTIONS) -->
+    <!-- TOUS LES BOUTONS SUR UNE SEULE LIGNE (PAS DE BLOCS) -->
+    <button id="onAirBtn" class="btn" onclick="toggleOnAir()">⚪ OFF AIR</button>
+    <button id="chronoBtn" class="btn" onclick="gererChrono()">⏱️ CHRONO (<span id="txtChrono">03:00</span>)</button>
+    <button id="censureBtn" class="btn" onclick="declencherCensure()">🤬 BIP</button>
+
+    <!-- LE FLUX DISCRET TOUT EN BAS -->
+    <div id="monChatRadio" class="mini-chat">
+        <span style="color: gray;">[En attente du direct...]</span>
+    </div>
+
     <script>
-        // ==========================================
-        // 1. SÉCURITÉ : MODE SPECTATEUR OU DIRECTEUR
-        // ==========================================
+        // --- 1. DETECTION DU MODE (URL) ---
         const urlParams = new URLSearchParams(window.location.search);
         const isDirecteur = urlParams.get('mode') === 'directeur';
         const txtMode = document.getElementById('txtMode');
 
         if (isDirecteur) {
-            txtMode.innerText = "🕹️ DIRECTEUR (Contrôles actifs)";
+            txtMode.innerText = "🕹️ Mode Directeur";
             txtMode.style.color = "#00ff66";
-            txtMode.style.backgroundColor = "#1c3d27";
+            document.getElementById('nbAuditeurs').innerText = "14";
         } else {
-            txtMode.innerText = "👁️ SPECTATEUR (Verrouillé)";
+            txtMode.innerText = "👁️ Mode Spectateur";
             txtMode.style.color = "#ff4d4d";
-            txtMode.style.backgroundColor = "#4d1c1c";
-
-            // Si on n'est pas directeur, on bloque tous les boutons de la page
-            document.querySelectorAll('button').forEach(bouton => {
-                bouton.disabled = true;
-                bouton.style.cursor = 'not-allowed';
-                bouton.style.opacity = '0.5';
-            });
+            // Bloque les clics accidentels sur téléphone si on n'est pas directeur
+            document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
         }
 
-        // ==========================================
-        // 2. GESTION DU BOUTON ON AIR
-        // ==========================================
+        // --- 2. BOUTON ON AIR ---
         let isOnAir = false;
         let chatInterval;
+        let auditeursInterval;
 
         function toggleOnAir() {
-            if (!isDirecteur) return; // Sécurité
-
+            if (!isDirecteur) return;
             isOnAir = !isOnAir;
             const btn = document.getElementById('onAirBtn');
 
             if (isOnAir) {
                 btn.innerText = "🔴 ON AIR";
-                btn.style.backgroundColor = "#ff1a1a";
-                btn.style.boxShadow = "0 0 15px #ff1a1a";
-                
-                // On vide le message d'attente du chat et on lance la simulation
+                btn.classList.add('active');
                 document.getElementById('monChatRadio').innerHTML = "";
-                lancerSimulationAuditeurs();
+                lancerChatEtAuditeurs();
             } else {
                 btn.innerText = "⚪ OFF AIR";
-                btn.style.backgroundColor = "#555";
-                btn.style.boxShadow = "none";
-                
-                // On arrête de recevoir des messages
+                btn.classList.remove('active');
                 clearInterval(chatInterval);
+                clearInterval(auditeursInterval);
+                document.getElementById('nbAuditeurs').innerText = "0";
             }
         }
 
-        // ==========================================
-        // 3. SIMULATION DES MESSAGES DU CHAT
-        // ==========================================
-        const baseMessages = [
-            { pseudo: "Lucas_31", texte: "Trop bien le son de l'émission ! 🔥" },
-            { pseudo: "Sarah_Music", texte: "Vous pouvez passer du Benson Boone après ? Pliz !" },
-            { pseudo: "GamerFou", texte: "Dédicace à toute la team Transfr !! 😎" },
-            { pseudo: "Emma_Clap", texte: "Le jingle déchire grave aujourd'hui." },
-            { pseudo: "Mat_Ping", texte: "Propre la régie, le live est super fluide !" }
-        ];
+        // --- 3. CLIGNOTEMENT & BIP CENSURE ---
+        function declencherCensure() {
+            if (!isDirecteur || !isOnAir) return;
 
-        function lancerSimulationAuditeurs() {
-            const chatBox = document.getElementById('monChatRadio');
-            
-            chatInterval = setInterval(() => {
-                // Choisit un message au hasard
-                const randomMsg = baseMessages[Math.floor(Math.random() * baseMessages.length)];
-                
-                // Crée l'élément HTML pour le message
-                const p = document.createElement('p');
-                p.className = "msg-auditeur";
-                p.innerHTML = `<strong style="color: #4da6ff;">${randomMsg.pseudo} :</strong> ${randomMsg.texte}`;
-                
-                // Ajoute au chat et descend le scroll automatiquement
-                chatBox.appendChild(p);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 3500); // Un nouveau message toutes les 3,5 secondes
+            // Micro-bip audio électronique
+            let ctx = new (window.AudioContext || window.webkitAudioContext)();
+            let osc = ctx.createOscillator();
+            osc.frequency.value = 1000;
+            osc.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.25);
+
+            // Flash rouge ultra rapide sur tout le téléphone
+            document.body.style.backgroundColor = "#b30000";
+            setTimeout(() => {
+                document.body.style.backgroundColor = "#121212";
+            }, 250);
         }
 
-        // ==========================================
-        // 4. GESTION DU CHRONOMÈTRE
-        // ==========================================
+        // --- 4. CHRONO SANS GROS RECTANGLE ---
         let chronoTimer;
-        let tempsRestant = 180; // 3 minutes en secondes (3 * 60)
+        let tempsRestant = 180;
         let chronoEnMarche = false;
 
         function gererChrono() {
-            if (!isDirecteur) return; // Sécurité
-
-            const btnChrono = document.getElementById('chronoBtn');
-            const displayChrono = document.getElementById('chronoDisplay');
+            if (!isDirecteur) return;
+            const btn = document.getElementById('chronoBtn');
+            const txt = document.getElementById('txtChrono');
 
             if (chronoEnMarche) {
-                // Mode PAUSE
                 clearInterval(chronoTimer);
-                btnChrono.innerText = "REPRENDRE";
-                btnChrono.style.backgroundColor = "#00ff66";
+                btn.style.borderColor = "#444";
                 chronoEnMarche = false;
             } else {
-                // Mode EN MARCHE
                 chronoEnMarche = true;
-                btnChrono.innerText = "PAUSE";
-                btnChrono.style.backgroundColor = "#ffcd1e";
+                btn.style.borderColor = "#ffcd1e";
 
                 chronoTimer = setInterval(() => {
                     tempsRestant--;
+                    let mins = Math.floor(tempsRestant / 60).toString().padStart(2, '0');
+                    let secs = (tempsRestant % 60).toString().padStart(2, '0');
+                    txt.innerText = `${mins}:${secs}`;
 
-                    // Calcul des minutes et secondes
-                    let minutes = Math.floor(tempsRestant / 60).toString().padStart(2, '0');
-                    let secondes = (tempsRestant % 60).toString().padStart(2, '0');
-                    displayChrono.innerText = `${minutes}:${secondes}`;
+                    if (tempsRestant <= 15) txt.style.color = "#ff3333"; // Alerte rouge
 
-                    // Changement de couleur s'il reste moins de 20 secondes (Alerte !)
-                    if (tempsRestant <= 20) {
-                        displayChrono.style.color = "#ff1a1a";
-                    }
-
-                    // Quand le temps est fini
                     if (tempsRestant <= 0) {
                         clearInterval(chronoTimer);
-                        displayChrono.innerText = "00:00";
-                        btnChrono.innerText = "TERMINÉ";
-                        btnChrono.disabled = true;
-                        btnChrono.style.opacity = "0.5";
-                        alert("⏱️ Temps écoulé pour la chronique !");
+                        alert("⏱️ Temps écoulé !");
                     }
                 }, 1000);
             }
+        }
+
+        // --- 5. SIMULATION FLUX ET AUDITEURS ---
+        const messages = [
+            { u: "Lucas_31", m: "Trop bien le son ! 🔥" },
+            { u: "Sarah_M", m: "Tu passes du Benson Boone après ? 😍" },
+            { u: "GamerFou", m: "Dédicace à la team Transfr ! 😎" },
+            { u: "Mat_Ping", m: "Le live est super fluide sur mobile" }
+        ];
+
+        function lancerChatEtAuditeurs() {
+            const chatBox = document.getElementById('monChatRadio');
+            
+            // Les messages défilent discrètement
+            chatInterval = setInterval(() => {
+                let r = messages[Math.floor(Math.random() * messages.length)];
+                let p = document.createElement('div');
+                p.className = "msg";
+                p.innerHTML = `<strong style="color:#4da6ff;">${r.u} :</strong> ${r.m}`;
+                chatBox.appendChild(p);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 4000);
+
+            // Le compteur d'auditeurs bouge tout seul
+            auditeursInterval = setInterval(() => {
+                document.getElementById('nbAuditeurs').innerText = Math.floor(Math.random() * (45 - 15 + 1)) + 15;
+            }, 6000);
         }
     </script>
 </body>
