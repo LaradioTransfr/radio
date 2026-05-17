@@ -65,9 +65,9 @@
     <!-- ====================================================== -->
     <!-- INTERFACE DU PANNEAU DE CONTRÔLE ET PLAYLIST (ADMIN)   -->
     <!-- ====================================================== -->
-    <div id="panneau-admin" style="display: none; max-width: 1100px; margin: 20px auto; padding: 10px;">
+    <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 20px auto; padding: 10px;">
         
-        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
+        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px;">
             
             <!-- COLONNE GAUCHE : TABLEAU DE BORD STUDIO -->
             <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
@@ -140,7 +140,7 @@
                 </div>
             </div>
 
-            <!-- COLONNE DROITE : PLAYLIST & NOUVELLE BOÎTE À INFOS -->
+            <!-- COLONNE DROITE : PLAYLIST & BOÎTE À INFOS AVEC CARTE METEO DE FRANCE -->
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 
                 <!-- PLAYLIST DE TRANSFR -->
@@ -149,13 +149,13 @@
                     
                     <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
 
-                    <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
                         <h4 style="color: #ff4757; margin-bottom: 8px; font-size: 14px;">🎸 POP ROCK / STYLE MÅNESKIN</h4>
                         <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Gros Rock Classique Énergique')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Classique - Piste 1</button>
                         <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Guitare Solo - Piste 2</button>
                     </div>
 
-                    <div style="margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
                         <h4 style="color: #00d2ff; margin-bottom: 8px; font-size: 14px;">🎤 RAP / HIP-HOP BEATS</h4>
                         <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
                     </div>
@@ -169,25 +169,25 @@
                     <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; font-weight: bold; width: 100%; margin-top: 10px; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">⏹️ Couper la musique</button>
                 </div>
 
-                <!-- NOUVELLE ZONE : RECUPERATION DE VRAIES INFOS -->
+                <!-- ZONE METEO FRANCE & ACTUS DU DIRECTEUR -->
                 <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #2ed573; box-shadow: 0 0 20px rgba(46,213,115,0.15); height: fit-content;">
-                    <h3 style="color: #2ed573; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">📰 BOÎTE À INFOS DU DIRECTEUR</h3>
+                    <h3 style="color: #2ed573; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">📰 INFOS EN DIRECT</h3>
                     
-                    <!-- Bouton de récupération rapide -->
                     <button onclick="recupererInfosFlash()" style="background: #2ed573; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 15px;">
-                        🔄 Récupérer la météo & les actus
+                        🔄 Actualiser la Carte & les Actus
                     </button>
 
-                    <!-- Affichage Météo -->
-                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2d2d44;">
-                        <h4 style="margin: 0 0 5px 0; color: #00d2ff; font-size: 13px;">🌤️ Météo (Saint-Orens) :</h4>
-                        <div id="info-bloc-meteo" style="font-size: 13px; color: #ddd;">Clique sur le bouton pour charger...</div>
+                    <!-- CARTE METEO DE TOUTE LA FRANCE (INTERACTIVE ET SANS CLÉ) -->
+                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2d2d44; text-align: center;">
+                        <h4 style="margin: 0 0 8px 0; color: #00d2ff; font-size: 13px;">🌤️ Carte Météo de la France :</h4>
+                        <!-- Intégration d'un widget météo métropolitain complet et réactif -->
+                        <iframe src="https://www.meteofrance.com/widget/carte/france" style="width: 100%; height: 280px; border: none; border-radius: 6px; background: #fff;" scrolling="no"></iframe>
                     </div>
 
-                    <!-- Affichage Actus -->
+                    <!-- BLOC DES ACTUALITÉS -->
                     <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; border: 1px solid #2d2d44;">
                         <h4 style="margin: 0 0 8px 0; color: #ffa502; font-size: 13px;">🔥 Actualités France :</h4>
-                        <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 200px; overflow-y: auto; text-align: left;">
+                        <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 150px; overflow-y: auto; text-align: left;">
                             Les titres de l'actualité s'afficheront ici.
                         </div>
                     </div>
@@ -201,7 +201,7 @@
     <div id="co-directeurs-audio-container"></div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET ENRICHIE                -->
+    <!-- LOGIQUE JAVASCRIPT                                     -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
@@ -236,6 +236,9 @@
             document.getElementById('panneau-admin').style.display = 'block';
             modeAdminActif = true;
             
+            // Charger les actus au démarrage de l'admin
+            recupererInfosFlash();
+
             const dateSauvegardee = localStorage.getItem('planning-transfr');
             if (dateSauvegardee && dateSauvegardee.includes(" à ")) {
                 const parties = dateSauvegardee.split(" à ");
@@ -249,38 +252,22 @@
 
     // --- SCRIPT DE RECUPERATION DES INFOS REELLES ---
     function recupererInfosFlash() {
-        const blocMeteo = document.getElementById('info-bloc-meteo');
         const blocActus = document.getElementById('info-bloc-actus');
-
-        blocMeteo.innerText = "⏳ Récupération météo...";
         blocActus.innerText = "⏳ Chargement des dernières actualités...";
 
-        // 1. Récupération de la vraie météo (via Open-Meteo API, gratuite et sans clé)
-        // Coordonnées approximatives de Saint-Orens-de-Gameville
-        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.5511&longitude=1.5436&current_weather=true')
-            .then(res => res.json())
-            .then(data => {
-                if(data && data.current_weather) {
-                    const temp = data.current_weather.temperature;
-                    const vent = data.current_weather.windspeed;
-                    blocMeteo.innerHTML = `📍 <strong>Saint-Orens :</strong> Température de <strong>${temp}°C</strong> | Vent : ${vent} km/h`;
-                } else {
-                    blocMeteo.innerText = "⚠️ Impossible de lire les données météo.";
-                }
-            })
-            .catch(() => { blocMeteo.innerText = "❌ Erreur de connexion météo."; });
+        // Rafraîchissement de l'Iframe Météo France
+        const iframe = document.querySelector('iframe');
+        if(iframe) iframe.src = iframe.src;
 
-        // 2. Récupération des vraies actualités (via un parseur de flux RSS Google News France public)
+        // Récupération des vraies actualités (via Google News France public)
         fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Dfr%26gl%3DFR%26ceid%3DFR%3Afr')
             .then(res => res.json())
             .then(data => {
                 if(data && data.items && data.items.length > 0) {
-                    blocActus.innerHTML = ""; // On vide le texte d'attente
-                    // On prend les 5 premiers titres majeurs
+                    blocActus.innerHTML = ""; 
                     for(let i = 0; i < 5; i++) {
                         if(data.items[i]) {
                             let titre = data.items[i].title;
-                            // Nettoyer un peu le nom de la source à la fin du titre
                             if(titre.includes(" - ")) {
                                 const parts = titre.split(" - ");
                                 parts.pop();
