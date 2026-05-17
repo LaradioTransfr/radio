@@ -258,7 +258,6 @@
     let destinationMixee = null;
     let fluxMixe = null;
     
-    let boucleVumetre = null;
     let analyserNode = null;
     let horlogeInterval = null;
     let dateCibleTimestamp = null;
@@ -533,13 +532,13 @@
     function lancerBruitageInstantane(url, nom) {
         const lecteur = document.getElementById('lecteur-jingle-instantane');
         lecteur.src = url;
-        lecteur.play();
+        lecteur.play().catch(e => console.log("Erreur lecture jingle:", e));
     }
 
     function jouerMusique(url, titre) {
         const lecteur = document.getElementById('lecteur-musique-studio');
         lecteur.src = url;
-        lecteur.play();
+        lecteur.play().catch(e => console.log("Erreur lecture musique:", e));
         document.getElementById('statut-musique').innerText = "📻 " + titre;
     }
 
@@ -548,7 +547,7 @@
         if (input.files[0]) jouerMusique(URL.createObjectURL(input.files[0]), input.files[0].name);
     }
 
-    function subtitleMusique() {
+    function arreterMusique() {
         document.getElementById('lecteur-musique-studio').pause();
         document.getElementById('statut-musique').innerText = "📴 Coupée";
     }
@@ -582,6 +581,7 @@
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 destinationMixee = audioContext.createMediaStreamDestination();
 
+                // 1. CONFIGURATION MICRO
                 sourceNodeMicro = audioContext.createMediaStreamSource(stream);
                 gainNodeMicro = audioContext.createGain();
                 analyserNode = audioContext.createAnalyser();
@@ -589,17 +589,21 @@
                 analyserNode.connect(gainNodeMicro);
                 gainNodeMicro.connect(destinationMixee);
 
-                sourceNodePlaylist = audioContext.createMediaElementSource(document.getElementById('lecteur-musique-studio'));
+                // 2. CONFIGURATION MUSIQUE (PLAYLIST) + CONNEXION HP LOCAL ET MIXER
+                const lecteurMusique = document.getElementById('lecteur-musique-studio');
+                sourceNodePlaylist = audioContext.createMediaElementSource(lecteurMusique);
                 gainNodePlaylist = audioContext.createGain();
                 sourceNodePlaylist.connect(gainNodePlaylist);
-                gainNodePlaylist.connect(destinationMixee);
-                gainNodePlaylist.connect(audioContext.destination);
+                gainNodePlaylist.connect(destinationMixee); // Envoi vers les auditeurs
+                gainNodePlaylist.connect(audioContext.destination); // Envoi vers tes haut-parleurs
 
-                sourceNodeJingle = audioContext.createMediaElementSource(document.getElementById('lecteur-jingle-instantane'));
+                // 3. CONFIGURATION EFFETS (JINGLES / PC) + CONNEXION HP LOCAL ET MIXER
+                const lecteurJingle = document.getElementById('lecteur-jingle-instantane');
+                sourceNodeJingle = audioContext.createMediaElementSource(lecteurJingle);
                 gainNodePC = audioContext.createGain();
                 sourceNodeJingle.connect(gainNodePC);
-                gainNodePC.connect(destinationMixee);
-                gainNodePC.connect(audioContext.destination);
+                gainNodePC.connect(destinationMixee); // Envoi vers les auditeurs
+                gainNodePC.connect(audioContext.destination); // Envoi vers tes haut-parleurs
 
                 fluxMixe = destinationMixee.stream;
 
