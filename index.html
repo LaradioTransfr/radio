@@ -119,7 +119,7 @@
         <div style="display: block; margin-bottom: 20px;">
             
             <!-- TABLEAU DE BORD STUDIO -->
-            <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2); margin-bottom: 20px;">
+            <div style="background: #14141f; padding: 25px; border-radius: 166px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2); margin-bottom: 20px;">
                 <div style="text-align: center; margin-bottom: 25px;">
                     <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD STUDIO CO-LIVE</h2>
                     <span id="badge-studio-actif" style="background: rgba(255, 165, 0, 0.1); color: #ffa502; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE EN ATTENTE</span>
@@ -221,7 +221,7 @@
                     <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; margin-top: 5px;">
                 </div>
                 <div id="statut-musique" style="margin-top: 10px; font-size: 12px; text-align: center; color: #2ed573;">📴 Aucune musique en cours</div>
-                <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer; margin-top: 5px;">⏹️ Couper la musique</button>
+                <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; width: 100%; padding: 8px; border-radius: 6px; margin-top: 5px;">⏹️ Couper la musique</button>
             </div>
 
             <!-- METEO ET CARTE -->
@@ -263,30 +263,10 @@
     let dateCibleTimestamp = null;
     let modeStudioActuel = "attente"; 
     let mediaRecorder = null;
-    let morceauxAudio Enregistres = [];
+    let morceauxAudioEnregistres = [];
     let listePodcastsData = [];
 
-    // FONCTION POUR ACTIVER LA CONSOLE AUTOMATIQUEMENT
-    function activerModeDirecteurImmediat() {
-        document.getElementById('panneau-admin').style.display = 'block';
-        document.getElementById('lecteur-auditeur').style.display = 'none';
-        modeAdminActif = true;
-        
-        afficherPodcastsPublics();
-        recupererInfosFlash();
-
-        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
-        if (timestampSauvegardé) {
-            let d = new Date(parseInt(timestampSauvegardé));
-            let annee = d.getFullYear();
-            let mois = String(d.getMonth() + 1).padStart(2, '0');
-            let jour = String(d.getDate()).padStart(2, '0');
-            let heure = String(d.getHours()).padStart(2, '0');
-            let minute = String(d.getMinutes()).padStart(2, '0');
-            document.getElementById('admin-date-heure-precise').value = `${annee}-${mois}-${jour}T${heure}:${minute}`;
-        }
-    }
-
+    // FONCTION POUR OUVRIR LA POPUP DE CONNEXION
     function ouvrirConnexion() {
         document.getElementById('zone-connexion').style.display = 'block';
         document.getElementById('code-secret').value = "";
@@ -304,6 +284,27 @@
             activerModeDirecteurImmediat();
         } else {
             alert('Code secret incorrect !');
+        }
+    }
+
+    // FONCTION POUR ACTIVER LA CONSOLE
+    function activerModeDirecteurImmediat() {
+        document.getElementById('panneau-admin').style.display = 'block';
+        document.getElementById('lecteur-auditeur').style.display = 'none';
+        modeAdminActif = true;
+        
+        afficherPodcastsPublics();
+        recupererInfosFlash();
+
+        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+        if (timestampSauvegardé) {
+            let d = new Date(parseInt(timestampSauvegardé));
+            let annee = d.getFullYear();
+            let mois = String(d.getMonth() + 1).padStart(2, '0');
+            let jour = String(d.getDate()).padStart(2, '0');
+            let heure = String(d.getHours()).padStart(2, '0');
+            let minute = String(d.getMinutes()).padStart(2, '0');
+            document.getElementById('admin-date-heure-precise').value = `${annee}-${mois}-${jour}T${heure}:${minute}`;
         }
     }
 
@@ -421,8 +422,9 @@
 
     function afficherPodcastsPublics() {
         const conteneur = document.getElementById('liste-podcasts-publics');
+        if (!conteneur) return;
         if (listePodcastsData.length === 0) {
-            conteneur.innerHTML = `<p style="color:#666; font-style:italic; font-size:13px;">Aucun podcast.</p>`;
+            conteneur.innerHTML = `<p id="aucun-podcast-msg" style="color:#666; font-style:italic; font-size:13px; margin:0;">Aucun podcast publié pour le moment.</p>`;
             return;
         }
         conteneur.innerHTML = "";
@@ -558,6 +560,16 @@
         if (input.files[0]) jouerMusique(URL.createObjectURL(input.files[0]), input.files[0].name);
     }
 
+    function barreEtMusique() {
+        document.getElementById('lecteur-musique-studio').pause();
+        document.getElementById('statut-musique').innerText = "📴 Coupée";
+    }
+
+    function barreEtMusique() {
+        document.getElementById('lecteur-musique-studio').pause();
+        document.getElementById('statut-musique').innerText = "📴 Coupée";
+    }
+
     function arreterMusique() {
         document.getElementById('lecteur-musique-studio').pause();
         document.getElementById('statut-musique').innerText = "📴 Coupée";
@@ -613,7 +625,7 @@
                 sourceNodeJingle = audioContext.createMediaElementSource(lecteurJingle);
                 gainNodePC = audioContext.createGain();
                 sourceNodeJingle.connect(gainNodePC);
-                gainNodePC.connect(destinationMixee); 
+                gainNodeJingle.connect(destinationMixee); 
                 gainNodePC.connect(audioContext.destination); 
 
                 fluxMixe = destinationMixee.stream;
