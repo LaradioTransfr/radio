@@ -51,9 +51,10 @@
             <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
         </div>
 
-        <!-- COMPTEUR DE VISITES CORRIGÉ (AUDITEUR) -->
-        <div id="compteur-visites-auditeur" style="margin-top: 20px; font-size: 11px; color: #666; text-align: center; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 10px;">
-            👁️ Total de visites sur le site : <span id="nb-visites-auditeur" style="color: #00d2ff; font-weight: bold;">...</span>
+        <!-- COMPTEUR DE VISITES REEL (AUDITEUR) -->
+        <div style="margin-top: 20px; font-size: 13px; color: #666; text-align: center; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 10px;">
+            <span style="color: #aaa; vertical-align: middle;">👁️ Total de visites : </span>
+            <img src="https://counter.moe/count/transfr-radio" alt="Compteur" style="vertical-align: middle; max-height: 20px; filter: hue-rotate(180deg);">
         </div>
     </div>
 
@@ -92,11 +93,14 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-                    <!-- Statistiques modifiées avec le Compteur Global -->
+                    <!-- Statistiques modifiées avec le Compteur Reel -->
                     <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
                         <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">📊 STATISTIQUES</h4>
                         <p style="font-size: 15px; margin: 8px 0 4px 0;">Auditeurs en direct : <span id="admin-compteur" style="color: #ffa502; font-weight: bold; font-size: 22px;">0</span></p>
-                        <p style="font-size: 13px; margin: 0; color: #aaa; border-top: 1px dashed #333; padding-top: 8px;">👥 Visiteurs uniques cumulés : <span id="admin-total-visites" style="color: #00d2ff; font-weight: bold;">...</span></p>
+                        <div style="margin-top: 10px; font-size: 13px; color: #aaa; border-top: 1px dashed #333; padding-top: 8px;">
+                            <span>👥 Total visites : </span>
+                            <img src="https://counter.moe/count/transfr-radio" alt="Compteur" style="vertical-align: middle; max-height: 18px; filter: hue-rotate(180deg);">
+                        </div>
                     </div>
 
                     <!-- Boutons Antenne -->
@@ -229,38 +233,6 @@
     let boucleVumetre = null;
     let analyserNode = null;
 
-    // NOUVELLE FONCTION COMPTEUR ULTRA-FIABLE (HITS API)
-    function chargerCompteurDeVisites() {
-        // Cette API utilise un système d'image invisible pour compter sans jamais buguer
-        const urlAPI = "https://api.countapi.xyz/hit/transfr-live-studio-maceo/visites"; 
-        // On bascule sur le serveur alternatif de secours super stable :
-        const fallbackURL = "https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftransfr-radio-maceo&count_bg=%2300D2FF&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false";
-        
-        // On récupère la valeur de façon moderne et propre
-        fetch("https://api.allorigins.win/get?url=" + encodeURIComponent("https://api.hitsteps.com/39281.json"))
-        .then(res => res.json())
-        .then(() => {
-             // Pour être 100% sûr que ça marche sur GitHub Pages sans dépendre d'un serveur externe en panne,
-             // On utilise un compteur basé sur une valeur de session qui simule l'historique de visites de façon fluide
-             let visitesTotales = localStorage.getItem('compteur_visites_transfr');
-             if (!visitesTotales) {
-                 visitesTotales = Math.floor(Math.random() * 40) + 12; // Initialise à un joli chiffre de départ si c'est vide
-             }
-             visitesTotales = parseInt(visitesTotales) + 1;
-             localStorage.setItem('compteur_visites_transfr', visitesTotales);
-             
-             document.getElementById('nb-visites-auditeur').innerText = visitesTotales;
-             document.getElementById('admin-total-visites').innerText = visitesTotales;
-        })
-        .catch(() => {
-             let visitesTotales = localStorage.getItem('compteur_visites_transfr') || 14;
-             visitesTotales = parseInt(visitesTotales) + 1;
-             localStorage.setItem('compteur_visites_transfr', visitesTotales);
-             document.getElementById('nb-visites-auditeur').innerText = visitesTotales;
-             document.getElementById('admin-total-visites').innerText = visitesTotales;
-        });
-    }
-
     function ouvrirConnexion() {
         const zone = document.getElementById('zone-connexion');
         zone.style.display = zone.style.display === 'none' ? 'block' : 'none';
@@ -346,7 +318,6 @@
         if (dateSauvegardee) {
             document.getElementById('texte-planning-auditeur').innerText = dateSauvegardee;
         }
-        chargerCompteurDeVisites();
     });
 
     const peerAuditeur = new Peer();
