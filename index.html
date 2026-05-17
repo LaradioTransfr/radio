@@ -3,194 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Console Directeur - Transfr</title>
+    <title>Radio Transfr - Studio</title>
     <style>
+        /* Design général de la page (style sombre et propre) */
         body {
-            background-color: #121214;
+            background-color: #1a1a1a;
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
+            font-family: Arial, sans-serif;
             padding: 20px;
+            margin: 0;
         }
 
         header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #29292e;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
         }
 
-        h1 {
-            margin: 0;
-            color: #e1e1e6;
+        .statut-mode {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background-color: #333;
         }
 
         /* Bouton ON AIR */
-        .on-air-btn {
-            background-color: #29292e;
-            color: #7c7c8a;
-            border: none;
-            padding: 15px 30px;
+        .btn-on-air {
             font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .on-air-btn.active {
-            background-color: #e12525;
+            padding: 12px 24px;
+            background-color: #555;
             color: white;
-            box-shadow: 0 0 20px rgba(225, 37, 37, 0.5);
-            animation: pulse 1.5s infinite;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        /* Grille principale */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        /* Conteneur des éléments */
+        .flex-container {
+            display: flex;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .card {
-            background-color: #202024;
-            border-radius: 10px;
+        .bloc {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
             padding: 20px;
-            border: 1px solid #29292e;
+            flex: 1;
+            min-width: 280px;
         }
 
         h2 {
             margin-top: 0;
-            font-size: 1.2rem;
-            color: #04d361;
-            border-bottom: 1px solid #29292e;
-            padding-bottom: 10px;
+            color: #ffcd1e;
+            font-size: 1.3rem;
         }
 
-        /* Table de mixage */
-        .mixer-group {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .fader {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .fader input[type=range] {
-            writing-mode: vertical-lr;
-            direction: rtl;
-            appearance: slider-vertical;
-            width: 8px;
-            height: 150px;
-            padding: 0 5px;
-            background: #29292e;
-            margin: 10px 0;
-        }
-
-        /* Soundboard */
-        .soundboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .sound-btn {
-            background-color: #29292e;
-            color: white;
-            border: 1px solid #323238;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .sound-btn:hover {
-            background-color: #3e3e4a;
-        }
-
-        .sound-btn.censure {
-            background-color: #c2410c;
-        }
-        .sound-btn.censure:hover {
-            background-color: #ea580c;
-        }
-
-        /* Chat en direct */
-        .chat-box {
-            background-color: #121214;
-            height: 150px;
+        /* Zone de Chat */
+        .zone-chat {
+            background-color: #111;
+            border-radius: 5px;
+            height: 180px;
             overflow-y: auto;
-            border-radius: 6px;
             padding: 10px;
             font-family: monospace;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
 
-        .message {
-            animation: fadeIn 0.3s ease;
+        .msg-auditeur {
+            margin: 5px 0;
+            border-bottom: 1px solid #222;
+            padding-bottom: 5px;
         }
 
-        .username {
-            color: #4da6ff;
-            font-weight: bold;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Chrono */
-        .timer-display {
-            font-size: 3rem;
+        /* Chronomètre */
+        .affichage-chrono {
+            font-size: 2.5rem;
             font-family: monospace;
             text-align: center;
-            margin: 10px 0;
-            color: #ffcd1e;
+            margin: 15px 0;
+            color: #00ff66;
         }
 
-        .timer-btn {
-            background-color: #04d361;
-            color: #121214;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
+        .btn-chrono {
             width: 100%;
-        }
-
-        .timer-btn.stop {
-            background-color: #e12525;
-            color: white;
-        }
-
-        /* Alerte temps critique */
-        .danger-zone {
-            animation: flash-red 0.5s infinite alternate;
-        }
-
-        @keyframes flash-red {
-            from { background-color: #202024; }
-            to { background-color: #4c0505; }
+            padding: 10px;
+            background-color: #00ff66;
+            color: black;
+            border: none;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -198,176 +106,166 @@
 
     <header>
         <div>
-            <h1>🎛️ TRANSFR - Studio Directeur</h1>
-            <p id="view-mode" style="margin: 5px 0 0 0; color: #8d8d99; font-size: 0.9rem;">Mode Visiteur</p>
+            <h1 style="margin:0;">📻 Radio Transfr</h1>
+            <div style="margin-top: 5px;">Statut : <span id="txtMode" class="statut-mode">Vérification...</span></div>
         </div>
-        <button class="on-air-btn" id="onAirBtn" onclick="toggleOnAir()">⚪ OFF AIR</button>
+        <!-- Bouton ON AIR -->
+        <button id="onAirBtn" class="btn-on-air" onclick="toggleOnAir()">⚪ OFF AIR</button>
     </header>
 
-    <div class="grid">
-        
-        <!-- Table de Mixage Virtuelle -->
-        <div class="card">
-            <h2>🎚️ Table de Mixage (Régie)</h2>
-            <div class="mixer-group">
-                <div class="fader">
-                    <span style="color: #ff4d4d;">MIC 1</span>
-                    <input type="range" min="0" max="100" value="80">
-                    <span>80%</span>
-                </div>
-                <div class="fader">
-                    <span style="color: #4da6ff;">MIC 2</span>
-                    <input type="range" min="0" max="100" value="0">
-                    <span>0%</span>
-                </div>
-                <div class="fader">
-                    <span style="color: #ffcd1e;">MUSIQUE</span>
-                    <input type="range" min="0" max="100" value="50">
-                    <span>50%</span>
-                </div>
-                <div class="fader">
-                    <span style="color: #a855f7;">JINGLES</span>
-                    <input type="range" min="0" max="100" value="75">
-                    <span>75%</span>
-                </div>
-            </div>
+    <div class="flex-container">
+
+        <!-- BLOC 1 : LE CHRONOMÈTRE -->
+        <div class="bloc">
+            <h2>⏱️ Temps Chronique (3 min)</h2>
+            <div id="chronoDisplay" class="affichage-chrono">03:00</div>
+            <button id="chronoBtn" class="btn-chrono" onclick="gererChrono()">DÉMARRER</button>
         </div>
 
-        <!-- Chronomètre Chronique -->
-        <div class="card" id="timerCard">
-            <h2>⏱️ Chrono Chronique (3 Min)</h2>
-            <div class="timer-display" id="timerDisplay">03:00</div>
-            <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">LANCER LE CHRONO</button>
-        </div>
-
-        <!-- Soundboard (Boîte à bruitages) -->
-        <div class="card">
-            <h2>🔊 Soundboard Instantanée</h2>
-            <div class="soundboard">
-                <button class="sound-btn" onclick="playEffect('Applaudissements')">👏 Applaudissements</button>
-                <button class="sound-btn" onclick="playEffect('Rire')">😂 Rires</button>
-                <button class="sound-btn" onclick="playEffect('Flash Info')">🚨 Flash Info</button>
-                <button class="sound-btn censure" onclick="playEffect('Censure')">🤬 BIP CENSURE</button>
-            </div>
-        </div>
-
-        <!-- Faux Chat en Direct -->
-        <div class="card">
-            <h2>💬 Auditeurs en Direct (Simulation)</h2>
-            <div class="chat-box" id="chatBox">
-                <div class="message"><span class="username">Système :</span> Connecté au flux de la radio...</div>
+        <!-- BLOC 2 : LE CHAT DES AUDITEURS -->
+        <div class="bloc">
+            <h2>💬 Flux des Auditeurs</h2>
+            <div id="monChatRadio" class="zone-chat">
+                <p style="color: gray; margin: 0;">[En attente du passage ON AIR pour recevoir les messages...]</p>
             </div>
         </div>
 
     </div>
 
+    <!-- SCRIPT JAVASCRIPT (LES FONCTIONS) -->
     <script>
-        // --- GESTION DU MODE DIRECTEUR VIA L'URL ---
+        // ==========================================
+        // 1. SÉCURITÉ : MODE SPECTATEUR OU DIRECTEUR
+        // ==========================================
         const urlParams = new URLSearchParams(window.location.search);
         const isDirecteur = urlParams.get('mode') === 'directeur';
-        
+        const txtMode = document.getElementById('txtMode');
+
         if (isDirecteur) {
-            document.getElementById('view-mode').innerText = "🕹️ Mode Directeur Principal ACTIF";
-            document.getElementById('view-mode').style.color = "#04d361";
+            txtMode.innerText = "🕹️ DIRECTEUR (Contrôles actifs)";
+            txtMode.style.color = "#00ff66";
+            txtMode.style.backgroundColor = "#1c3d27";
         } else {
-            document.getElementById('view-mode').innerText = "👁️ Mode Spectateur (Modifications désactivées)";
-            // Désactive les boutons si on n'est pas directeur
-            document.querySelectorAll('button, input').forEach(el => el.disabled = true);
+            txtMode.innerText = "👁️ SPECTATEUR (Verrouillé)";
+            txtMode.style.color = "#ff4d4d";
+            txtMode.style.backgroundColor = "#4d1c1c";
+
+            // Si on n'est pas directeur, on bloque tous les boutons de la page
+            document.querySelectorAll('button').forEach(bouton => {
+                bouton.disabled = true;
+                bouton.style.cursor = 'not-allowed';
+                bouton.style.opacity = '0.5';
+            });
         }
 
-        // --- BOUTON ON AIR ---
+        // ==========================================
+        // 2. GESTION DU BOUTON ON AIR
+        // ==========================================
         let isOnAir = false;
+        let chatInterval;
+
         function toggleOnAir() {
-            if(!isDirecteur) return;
+            if (!isDirecteur) return; // Sécurité
+
             isOnAir = !isOnAir;
             const btn = document.getElementById('onAirBtn');
-            if(isOnAir) {
+
+            if (isOnAir) {
                 btn.innerText = "🔴 ON AIR";
-                btn.classList.add('active');
-                startAudienceSimulation(); // Lance les messages du chat
+                btn.style.backgroundColor = "#ff1a1a";
+                btn.style.boxShadow = "0 0 15px #ff1a1a";
+                
+                // On vide le message d'attente du chat et on lance la simulation
+                document.getElementById('monChatRadio').innerHTML = "";
+                lancerSimulationAuditeurs();
             } else {
                 btn.innerText = "⚪ OFF AIR";
-                btn.classList.remove('active');
+                btn.style.backgroundColor = "#555";
+                btn.style.boxShadow = "none";
+                
+                // On arrête de recevoir des messages
                 clearInterval(chatInterval);
             }
         }
 
-        // --- SOUNDBOARD ---
-        function playEffect(nom) {
-            if(!isOnAir) {
-                alert("Impossible de lancer un bruitage si le studio est OFF AIR !");
-                return;
-            }
-            // Si le navigateur le permet, on génère un petit bip électronique pour le bouton Censure !
-            if (nom === 'Censure') {
-                let ctx = new (window.AudioContext || window.webkitAudioContext)();
-                let osc = ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(1000, ctx.currentTime); // Fréquence du BIP (1000Hz)
-                osc.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.5); // Durée : 0.5 seconde
-            } else {
-                alert(`🔊 Effet sonore déclenché : [${nom}]`);
-            }
+        // ==========================================
+        // 3. SIMULATION DES MESSAGES DU CHAT
+        // ==========================================
+        const baseMessages = [
+            { pseudo: "Lucas_31", texte: "Trop bien le son de l'émission ! 🔥" },
+            { pseudo: "Sarah_Music", texte: "Vous pouvez passer du Benson Boone après ? Pliz !" },
+            { pseudo: "GamerFou", texte: "Dédicace à toute la team Transfr !! 😎" },
+            { pseudo: "Emma_Clap", texte: "Le jingle déchire grave aujourd'hui." },
+            { pseudo: "Mat_Ping", texte: "Propre la régie, le live est super fluide !" }
+        ];
+
+        function lancerSimulationAuditeurs() {
+            const chatBox = document.getElementById('monChatRadio');
+            
+            chatInterval = setInterval(() => {
+                // Choisit un message au hasard
+                const randomMsg = baseMessages[Math.floor(Math.random() * baseMessages.length)];
+                
+                // Crée l'élément HTML pour le message
+                const p = document.createElement('p');
+                p.className = "msg-auditeur";
+                p.innerHTML = `<strong style="color: #4da6ff;">${randomMsg.pseudo} :</strong> ${randomMsg.texte}`;
+                
+                // Ajoute au chat et descend le scroll automatiquement
+                chatBox.appendChild(p);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 3500); // Un nouveau message toutes les 3,5 secondes
         }
 
-        // --- CHRONOMÈTRE ---
-        let timer;
-        let timeLeft = 180; // 3 minutes en secondes
-        let timerRunning = false;
+        // ==========================================
+        // 4. GESTION DU CHRONOMÈTRE
+        // ==========================================
+        let chronoTimer;
+        let tempsRestant = 180; // 3 minutes en secondes (3 * 60)
+        let chronoEnMarche = false;
 
-        function toggleTimer() {
-            if(timerRunning) {
-                clearInterval(timer);
-                document.getElementById('timerBtn').innerText = "REPRENDRE";
-                document.getElementById('timerBtn').classList.remove('stop');
-                timerRunning = false;
+        function gererChrono() {
+            if (!isDirecteur) return; // Sécurité
+
+            const btnChrono = document.getElementById('chronoBtn');
+            const displayChrono = document.getElementById('chronoDisplay');
+
+            if (chronoEnMarche) {
+                // Mode PAUSE
+                clearInterval(chronoTimer);
+                btnChrono.innerText = "REPRENDRE";
+                btnChrono.style.backgroundColor = "#00ff66";
+                chronoEnMarche = false;
             } else {
-                timerRunning = true;
-                document.getElementById('timerBtn').innerText = "PAUSE";
-                document.getElementById('timerBtn').classList.add('stop');
-                
-                timer = setInterval(() => {
-                    timeLeft--;
-                    let mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-                    let secs = (timeLeft % 60).toString().padStart(2, '0');
-                    document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+                // Mode EN MARCHE
+                chronoEnMarche = true;
+                btnChrono.innerText = "PAUSE";
+                btnChrono.style.backgroundColor = "#ffcd1e";
 
-                    // Alerte s'il reste moins de 15 secondes
-                    if(timeLeft <= 15) {
-                        document.getElementById('timerCard').classList.add('danger-zone');
+                chronoTimer = setInterval(() => {
+                    tempsRestant--;
+
+                    // Calcul des minutes et secondes
+                    let minutes = Math.floor(tempsRestant / 60).toString().padStart(2, '0');
+                    let secondes = (tempsRestant % 60).toString().padStart(2, '0');
+                    displayChrono.innerText = `${minutes}:${secondes}`;
+
+                    // Changement de couleur s'il reste moins de 20 secondes (Alerte !)
+                    if (tempsRestant <= 20) {
+                        displayChrono.style.color = "#ff1a1a";
                     }
 
-                    if(timeLeft <= 0) {
-                        clearInterval(timer);
-                        document.getElementById('timerDisplay').innerText = "00:00";
+                    // Quand le temps est fini
+                    if (tempsRestant <= 0) {
+                        clearInterval(chronoTimer);
+                        displayChrono.innerText = "00:00";
+                        btnChrono.innerText = "TERMINÉ";
+                        btnChrono.disabled = true;
+                        btnChrono.style.opacity = "0.5";
                         alert("⏱️ Temps écoulé pour la chronique !");
                     }
                 }, 1000);
             }
-        }
-
-        // --- SIMULATEUR DE CHAT (AUDITEURS) ---
-        const listeMessages = [
-            { user: "Lucas_31", msg: "Trop bien le son de l'émission aujourd'hui ! 🔥" },
-            { user: "Sarah_Music", msg: "Vous passez quand le prochain morceau de Benson Boone ?" },
-            { user: "GamerFou", msg: "Dédicace à toute la team Transfr !! 😎" },
-            { user: "Emma_Clap", msg: "Le jingle déchire grave" },
-            { user: "Mat_Ping", msg: "Propre la régie, super fluide !" }
-        ];
-        
-        let chatInterval;
-        function startAudienceSimulation() {
-            const chatBox = document.getElementById('chatBox');
-            chatInterval = setInterval(() => {
-                let hasard = listeMessages[Math.floor(Math.random() * listeMessages.length)];
-                let div = document.createElement('div');
-                div.className = "message";
-                div.innerHTML = `<span class="username">${hasard.user} :</span> ${hasard.msg}`;
-                chatBox.appendChild(div);
-                chatBox.scrollTop = chatBox.scrollHeight; // Descend le chat auto
-            }, 4000); // Un message toutes les 4 secondes
         }
     </script>
 </body>
