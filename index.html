@@ -47,7 +47,7 @@
         <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 25px; padding-top: 20px; text-align: left;">
             <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">💾 Émissions en Podcast (Replay) :</h4>
             
-            <div id="liste-podcasts-publics" style="display: flex; flex-direction: column; gap: 10px; max-height: 200px; overflow-y: auto; margin-bottom: 20px;">
+            <div id="liste-podcasts-publics" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
                 <p id="aucun-podcast-msg" style="color: #666; font-style: italic; font-size: 13px; margin: 0;">Aucun podcast publié pour le moment.</p>
             </div>
 
@@ -130,7 +130,7 @@
                     <button onclick="diffuserPlanning()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px;">🟢 Lancer le Compte à Rebours sur les écrans</button>
                 </div>
 
-                <!-- NOUVELLE ZONE ADMIN : PUBLICATION DES PODCASTS -->
+                <!-- ZONE ADMIN : PUBLICATION DES PODCASTS -->
                 <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #ffa502; margin-bottom: 20px;">
                     <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 10px;">📤 METTRE EN LIGNE UN PODCAST POUR LE PUBLIC</h4>
                     <input type="text" id="admin-titre-podcast" placeholder="Ex: Émission Spéciale n°1..." style="width: 93%; padding: 8px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 13px;">
@@ -299,7 +299,7 @@
     // Mode Enregistrement Podcast
     let modeStudioActuel = "attente"; 
     let mediaRecorder = null;
-    let morceauxAudioEnregistres = []; // CORRIGÉ : L'espace a été supprimé ici !
+    let morceauxAudioEnregistres = [];
 
     // Base de données locale pour stocker les podcasts publiés
     let listePodcastsData = [];
@@ -316,6 +316,8 @@
             document.getElementById('panneau-admin').style.display = 'block';
             modeAdminActif = true;
             
+            // On rafraîchit l'affichage de la liste pour faire apparaître les boutons de suppression !
+            afficherPodcastsPublics();
             recupererInfosFlash();
 
             const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
@@ -494,14 +496,12 @@
 
     function afficherPodcastsPublics() {
         const conteneur = document.getElementById('liste-podcasts-publics');
-        const messageAucun = document.getElementById('aucun-podcast-msg');
         
         if (listePodcastsData.length === 0) {
-            if (messageAucun) messageAucun.style.display = "block";
+            conteneur.innerHTML = `<p id="aucun-podcast-msg" style="color: #666; font-style: italic; font-size: 13px; margin: 0;">Aucun podcast publié pour le moment.</p>`;
             return;
         }
 
-        if (messageAucun) messageAucun.style.display = "none";
         conteneur.innerHTML = "";
 
         listePodcastsData.forEach(pod => {
@@ -510,17 +510,57 @@
             
             ligne.style.cssText = "background: rgba(255,255,255,0.03); border: 1px solid " + (estPrive ? "rgba(255,71,87,0.3)" : "rgba(255,165,0,0.15)") + "; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px;";
             
+            // AJOUT DU BOUTON SUPPRIMER UNIQUEMENT SI LE DIRECTEUR EST CONNECTÉ
+            let boutonSupprimerHTML = "";
+            if (modeAdminActif) {
+                boutonSupprimerHTML = `<button onclick="supprimerPodcast(${pod.id}, '${pod.titre.replace(/'/g, "\\'")}')" style="background: #ff4757; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; flex-shrink: 0; margin-left: 5px;">🗑️ Supprimer</button>`;
+            }
+
             ligne.innerHTML = `
-                <div style="overflow: hidden;">
+                <div style="overflow: hidden; flex-grow: 1;">
                     <div style="font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         ${estPrive ? "🔒 [PRIVÉ] " : "🔓 "} ${pod.titre}
                     </div>
                     <div style="font-size: 11px; color: #666;">Publié le ${pod.date}</div>
                 </div>
-                <button onclick="ecouterUnPodcast(${pod.id})" style="background: ${estPrive ? '#ff4757' : '#ffa502'}; color: ${estPrive ? 'white' : '#1e1e2f'}; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; flex-shrink: 0;">▶️ Écouter</button>
+                <div style="display: flex; gap: 5px; flex-shrink: 0;">
+                    <button onclick="ecouterUnPodcast(${pod.id})" style="background: ${estPrive ? '#ff4757' : '#ffa502'}; color: ${estPrive ? 'white' : '#1e1e2f'}; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer;">▶️ Écouter</button>
+                    ${boutonSupprimerHTML}
+                </div>
             `;
             conteneur.appendChild(ligne);
         });
+    }
+
+    // NOUVELLE FONCTION : SUPPRESSION DU PODCAST PAR LE DIRECTEUR
+    function supprimerPodcast(id, titre) {
+        if (confirm(`⚠️ Es-tu sûr de vouloir supprimer définitivement le podcast "${titre}" ?`)) {
+            // Filtrer la liste pour enlever le podcast sélectionné
+            listePodcastsData = listePodcastsData.filter(pod => pod.id !== id);
+            
+            // Sauvegarder dans la mémoire locale
+            localStorage.setItem('transfr-podcasts-publics', JSON.stringify(listePodcastsData));
+            
+            // Mettre à jour l'affichage sur la page
+            afficherPodcastsPublics();
+
+            // Si le podcast supprimé était en train de jouer, on coupe le lecteur
+            const player = document.getElementById('audio-podcast-player');
+            const conteneurLecteur = document.getElementById('lecteur-podcast-container');
+            if (conteneurLecteur.style.display === "block" && document.getElementById('titre-podcast-en-cours').innerText.includes(titre)) {
+                player.pause();
+                player.src = "";
+                conteneurLecteur.style.display = "none";
+            }
+
+            // Envoyer un message aux auditeurs connectés pour qu'ils suppriment aussi de leur écran
+            Object.keys(connexionsAuditeurs).forEach(pId => {
+                let c = connexionsAuditeurs[pId].dataConn;
+                if (c && c.open) c.send({ type: 'demande-podcasts-sync' });
+            });
+
+            alert("🗑️ Le podcast a bien été supprimé de la radio !");
+        }
     }
 
     function ecouterUnPodcast(id) {
@@ -734,7 +774,7 @@
         }
     }
 
-    function arreterMusique() {
+    function arrêterMusique() {
         const lecteur = document.getElementById('lecteur-musique-studio');
         lecteur.pause(); 
         lecteur.src = "";
@@ -929,7 +969,7 @@
     }
 
     function couperLive() {
-        arreterMusique(); 
+        arrêterMusique(); 
 
         if (modeStudioActuel === "podcast" && mediaRecorder && mediaRecorder.state !== "inactive") {
             mediaRecorder.stop();
