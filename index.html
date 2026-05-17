@@ -76,7 +76,7 @@
                     <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE ACTIVE</span>
                 </div>
 
-                <!-- ZONE : PROGRAMMATION DU PROCHAIN DIRECT (MODE DIRECTEUR) -->
+                <!-- ZONE : PROGRAMMATION DU PROCHAIN DIRECT -->
                 <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #00d2ff; margin-bottom: 20px;">
                     <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">📅 ANNONCER LE PROCHAIN DIRECT</h4>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
@@ -140,34 +140,59 @@
                 </div>
             </div>
 
-            <!-- COLONNE DROITE : PLAYLIST MULTI-GENRES -->
-            <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
-                <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
+            <!-- COLONNE DROITE : PLAYLIST & NOUVELLE BOÎTE À INFOS -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
                 
-                <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
+                <!-- PLAYLIST DE TRANSFR -->
+                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
+                    <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
+                    
+                    <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
 
-                <!-- POP ROCK -->
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #ff4757; margin-bottom: 8px; font-size: 14px;">🎸 POP ROCK / STYLE MÅNESKIN</h4>
-                    <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Gros Rock Classique Énergique')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Classique - Piste 1</button>
-                    <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Guitare Solo - Piste 2</button>
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #ff4757; margin-bottom: 8px; font-size: 14px;">🎸 POP ROCK / STYLE MÅNESKIN</h4>
+                        <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Gros Rock Classique Énergique')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Classique - Piste 1</button>
+                        <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Guitare Solo - Piste 2</button>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #00d2ff; margin-bottom: 8px; font-size: 14px;">🎤 RAP / HIP-HOP BEATS</h4>
+                        <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
+                    </div>
+
+                    <div style="background: rgba(255,165,0,0.05); padding: 12px; border-radius: 8px; border: 1px dashed #ffa502; text-align: center;">
+                        <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 8px; font-size: 13px;">📂 DIFFUSER UN MP3 DE TON PC</h4>
+                        <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; cursor: pointer;">
+                    </div>
+
+                    <div id="statut-musique" style="margin-top: 15px; background: #12121a; padding: 10px; border-radius: 6px; font-size: 12px; color: #2ed573; text-align: center; border: 1px solid #222;">📴 Aucune musique en cours</div>
+                    <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; font-weight: bold; width: 100%; margin-top: 10px; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">⏹️ Couper la musique</button>
                 </div>
 
-                <!-- RAP / HIP-HOP -->
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #00d2ff; margin-bottom: 8px; font-size: 14px;">🎤 RAP / HIP-HOP BEATS</h4>
-                    <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
+                <!-- NOUVELLE ZONE : RECUPERATION DE VRAIES INFOS -->
+                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #2ed573; box-shadow: 0 0 20px rgba(46,213,115,0.15); height: fit-content;">
+                    <h3 style="color: #2ed573; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">📰 BOÎTE À INFOS DU DIRECTEUR</h3>
+                    
+                    <!-- Bouton de récupération rapide -->
+                    <button onclick="recupererInfosFlash()" style="background: #2ed573; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 15px;">
+                        🔄 Récupérer la météo & les actus
+                    </button>
+
+                    <!-- Affichage Météo -->
+                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2d2d44;">
+                        <h4 style="margin: 0 0 5px 0; color: #00d2ff; font-size: 13px;">🌤️ Météo (Saint-Orens) :</h4>
+                        <div id="info-bloc-meteo" style="font-size: 13px; color: #ddd;">Clique sur le bouton pour charger...</div>
+                    </div>
+
+                    <!-- Affichage Actus -->
+                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; border: 1px solid #2d2d44;">
+                        <h4 style="margin: 0 0 8px 0; color: #ffa502; font-size: 13px;">🔥 Actualités France :</h4>
+                        <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 200px; overflow-y: auto; text-align: left;">
+                            Les titres de l'actualité s'afficheront ici.
+                        </div>
+                    </div>
                 </div>
 
-                <!-- DIFFUSER UN MP3 DEPUIS SON PC -->
-                <div style="background: rgba(255,165,0,0.05); padding: 12px; border-radius: 8px; border: 1px dashed #ffa502; text-align: center;">
-                    <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 8px; font-size: 13px;">📂 DIFFUSER UN MP3 DE TON PC</h4>
-                    <p style="font-size: 11px; color: #aaa; margin-top:0;">Prends directement un fichier de ton ordinateur :</p>
-                    <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; cursor: pointer;">
-                </div>
-
-                <div id="statut-musique" style="margin-top: 15px; background: #12121a; padding: 10px; border-radius: 6px; font-size: 12px; color: #2ed573; text-align: center; border: 1px solid #222;">📴 Aucune musique en cours</div>
-                <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; font-weight: bold; width: 100%; margin-top: 10px; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">⏹️ Couper la musique</button>
             </div>
 
         </div>
@@ -176,7 +201,7 @@
     <div id="co-directeurs-audio-container"></div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET OPTIMISÉE               -->
+    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET ENRICHIE                -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
@@ -211,7 +236,6 @@
             document.getElementById('panneau-admin').style.display = 'block';
             modeAdminActif = true;
             
-            // Met l'ancienne valeur dans les cases pour t'aider
             const dateSauvegardee = localStorage.getItem('planning-transfr');
             if (dateSauvegardee && dateSauvegardee.includes(" à ")) {
                 const parties = dateSauvegardee.split(" à ");
@@ -223,7 +247,55 @@
         }
     }
 
-    // --- FONCTION DE DIFFUSION DU PLANNING (CORRIGÉE) ---
+    // --- SCRIPT DE RECUPERATION DES INFOS REELLES ---
+    function recupererInfosFlash() {
+        const blocMeteo = document.getElementById('info-bloc-meteo');
+        const blocActus = document.getElementById('info-bloc-actus');
+
+        blocMeteo.innerText = "⏳ Récupération météo...";
+        blocActus.innerText = "⏳ Chargement des dernières actualités...";
+
+        // 1. Récupération de la vraie météo (via Open-Meteo API, gratuite et sans clé)
+        // Coordonnées approximatives de Saint-Orens-de-Gameville
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=43.5511&longitude=1.5436&current_weather=true')
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.current_weather) {
+                    const temp = data.current_weather.temperature;
+                    const vent = data.current_weather.windspeed;
+                    blocMeteo.innerHTML = `📍 <strong>Saint-Orens :</strong> Température de <strong>${temp}°C</strong> | Vent : ${vent} km/h`;
+                } else {
+                    blocMeteo.innerText = "⚠️ Impossible de lire les données météo.";
+                }
+            })
+            .catch(() => { blocMeteo.innerText = "❌ Erreur de connexion météo."; });
+
+        // 2. Récupération des vraies actualités (via un parseur de flux RSS Google News France public)
+        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Dfr%26gl%3DFR%26ceid%3DFR%3Afr')
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.items && data.items.length > 0) {
+                    blocActus.innerHTML = ""; // On vide le texte d'attente
+                    // On prend les 5 premiers titres majeurs
+                    for(let i = 0; i < 5; i++) {
+                        if(data.items[i]) {
+                            let titre = data.items[i].title;
+                            // Nettoyer un peu le nom de la source à la fin du titre
+                            if(titre.includes(" - ")) {
+                                const parts = titre.split(" - ");
+                                parts.pop();
+                                titre = parts.join(" - ");
+                            }
+                            blocActus.innerHTML += `<p style="margin: 0 0 8px 0; padding-bottom: 5px; border-bottom: 1px solid #222;">🔹 ${titre}</p>`;
+                        }
+                    }
+                } else {
+                    blocActus.innerText = "⚠️ Aucun article disponible pour le moment.";
+                }
+            })
+            .catch(() => { blocActus.innerText = "❌ Impossible de charger les actualités."; });
+    }
+
     function diffuserPlanning() {
         const dateInput = document.getElementById('admin-date-direct').value.trim();
         const heureInput = document.getElementById('admin-heure-direct').value.trim();
@@ -234,14 +306,9 @@
         }
 
         const texteComplet = `${dateInput} ${heureInput}`;
-        
-        // CORRECTION : On met à jour l'affichage sur la page TOUT DE SUITE
         document.getElementById('texte-planning-auditeur').innerText = texteComplet;
-        
-        // On sauvegarde dans le navigateur
         localStorage.setItem('planning-transfr', texteComplet);
 
-        // Si le réseau radio est allumé, on transmet aux auditeurs connectés
         Object.keys(connexionsAuditeurs).forEach(peerId => {
             if (connexionsAuditeurs[peerId] && connexionsAuditeurs[peerId].dataConn) {
                 let conn = connexionsAuditeurs[peerId].dataConn;
@@ -254,7 +321,6 @@
         alert("📢 Date enregistrée et mise à jour sur l'écran !");
     }
 
-    // CHARGEMENT AUTOMATIQUE AU DÉMARRAGE DE LA PAGE
     window.addEventListener('DOMContentLoaded', () => {
         const dateSauvegardee = localStorage.getItem('planning-transfr');
         if (dateSauvegardee) {
