@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #ff4757; margin-bottom: 20px; border: 1px solid rgba(255,47,87,0.2);">
+        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #aaa; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
             ⚪ Recherche de la diffusion de Transfr...
         </div>
         
@@ -62,6 +62,25 @@
     </div>
 
     <!-- ====================================================== -->
+    <!-- FENÊTRE CHOIX MODE DE STUDIO (DIRECT OU PODCAST)      -->
+    <!-- ====================================================== -->
+    <div id="fenetre-choix-studio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #1e1e2f; padding: 30px; border-radius: 16px; border: 2px solid #00d2ff; max-width: 450px; text-align: center; box-shadow: 0 0 30px rgba(0,210,255,0.3);">
+            <h3 style="color: #00d2ff; margin-top: 0; font-size: 22px;">🎙️ CONFIGURATION DE LA SESSION</h3>
+            <p style="color: #ccc; font-size: 14px; margin-bottom: 25px;">Bonjour Directeur. Comment souhaitez-vous exploiter la table de mixage aujourd'hui ?</p>
+            
+            <button onclick="validerChoixStudio('direct')" style="background: #2ed573; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; font-size: 15px; margin-bottom: 12px; display: block; box-shadow: 0 4px 10px rgba(46,213,115,0.2);">
+                🔴 LANCER LA RADIO EN DIRECT (Public)
+            </button>
+            <button onclick="validerChoixStudio('podcast')" style="background: #ffa502; color: #1e1e2f; border: none; padding: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; font-size: 15px; display: block; box-shadow: 0 4px 10px rgba(255,165,0,0.2);">
+                💾 ENREGISTRER UN PODCAST (Privé - Téléchargement .wav)
+            </button>
+            <br>
+            <button onclick="annulerChoixStudio()" style="background: transparent; color: #666; border: none; cursor: pointer; font-size: 13px; text-decoration: underline;">Annuler et retourner au tableau de bord</button>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
     <!-- FENÊTRE DE CONNEXION CACHÉE                            -->
     <!-- ====================================================== -->
     <div id="zone-connexion" style="display: none; text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; margin: 20px auto; border: 1px solid #3d3d5c; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
@@ -82,7 +101,7 @@
             <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
                 <div style="text-align: center; margin-bottom: 25px;">
                     <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD STUDIO CO-LIVE</h2>
-                    <span style="background: rgba(46, 213, 115, 0.1); color: #2ed573; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE ACTIVE</span>
+                    <span id="badge-studio-actif" style="background: rgba(255, 165, 0, 0.1); color: #ffa502; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE EN ATTENTE</span>
                 </div>
 
                 <!-- ZONE : PROGRAMMATION DU PROCHAIN DIRECT (COMPTE À REBOURS) -->
@@ -108,7 +127,7 @@
                     <!-- Boutons Antenne -->
                     <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center;">
                         <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px;">🎙️ BOUTONS ANTENNE</h4>
-                        <button id="btn-lancer-live" onclick="lancerLive()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">🟢 ALLUMER LA CONSOLE & LE MICRO</button>
+                        <button id="btn-lancer-live" onclick="ouvrirFenetreChoixStudio()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">🎛️ ALLUMER LA CONSOLE DE MIXAGE</button>
                         <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none; margin-bottom: 8px;">⏸️ METTRE EN PAUSE</button>
                         <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none;">🛑 QUITTER LE STUDIO</button>
 
@@ -239,6 +258,11 @@
     let horlogeInterval = null;
     let dateCibleTimestamp = null;
 
+    // Variables pour le mode Enregistrement Podcast
+    let modeStudioActuel = "attente"; // "attente", "direct" ou "podcast"
+    let mediaRecorder = null;
+    let morceauxAudioEnregistres = [];
+
     function ouvrirConnexion() {
         const zone = document.getElementById('zone-connexion');
         zone.style.display = zone.style.display === 'none' ? 'block' : 'none';
@@ -255,7 +279,6 @@
 
             const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
             if (timestampSauvegardé) {
-                // Pré-remplir le sélecteur avec la date stockée convertie au format local requis par l'input HTML
                 let d = new Date(parseInt(timestampSauvegardé));
                 let annee = d.getFullYear();
                 let mois = String(d.getMonth() + 1).padStart(2, '0');
@@ -299,7 +322,6 @@
             .catch(() => { blocActus.innerText = "❌ Impossible de charger les actualités."; });
     }
 
-    // Fonction maîtresse pour lancer le vrai compte à rebours visuel
     function démarrerCalculCompteARebours(timestamp) {
         if (horlogeInterval) clearInterval(horlogeInterval);
         dateCibleTimestamp = parseInt(timestamp);
@@ -315,13 +337,11 @@
                 return;
             }
 
-            // Calculs mathématiques pour extraire les jours, heures, minutes, secondes restants
             const jours = Math.floor(ecart / (1000 * 60 * 60 * 24));
             const heures = Math.floor((ecart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((ecart % (1000 * 60 * 60)) / (1000 * 60));
             const secondes = Math.floor((ecart % (1000 * 60)) / 1000);
 
-            // Formatage propre avec un zéro devant si le chiffre est inférieur à 10
             let formatJours = jours > 0 ? `${jours}j ` : "";
             let formatHeures = String(heures).padStart(2, '0');
             let formatMinutes = String(minutes).padStart(2, '0');
@@ -351,11 +371,9 @@
             return;
         }
 
-        // Lancement immédiat en local pour l'admin
         localStorage.setItem('timestamp-direct-transfr', timestampCible);
         démarrerCalculCompteARebours(timestampCible);
 
-        // Envoyer la cible en temps réel à tous les auditeurs connectés
         Object.keys(connexionsAuditeurs).forEach(peerId => {
             if (connexionsAuditeurs[peerId] && connexionsAuditeurs[peerId].dataConn) {
                 let conn = connexionsAuditeurs[peerId].dataConn;
@@ -368,7 +386,6 @@
         alert("📢 Compte à rebours mis à jour et envoyé au public !");
     }
 
-    // Au chargement de la page, récupérer la date enregistrée s'il y en a une
     window.addEventListener('DOMContentLoaded', () => {
         const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
         if (timestampSauvegardé) {
@@ -518,7 +535,7 @@
 
     function jouerMusique(urlOuBlob, titre) {
         if (!audioContext) {
-            alert("⚠️ Clique d'abord sur le bouton vert '🟢 ALLUMER LA CONSOLE & LE MICRO' avant de lancer une musique !");
+            alert("⚠️ Active d'abord la console de mixage (bouton bleu) avant de lancer une musique !");
             return;
         }
         const lecteur = document.getElementById('lecteur-musique-studio');
@@ -551,16 +568,12 @@
         }
     }
 
-    function barreEtStatut() {
+    function arreterMusique() {
         const lecteur = document.getElementById('lecteur-musique-studio');
         lecteur.pause(); 
         lecteur.src = "";
         document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours";
         document.getElementById('statut-musique').style.color = "#2ed573";
-    }
-
-    function arreterMusique() {
-        barreEtStatut();
     }
 
     function basculerPause() {
@@ -577,7 +590,7 @@
             pisteMicro.enabled = true;
             document.getElementById('btn-pause-live').innerText = "⏸️ METTRE EN PAUSE";
             document.getElementById('btn-pause-live').style.background = "#ffa502";
-            document.getElementById('statut-micro-live').innerText = "🎙️ EN DIRECT-STUDIO";
+            document.getElementById('statut-micro-live').innerText = modeStudioActuel === 'direct' ? "🎙️ EN DIRECT-STUDIO" : "🎙️ ENREGISTREMENT PODCAST";
             ajusterVolumeMicro();
         }
     }
@@ -602,7 +615,22 @@
         document.getElementById('admin-compteur').innerText = nombreAuditeurs;
     }
 
-    function lancerLive() {
+    // Gestion de l'ouverture de la fenêtre de configuration
+    function ouvrirFenetreChoixStudio() {
+        document.getElementById('fenetre-choix-studio').style.display = "flex";
+    }
+
+    function annulerChoixStudio() {
+        document.getElementById('fenetre-choix-studio').style.display = "none";
+    }
+
+    function validerChoixStudio(mode) {
+        document.getElementById('fenetre-choix-studio').style.display = "none";
+        modeStudioActuel = mode; 
+        lancerConfigurationStudio();
+    }
+
+    function lancerConfigurationStudio() {
         const configurationsAudio = {
             audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
             video: false
@@ -633,34 +661,83 @@
                 gainNodePC.connect(destinationMixee);
 
                 fluxMixe = destinationMixee.stream;
-                monPeer = new Peer(ID_RADIO_PRINCIPALE);
-                
-                monPeer.on('open', () => {
-                    configurerEvenementsStudio();
-                });
 
-                monPeer.on('error', (err) => {
-                    if (err.type === 'unavailable-id') {
-                        monPeer = new Peer(); 
-                        monPeer.on('open', () => {
-                            let appelStudio = monPeer.call(ID_RADIO_PRINCIPALE, fluxMixe);
-                            configurerEvenementsStudio();
-                            appelStudio.on('stream', (fluxRetourStudio) => {
-                                diffuserVoixCoDirecteur(fluxRetourStudio);
+                // SI MODE PODCAST : On démarre le module d'enregistrement local
+                if (modeStudioActuel === "podcast") {
+                    morceauxAudioEnregistres = [];
+                    mediaRecorder = new MediaRecorder(fluxMixe);
+                    
+                    mediaRecorder.ondataavailable = function(evenement) {
+                        if (evenement.data.size > 0) {
+                            morceauxAudioEnregistres.push(evenement.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = function() {
+                        // Création du fichier final complet
+                        const blobPodcast = new Blob(morceauxAudioEnregistres, { type: 'audio/wav' });
+                        const urlFichier = URL.createObjectURL(blobPodcast);
+                        
+                        // Déclenchement automatique du téléchargement sur le PC
+                        const lienTelechargement = document.createElement('a');
+                        lienTelechargement.href = urlFichier;
+                        lienTelechargement.download = `Podcast_Transfr_${new Date().toLocaleDateString().replace(/\//g, '-')}.wav`;
+                        document.body.appendChild(lienTelechargement);
+                        lienTelechargement.click();
+                        document.body.removeChild(lienTelechargement);
+                        
+                        alert("💾 Podcast enregistré avec succès ! Le fichier audio .wav a été téléchargé dans votre dossier Téléchargements.");
+                    };
+
+                    mediaRecorder.start();
+                    configurerEvenementsStudio();
+                } 
+                // SI MODE DIRECT : On démarre le serveur PeerJS pour le public
+                else if (modeStudioActuel === "direct") {
+                    monPeer = new Peer(ID_RADIO_PRINCIPALE);
+                    
+                    monPeer.on('open', () => {
+                        configurerEvenementsStudio();
+                    });
+
+                    monPeer.on('error', (err) => {
+                        if (err.type === 'unavailable-id') {
+                            monPeer = new Peer(); 
+                            monPeer.on('open', () => {
+                                let appelStudio = monPeer.call(ID_RADIO_PRINCIPALE, fluxMixe);
+                                configurerEvenementsStudio();
+                                appelStudio.on('stream', (fluxRetourStudio) => {
+                                    diffuserVoixCoDirecteur(fluxRetourStudio);
+                                });
                             });
-                        });
-                    }
-                });
+                        }
+                    });
+                }
             })
-            .catch(err => { alert("Donne l'accès au micro !"); });
+            .catch(err => { alert("L'accès au micro est nécessaire pour faire fonctionner la table de mixage !"); });
     }
 
     function configurerEvenementsStudio() {
         document.getElementById('btn-lancer-live').style.display = "none";
         document.getElementById('btn-pause-live').style.display = "inline-block";
         document.getElementById('btn-couper-live').style.display = "inline-block";
-        document.getElementById('statut-micro-live').innerText = "🎙️ STUDIO ACTIF (EN DIRECT)";
-        document.getElementById('statut-micro-live').style.color = "#2ed573";
+        
+        const badge = document.getElementById('badge-studio-actif');
+        const statutLabel = document.getElementById('statut-micro-live');
+
+        if (modeStudioActuel === "direct") {
+            badge.innerText = "● CONSOLE EN DIRECT (PUBLIC)";
+            badge.style.background = "rgba(46, 213, 115, 0.1)";
+            badge.style.color = "#2ed573";
+            statutLabel.innerText = "🎙️ STUDIO ACTIF (EN DIRECT)";
+            statutLabel.style.color = "#2ed573";
+        } else {
+            badge.innerText = "● ENREGISTREMENT PODCAST (PRIVÉ)";
+            badge.style.background = "rgba(255, 165, 0, 0.1)";
+            badge.style.color = "#ffa502";
+            statutLabel.innerText = "🎙️ ENREGISTREMENT EN COURS...";
+            statutLabel.style.color = "#ffa502";
+        }
         
         microEnPause = false;
         ajusterVolumeMicro();
@@ -668,42 +745,44 @@
         ajusterVolumePlaylist();
         animerVumetre();
 
-        monPeer.on('call', (call) => {
-            call.answer(fluxMixe);
-        });
+        if (modeStudioActuel === "direct" && monPeer) {
+            monPeer.on('call', (call) => {
+                call.answer(fluxMixe);
+            });
 
-        monPeer.on('connection', (conn) => {
-            conn.on('data', (data) => {
-                if (data && data.type === 'connexion') {
-                    const call = monPeer.call(conn.peer, fluxMixe);
-                    connexionsAuditeurs[conn.peer] = { call: call, dataConn: conn };
+            monPeer.on('connection', (conn) => {
+                conn.on('data', (data) => {
+                    if (data && data.type === 'connexion') {
+                        const call = monPeer.call(conn.peer, fluxMixe);
+                        connexionsAuditeurs[conn.peer] = { call: call, dataConn: conn };
+                        mettreAJourCompteur();
+                        
+                        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+                        if (timestampSauvegardé) {
+                            conn.send({ type: 'planning-update', timestamp: timestampSauvegardé });
+                        }
+                    }
+                    if (data && data.type === 'demande-planning') {
+                        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+                        if (timestampSauvegardé) {
+                            conn.send({ type: 'planning-update', timestamp: timestampSauvegardé });
+                        }
+                    }
+                    if (data && data.type === 'chat') {
+                        ajouterMessageAuTchatGlobal(data.pseudo, data.message);
+                        Object.keys(connexionsAuditeurs).forEach(pId => {
+                            let c = connexionsAuditeurs[pId].dataConn;
+                            if (c && c.open) c.send({ type: 'chat-diffuse', auteur: data.pseudo, message: data.message });
+                        });
+                    }
+                });
+                
+                conn.on('close', () => {
+                    delete connexionsAuditeurs[conn.peer];
                     mettreAJourCompteur();
-                    
-                    const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
-                    if (timestampSauvegardé) {
-                        conn.send({ type: 'planning-update', timestamp: timestampSauvegardé });
-                    }
-                }
-                if (data && data.type === 'demande-planning') {
-                    const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
-                    if (timestampSauvegardé) {
-                        conn.send({ type: 'planning-update', timestamp: timestampSauvegardé });
-                    }
-                }
-                if (data && data.type === 'chat') {
-                    ajouterMessageAuTchatGlobal(data.pseudo, data.message);
-                    Object.keys(connexionsAuditeurs).forEach(pId => {
-                        let c = connexionsAuditeurs[pId].dataConn;
-                        if (c && c.open) c.send({ type: 'chat-diffuse', auteur: data.pseudo, message: data.message });
-                    });
-                }
+                });
             });
-            
-            conn.on('close', () => {
-                delete connexionsAuditeurs[conn.peer];
-                mettreAJourCompteur();
-            });
-        });
+        }
     }
 
     function diffuserVoixCoDirecteur(stream) {
@@ -718,14 +797,22 @@
     function couperLive() {
         arreterMusique(); 
 
-        Object.keys(connexionsAuditeurs).forEach(peerId => {
-            let conn = connexionsAuditeurs[peerId].dataConn;
-            let call = connexionsAuditeurs[peerId].call;
-            if (conn && conn.open) {
-                conn.send({ type: 'studio-deconnexion' });
-                setTimeout(() => { conn.close(); if(call) call.close(); }, 200);
-            }
-        });
+        // Arrêter l'enregistrement du podcast si actif
+        if (modeStudioActuel === "podcast" && mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+        }
+
+        // Déconnecter les auditeurs si on était en direct
+        if (modeStudioActuel === "direct") {
+            Object.keys(connexionsAuditeurs).forEach(peerId => {
+                let conn = connexionsAuditeurs[peerId].dataConn;
+                let call = connexionsAuditeurs[peerId].call;
+                if (conn && conn.open) {
+                    conn.send({ type: 'studio-deconnexion' });
+                    setTimeout(() => { conn.close(); if(call) call.close(); }, 200);
+                }
+            });
+        }
         
         if (monFluxMicro) {
             monFluxMicro.getTracks().forEach(track => track.stop());
@@ -765,9 +852,16 @@
         document.getElementById('btn-couper-live').style.display = "none";
         document.getElementById('statut-micro-live').innerText = "Studio déconnecté";
         document.getElementById('statut-micro-live').style.color = "#ffa502";
+        
+        const badge = document.getElementById('badge-studio-actif');
+        badge.innerText = "● CONSOLE DE MIXAGE EN ATTENTE";
+        badge.style.background = "rgba(255, 165, 0, 0.1)";
+        badge.style.color = "#ffa502";
+
+        modeStudioActuel = "attente";
         mettreAJourCompteur();
 
-        setTimeout(() => { connecterAuStudio(); }, 1000);
+        setTimeout(() => { if(modeStudioActuel === "attente") connecterAuStudio(); }, 1000);
     }
     </script>
 </body>
