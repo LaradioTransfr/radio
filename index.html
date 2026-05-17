@@ -4,18 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radio Transfr</title>
+    <!-- SCRIPT DE BASE OBLIGATOIRE POUR LE DIRECT ET LE CHAT (PEERJS) -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; position: relative; min-height: 90vh;">
 
+    <!-- ====================================================== -->
+    <!-- PETIT BOUTON D'ADMINISTRATION DISCRET DANS LE COIN     -->
+    <!-- ====================================================== -->
     <button onclick="ouvrirConnexion()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px;">
         ⚙️ Admin
     </button>
 
+    <!-- ====================================================== -->
+    <!-- INTERFACE PRINCIPALE DE LA RADIO (CE QUE TOUT LE MONDE VOIT) -->
+    <!-- ====================================================== -->
     <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 60px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
         <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
         <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">Bienvenue sur la radio officielle de Transfr !</p>
         
+        <!-- ENCADRÉ COMPTE À REBOURS REEL POUR LES AUDITEURS -->
         <div id="zone-planning-auditeur" style="background: rgba(0, 210, 255, 0.05); border: 1px dashed rgba(0, 210, 255, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #00d2ff;">
             <div style="margin-bottom: 5px; font-weight: bold;">⏳ TEMPS AVANT LE PROCHAIN DIRECT :</div>
             <div id="compte-a-rebours-ecran" style="font-size: 22px; font-weight: bold; color: #ffa502; letter-spacing: 1px; font-family: monospace; margin-top: 5px;">
@@ -33,6 +41,9 @@
 
         <audio id="audio-live" autoplay></audio>
 
+        <!-- ====================================================== -->
+        <!-- SECTION REPLAY : LES PODCASTS PUBLICS OU PRIVÉS -->
+        <!-- ====================================================== -->
         <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 25px; padding-top: 20px; text-align: left;">
             <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">💾 Émissions en Podcast (Replay) :</h4>
             
@@ -40,12 +51,14 @@
                 <p id="aucun-podcast-msg" style="color: #666; font-style: italic; font-size: 13px; margin: 0;">Aucun podcast publié pour le moment.</p>
             </div>
 
+            <!-- Lecteur Audio dédié aux podcasts -->
             <div id="lecteur-podcast-container" style="display: none; background: #12121a; padding: 10px; border-radius: 8px; border: 1px solid #ffa502;">
                 <div id="titre-podcast-en-cours" style="font-size: 12px; color: #ffa502; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Podcast : Aucun</div>
                 <audio id="audio-podcast-player" controls style="width: 100%; height: 30px; accent-color: #ffa502;"></audio>
             </div>
         </div>
 
+        <!-- L'ESPACE COMMENTAIRES POUR LES AUDITEURS -->
         <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: left; margin-top: 25px;">
             <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">💬 Tchat en direct :</h4>
             
@@ -58,12 +71,16 @@
             <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
         </div>
 
+        <!-- COMPTEUR DE VISITES REEL -->
         <div style="margin-top: 20px; font-size: 13px; color: #666; text-align: center; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 10px;">
             <span style="color: #aaa; vertical-align: middle;">👁️ Total de visites : </span>
             <img src="https://api.counterapi.dev/v1/transfr-radio/visites/image.png" alt="Compteur" style="vertical-align: middle; max-height: 22px;">
         </div>
     </div>
 
+    <!-- ====================================================== -->
+    <!-- FENÊTRE CHOIX MODE DE STUDIO (DIRECT OU PODCAST)      -->
+    <!-- ====================================================== -->
     <div id="fenetre-choix-studio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: #1e1e2f; padding: 30px; border-radius: 16px; border: 2px solid #00d2ff; max-width: 450px; text-align: center; box-shadow: 0 0 30px rgba(0,210,255,0.3);">
             <h3 style="color: #00d2ff; margin-top: 0; font-size: 22px;">🎙️ CONFIGURATION DE LA SESSION</h3>
@@ -80,6 +97,9 @@
         </div>
     </div>
 
+    <!-- ====================================================== -->
+    <!-- FENÊTRE DE CONNEXION CACHÉE                            -->
+    <!-- ====================================================== -->
     <div id="zone-connexion" style="display: none; text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; margin: 20px auto; border: 1px solid #3d3d5c; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
         <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
         <input type="password" id="code-secret" placeholder="Entrez le code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center; font-size: 14px;">
@@ -87,16 +107,21 @@
         <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;">Valider</button>
     </div>
 
+    <!-- ====================================================== -->
+    <!-- INTERFACE DU PANNEAU DE CONTRÔLE ET PLAYLIST (ADMIN)   -->
+    <!-- ====================================================== -->
     <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 20px auto; padding: 10px;">
         
         <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px;">
             
+            <!-- COLONNE GAUCHE : TABLEAU DE BORD STUDIO -->
             <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
                 <div style="text-align: center; margin-bottom: 25px;">
                     <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD STUDIO CO-LIVE</h2>
                     <span id="badge-studio-actif" style="background: rgba(255, 165, 0, 0.1); color: #ffa502; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE EN ATTENTE</span>
                 </div>
 
+                <!-- ZONE : PROGRAMMATION DU PROCHAIN DIRECT -->
                 <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #00d2ff; margin-bottom: 20px;">
                     <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">⏳ PROGRAMMER LE COMPTE À REBOURS DU DIRECT</h4>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
@@ -105,16 +130,19 @@
                     <button onclick="diffuserPlanning()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px;">🟢 Lancer le Compte à Rebours sur les écrans</button>
                 </div>
 
+                <!-- NOUVELLE ZONE ADMIN : PUBLICATION DES PODCASTS -->
                 <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #ffa502; margin-bottom: 20px;">
                     <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 10px;">📤 METTRE EN LIGNE UN PODCAST POUR LE PUBLIC</h4>
                     <input type="text" id="admin-titre-podcast" placeholder="Ex: Émission Spéciale n°1..." style="width: 93%; padding: 8px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 13px;">
                     
+                    <!-- Choix du type de visibilité -->
                     <div style="margin-bottom: 10px; text-align: left; font-size: 13px;">
                         <span style="color: #aaa; margin-right: 10px;">Type d'accès :</span>
                         <label style="cursor: pointer; margin-right: 15px;"><input type="radio" name="admin-visibilite-podcast" value="public" checked onchange="toggleOptionPin(false)"> 🔓 Public</label>
                         <label style="cursor: pointer;"><input type="radio" name="admin-visibilite-podcast" value="prive" onchange="toggleOptionPin(true)"> 🔒 Privé (Code PIN)</label>
                     </div>
 
+                    <!-- Champ Code PIN caché par défaut -->
                     <div id="wrapper-pin-code" style="display: none; margin-bottom: 10px;">
                         <input type="text" id="admin-pin-podcast" placeholder="Créer un Code PIN secret (ex: 1234)..." maxlength="8" style="width: 93%; padding: 8px; border-radius: 6px; border: 1px solid #ffa502; background: #12121a; color: white; font-size: 13px;">
                     </div>
@@ -124,6 +152,7 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+                    <!-- Statistiques -->
                     <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
                         <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">📊 STATISTIQUES</h4>
                         <p style="font-size: 15px; margin: 8px 0 4px 0;">Auditeurs en direct : <span id="admin-compteur" style="color: #ffa502; font-weight: bold; font-size: 22px;">0</span></p>
@@ -133,6 +162,822 @@
                         </div>
                     </div>
 
+                    <!-- Boutons Antenne -->
                     <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; text-align: center;">
                         <h4 style="color: #ff4757; margin-top: 0; margin-bottom: 12px;">🎙️ BOUTONS ANTENNE</h4>
-                        <button id="btn-lancer-live" onclick="ouvrirFenetreChoixStudio()" style="background: #
+                        <button id="btn-lancer-live" onclick="ouvrirFenetreChoixStudio()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 8px;">🎛️ ALLUMER LA CONSOLE DE MIXAGE</button>
+                        <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none; margin-bottom: 8px;">⏸️ METTRE EN PAUSE</button>
+                        <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 13px; display: none;">🛑 QUITTER LE STUDIO</button>
+
+                        <div id="statut-micro-live" style="margin-top: 10px; font-weight: bold; color: #ffa502; font-size: 13px; margin-bottom: 10px;">Studio déconnecté</div>
+                        <div style="background: #12121a; width: 100%; height: 12px; border-radius: 6px; border: 1px solid #333; overflow: hidden;">
+                            <div id="barre-vumetre" style="background: linear-gradient(to right, #2ed573, #ffa502, #ff4757); width: 0%; height: 100%; transition: width 0.05s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLE DE MIXAGE -->
+                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 25px;">
+                    <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES DE LA TABLE DE MIXAGE</h4>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎤 Mon Volume Micro :</span><span id="val-vol-micro" style="color: #2ed573; font-weight: bold;">100%</span></div>
+                        <input type="range" id="slider-vol-micro" min="0" max="100" value="100" oninput="ajusterVolumeMicro()" style="width: 100%; accent-color: #2ed573; cursor: pointer;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>💻 Volume des sons PC / Musiques :</span><span id="val-vol-pc" style="color: #ffa502; font-weight: bold;">100%</span></div>
+                        <input type="range" id="slider-vol-pc" min="0" max="100" value="100" oninput="ajusterVolumePC()" style="width: 100%; accent-color: #ffa502; cursor: pointer;">
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎵 Volume Playlist Intégrée :</span><span id="val-vol-playlist" style="color: #00d2ff; font-weight: bold;">70%</span></div>
+                        <input type="range" id="slider-vol-playlist" min="0" max="100" value="70" oninput="ajusterVolumePlaylist()" style="width: 100%; accent-color: #00d2ff; cursor: pointer;">
+                    </div>
+                </div>
+
+                <!-- Modérateur du chat -->
+                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
+                    <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 12px;">💬 TCHAT GENERAL (REÇU & ENVOI)</h4>
+                    <div id="boite-tchat-admin" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; text-align: left; margin-bottom: 10px;">
+                        <p style="color: #555; margin: 0; font-style: italic;">En attente de messages...</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="admin-chat-message" placeholder="Écris une réponse visible par TOUS les auditeurs..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
+                        <button onclick="envoyerCommentaireAdmin()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 14px;">Répondre au Public</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLONNE DROITE : PLAYLIST & BOÎTE À INFOS -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- PLAYLIST DE TRANSFR -->
+                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
+                    <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
+                    
+                    <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
+
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="color: #ff4757; margin-bottom: 8px; font-size: 14px;">🎸 POP ROCK / STYLE MÅNESKIN</h4>
+                        <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Gros Rock Classique Énergique')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Classique - Piste 1</button>
+                        <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Guitare Solo - Piste 2</button>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="color: #00d2ff; margin-bottom: 8px; font-size: 14px;">🎤 RAP / HIP-HOP BEATS</h4>
+                        <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
+                    </div>
+
+                    <div style="background: rgba(255,165,0,0.05); padding: 12px; border-radius: 8px; border: 1px dashed #ffa502; text-align: center;">
+                        <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 8px; font-size: 13px;">📂 DIFFUSER UN MP3 DE TON PC</h4>
+                        <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; cursor: pointer;">
+                    </div>
+
+                    <div id="statut-musique" style="margin-top: 15px; background: #12121a; padding: 10px; border-radius: 6px; font-size: 12px; color: #2ed573; text-align: center; border: 1px solid #222;">📴 Aucune musique en cours</div>
+                    <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; font-weight: bold; width: 100%; margin-top: 10px; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">⏹️ Couper la musique</button>
+                </div>
+
+                <!-- ZONE METEO FRANCE & ACTUS DU DIRECTEUR -->
+                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #2ed573; box-shadow: 0 0 20px rgba(46,213,115,0.15); height: fit-content;">
+                    <h3 style="color: #2ed573; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">📰 INFOS EN DIRECT</h3>
+                    
+                    <button onclick="recupererInfosFlash()" style="background: #2ed573; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 15px;">
+                        🔄 Actualiser la Carte & les Actus
+                    </button>
+
+                    <!-- CARTE DE FRANCE INTERACTIVE PROPULSÉE PAR WINDY -->
+                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2d2d44; text-align: center;">
+                        <h4 style="margin: 0 0 8px 0; color: #00d2ff; font-size: 13px;">🌤️ Carte Météo de la France :</h4>
+                        <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricWind=default&zoom=5&overlay=clouds&product=ecmwf&level=surface&lat=46.5&lon=2.5&detailLat=43.546&detailLon=1.536&detail=true" style="width: 100%; height: 320px; border: none; border-radius: 6px;" scrolling="no"></iframe>
+                    </div>
+
+                    <!-- BLOC DES ACTUALITÉS -->
+                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; border: 1px solid #2d2d44;">
+                        <h4 style="margin: 0 0 8px 0; color: #ffa502; font-size: 13px;">🔥 Actualités France :</h4>
+                        <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 150px; overflow-y: auto; text-align: left;">
+                            Les titres de l'actualité s'afficheront ici.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div id="co-directeurs-audio-container"></div>
+
+    <!-- ====================================================== -->
+    <!-- LOGIQUE JAVASCRIPT                                     -->
+    <!-- ====================================================== -->
+    <script>
+    const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
+    let monPeer = null;
+    let monFluxMicro = null;
+    let connexionsAuditeurs = {}; 
+    let connexionAuStudio = null;
+    let modeAdminActif = false;
+    let microEnPause = false;
+
+    let audioContext = null;
+    let gainNodeMicro = null;
+    let gainNodePlaylist = null;
+    let gainNodePC = null; 
+    let sourceNodeMicro = null;
+    let sourceNodePlaylist = null;
+    let destinationMixee = null;
+    let fluxMixe = null;
+    
+    let boucleVumetre = null;
+    let analyserNode = null;
+
+    // Compte à Rebours
+    let horlogeInterval = null;
+    let dateCibleTimestamp = null;
+
+    // Mode Enregistrement Podcast
+    let modeStudioActuel = "attente"; 
+    let mediaRecorder = null;
+    let morceauxAudioEnregistres = []; // CORRIGÉ : L'espace a été supprimé ici !
+
+    // Base de données locale pour stocker les podcasts publiés
+    let listePodcastsData = [];
+
+    function ouvrirConnexion() {
+        const zone = document.getElementById('zone-connexion');
+        zone.style.display = zone.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function verifierCode() {
+        const codeSaisi = document.getElementById('code-secret').value;
+        if (codeSaisi === '1944') {
+            document.getElementById('zone-connexion').style.display = 'none';
+            document.getElementById('panneau-admin').style.display = 'block';
+            modeAdminActif = true;
+            
+            recupererInfosFlash();
+
+            const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+            if (timestampSauvegardé) {
+                let d = new Date(parseInt(timestampSauvegardé));
+                let annee = d.getFullYear();
+                let mois = String(d.getMonth() + 1).padStart(2, '0');
+                let jour = String(d.getDate()).padStart(2, '0');
+                let heure = String(d.getHours()).padStart(2, '0');
+                let minute = String(d.getMinutes()).padStart(2, '0');
+                document.getElementById('admin-date-heure-precise').value = `${annee}-${mois}-${jour}T${heure}:${minute}`;
+            }
+        } else {
+            alert('Code secret incorrect !');
+        }
+    }
+
+    function toggleOptionPin(afficher) {
+        document.getElementById('wrapper-pin-code').style.display = afficher ? 'block' : 'none';
+    }
+
+    function recupererInfosFlash() {
+        const blocActus = document.getElementById('info-bloc-actus');
+        blocActus.innerText = "⏳ Chargement des dernières actualités...";
+
+        const iframe = document.querySelector('iframe');
+        if(iframe) iframe.src = iframe.src;
+
+        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Dfr%26gl%3DFR%26ceid%3DFR%3Afr')
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.items && data.items.length > 0) {
+                    blocActus.innerHTML = ""; 
+                    for(let i = 0; i < 5; i++) {
+                        if(data.items[i]) {
+                            let titre = data.items[i].title;
+                            if(titre.includes(" - ")) {
+                                const parts = titre.split(" - ");
+                                parts.pop();
+                                titre = parts.join(" - ");
+                            }
+                            blocActus.innerHTML += `<p style="margin: 0 0 8px 0; padding-bottom: 5px; border-bottom: 1px solid #222;">🔹 ${titre}</p>`;
+                        }
+                    }
+                } else {
+                    blocActus.innerText = "⚠️ Aucun article disponible pour le moment.";
+                }
+            })
+            .catch(() => { blocActus.innerText = "❌ Impossible de charger les actualités."; });
+    }
+
+    function démarrerCalculCompteARebours(timestamp) {
+        if (horlogeInterval) clearInterval(horlogeInterval);
+        dateCibleTimestamp = parseInt(timestamp);
+
+        function rafraichirChrono() {
+            const maintenant = new Date().getTime();
+            const ecart = dateCibleTimestamp - maintenant;
+
+            if (ecart <= 0) {
+                document.getElementById('compte-a-rebours-ecran').innerText = "🔥 L'ÉMISSION COMMENCE TOUT DE SUITE !";
+                document.getElementById('compte-a-rebours-ecran').style.color = "#2ed573";
+                clearInterval(horlogeInterval);
+                return;
+            }
+
+            const jours = Math.floor(ecart / (1000 * 60 * 60 * 24));
+            const heures = Math.floor((ecart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((ecart % (1000 * 60 * 60)) / (1000 * 60));
+            const secondes = Math.floor((ecart % (1000 * 60)) / 1000);
+
+            let formatJours = jours > 0 ? `${jours}j ` : "";
+            let formatHeures = String(heures).padStart(2, '0');
+            let formatMinutes = String(minutes).padStart(2, '0');
+            let formatSecondes = String(secondes).padStart(2, '0');
+
+            document.getElementById('compte-a-rebours-ecran').innerText = `⏱️ ${formatJours}${formatHeures}h ${formatMinutes}m ${formatSecondes}s`;
+            document.getElementById('compte-a-rebours-ecran').style.color = "#ffa502";
+        }
+
+        rafraichirChrono();
+        horlogeInterval = setInterval(rafraichirChrono, 1000);
+    }
+
+    function diffuserPlanning() {
+        const chaineDateHeure = document.getElementById('admin-date-heure-precise').value;
+        if (!chaineDateHeure) {
+            alert("Sélectionne d'abord un jour et une heure dans le calendrier !");
+            return;
+        }
+        const objetDate = new Date(chaineDateHeure);
+        const timestampCible = objetDate.getTime();
+
+        if (isNaN(timestampCible)) {
+            alert("Erreur de format de date.");
+            return;
+        }
+
+        localStorage.setItem('timestamp-direct-transfr', timestampCible);
+        démarrerCalculCompteARebours(timestampCible);
+
+        Object.keys(connexionsAuditeurs).forEach(peerId => {
+            if (connexionsAuditeurs[peerId] && connexionsAuditeurs[peerId].dataConn) {
+                let conn = connexionsAuditeurs[peerId].dataConn;
+                if (conn.open) {
+                    conn.send({ type: 'planning-update', timestamp: timestampCible });
+                }
+            }
+        });
+        alert("📢 Compte à rebours mis à jour et envoyé au public !");
+    }
+
+    // Gestion de la Base de données des Podcasts
+    function chargerPodcastsEnregistres() {
+        const stockes = localStorage.getItem('transfr-podcasts-publics');
+        if (stockes) {
+            listePodcastsData = JSON.parse(stockes);
+            afficherPodcastsPublics();
+        }
+    }
+
+    function publierPodcastLigne() {
+        const titreInput = document.getElementById('admin-titre-podcast');
+        const fichierInput = document.getElementById('admin-fichier-podcast');
+        const visibiliteType = document.querySelector('input[name="admin-visibilite-podcast"]:checked').value;
+        const pinInput = document.getElementById('admin-pin-podcast');
+        
+        if (!titreInput.value.trim() || !fichierInput.files || !fichierInput.files[0]) {
+            alert("⚠️ Renseigne un titre et sélectionne le fichier audio du podcast !");
+            return;
+        }
+
+        if (visibiliteType === 'prive' && !pinInput.value.trim()) {
+            alert("⚠️ Crée un code PIN secret pour ce podcast privé !");
+            return;
+        }
+
+        const fichier = fichierInput.files[0];
+        const lecteurFichier = new FileReader();
+
+        lecteurFichier.onload = function(evenement) {
+            const base64Audio = evenement.target.result;
+            
+            const nouveauPodcast = {
+                id: Date.now(),
+                titre: titreInput.value.trim(),
+                date: new Date().toLocaleDateString('fr-FR'),
+                visibilite: visibiliteType,
+                pin: visibiliteType === 'prive' ? pinInput.value.trim() : null,
+                audioData: base64Audio
+            };
+
+            listePodcastsData.push(nouveauPodcast);
+            try {
+                localStorage.setItem('transfr-podcasts-publics', JSON.stringify(listePodcastsData));
+                titreInput.value = "";
+                fichierInput.value = "";
+                pinInput.value = "";
+                document.querySelector('input[name="admin-visibilite-podcast"][value="public"]').checked = true;
+                toggleOptionPin(false);
+                
+                afficherPodcastsPublics();
+                alert("🚀 Podcast en ligne ! Mis à jour instantanément pour tes auditeurs.");
+                
+                Object.keys(connexionsAuditeurs).forEach(pId => {
+                    let c = connexionsAuditeurs[pId].dataConn;
+                    if (c && c.open) c.send({ type: 'demande-podcasts-sync' });
+                });
+            } catch(e) {
+                alert("⚠️ Le fichier est trop volumineux pour la mémoire locale. Réduis un peu la durée ou la taille !");
+            }
+        };
+
+        lecteurFichier.readAsDataURL(fichier);
+    }
+
+    function afficherPodcastsPublics() {
+        const conteneur = document.getElementById('liste-podcasts-publics');
+        const messageAucun = document.getElementById('aucun-podcast-msg');
+        
+        if (listePodcastsData.length === 0) {
+            if (messageAucun) messageAucun.style.display = "block";
+            return;
+        }
+
+        if (messageAucun) messageAucun.style.display = "none";
+        conteneur.innerHTML = "";
+
+        listePodcastsData.forEach(pod => {
+            const ligne = document.createElement('div');
+            const estPrive = (pod.visibilite === 'prive');
+            
+            ligne.style.cssText = "background: rgba(255,255,255,0.03); border: 1px solid " + (estPrive ? "rgba(255,71,87,0.3)" : "rgba(255,165,0,0.15)") + "; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px;";
+            
+            ligne.innerHTML = `
+                <div style="overflow: hidden;">
+                    <div style="font-size: 14px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${estPrive ? "🔒 [PRIVÉ] " : "🔓 "} ${pod.titre}
+                    </div>
+                    <div style="font-size: 11px; color: #666;">Publié le ${pod.date}</div>
+                </div>
+                <button onclick="ecouterUnPodcast(${pod.id})" style="background: ${estPrive ? '#ff4757' : '#ffa502'}; color: ${estPrive ? 'white' : '#1e1e2f'}; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; flex-shrink: 0;">▶️ Écouter</button>
+            `;
+            conteneur.appendChild(ligne);
+        });
+    }
+
+    function ecouterUnPodcast(id) {
+        const pod = listePodcastsData.find(p => p.id === id);
+        if (!pod) return;
+
+        // Si le podcast est privé, on demande le code PIN !
+        if (pod.visibilite === 'prive') {
+            const codeSaisi = prompt("🔒 Ce podcast est privé. Entre le code PIN secret fourni par le Directeur pour l'écouter :");
+            if (codeSaisi !== pod.pin) {
+                alert("❌ Code PIN invalide ! Accès refusé.");
+                return;
+            }
+        }
+
+        // Arrêter le direct si en cours
+        const baliseAudioLive = document.getElementById('audio-live');
+        if (baliseAudioLive) baliseAudioLive.srcObject = null;
+        document.getElementById('btn-ecouter').innerText = "▶️ Écouter le Direct";
+        document.getElementById('btn-ecouter').disabled = false;
+
+        document.getElementById('lecteur-podcast-container').style.display = "block";
+        document.getElementById('titre-podcast-en-cours').innerText = "📻 En écoute : " + pod.titre;
+        
+        const player = document.getElementById('audio-podcast-player');
+        player.src = pod.audioData;
+        player.play();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+        if (timestampSauvegardé) {
+            démarrerCalculCompteARebours(timestampSauvegardé);
+        }
+        chargerPodcastsEnregistres();
+    });
+
+    const peerAuditeur = new Peer();
+    
+    function connecterAuStudio() {
+        connexionAuStudio = peerAuditeur.connect(ID_RADIO_PRINCIPALE);
+        
+        connexionAuStudio.on('open', () => {
+            document.getElementById('statut-diffusion').innerText = "🔴 TRANSFR EST EN DIRECT !";
+            document.getElementById('statut-diffusion').style.color = "#2ed573";
+            document.getElementById('btn-ecouter').style.display = "block";
+            
+            connexionAuStudio.send({ type: 'demande-planning' });
+        });
+        
+        connexionAuStudio.on('data', (data) => {
+            if (data && data.type === 'chat-diffuse') {
+                ajouterMessageAuTchatGlobal(data.auteur, data.message);
+            }
+            if (data && data.type === 'studio-deconnexion') {
+                forcerDeconnexionAuditeur();
+            }
+            if (data && data.type === 'planning-update') {
+                localStorage.setItem('timestamp-direct-transfr', data.timestamp);
+                démarrerCalculCompteARebours(data.timestamp);
+            }
+            if (data && data.type === 'demande-podcasts-sync') {
+                chargerPodcastsEnregistres();
+            }
+        });
+
+        connexionAuStudio.on('close', () => {
+            forcerDeconnexionAuditeur();
+        });
+    }
+
+    peerAuditeur.on('open', () => {
+        connecterAuStudio();
+    });
+
+    peerAuditeur.on('error', (err) => {
+        forcerDeconnexionAuditeur();
+    });
+
+    function forcerDeconnexionAuditeur() {
+        document.getElementById('statut-diffusion').innerText = "⚫ Station Hors Ligne (Pas d'émission)";
+        document.getElementById('statut-diffusion').style.color = "#aaa";
+        document.getElementById('btn-ecouter').style.display = "none";
+        document.getElementById('btn-ecouter').innerText = "▶️ Écouter le Direct";
+        document.getElementById('btn-ecouter').disabled = false;
+        const baliseAudio = document.getElementById('audio-live');
+        baliseAudio.srcObject = null;
+    }
+
+    function ecouterDirect() {
+        const player = document.getElementById('audio-podcast-player');
+        player.pause();
+        document.getElementById('lecteur-podcast-container').style.display = "none";
+
+        peerAuditeur.on('call', (call) => {
+            call.answer(); 
+            call.on('stream', (streamAuditeur) => {
+                const baliseAudio = document.getElementById('audio-live');
+                baliseAudio.srcObject = streamAuditeur;
+                baliseAudio.play();
+                document.getElementById('btn-ecouter').innerText = "🔊 ÉCOUTE EN COURS...";
+                document.getElementById('btn-ecouter').disabled = true;
+            });
+            call.on('close', () => { forcerDeconnexionAuditeur(); });
+        });
+        
+        if (connexionAuStudio && connexionAuStudio.open) {
+            connexionAuStudio.send({ type: 'connexion', message: 'je-veux-ecouter' });
+        }
+    }
+
+    function envoyerCommentaire() {
+        const pseudo = document.getElementById('chat-pseudo').value.trim();
+        const message = document.getElementById('chat-message').value.trim();
+        if (!pseudo || !message) return;
+
+        if (connexionAuStudio && connexionAuStudio.open) {
+            connexionAuStudio.send({ type: 'chat', pseudo: pseudo, message: message });
+            ajouterMessageAuTchatGlobal(pseudo, message);
+            document.getElementById('chat-message').value = "";
+        } else {
+            alert("Le studio est hors ligne !");
+        }
+    }
+
+    function envoyerCommentaireAdmin() {
+        const message = document.getElementById('admin-chat-message').value.trim();
+        if (!message) return;
+
+        ajouterMessageAuTchatGlobal("⭐ DIRECTEUR", message);
+
+        Object.keys(connexionsAuditeurs).forEach(peerId => {
+            if (monPeer && monPeer.connections[peerId]) {
+                monPeer.connections[peerId].forEach(conn => {
+                    if (conn.open) {
+                        conn.send({ type: 'chat-diffuse', auteur: "⭐ DIRECTEUR", message: message });
+                    }
+                });
+            }
+        });
+        document.getElementById('admin-chat-message').value = "";
+    }
+
+    function ajouterMessageAuTchatGlobal(auteur, texte) {
+        const boiteAdmin = document.getElementById('boite-tchat-admin');
+        const boiteAuditeur = document.getElementById('boite-tchat-auditeur');
+        
+        let couleurAuteur = (auteur === "⭐ DIRECTEUR") ? "#ffa502" : "#00d2ff";
+        let styleMessage = (auteur === "⭐ DIRECTEUR") ? "font-weight: bold; background: rgba(255,165,0,0.05); padding: 2px 5px; border-radius: 4px;" : "";
+        let ligneHTML = `<p style="margin: 5px 0; border-bottom: 1px solid #222; padding-bottom: 4px; ${styleMessage}"><strong style="color: ${couleurAuteur};">${auteur} :</strong> ${texte}</p>`;
+
+        if (boiteAdmin) {
+            if (boiteAdmin.innerHTML.includes("En attente")) boiteAdmin.innerHTML = "";
+            boiteAdmin.innerHTML += ligneHTML;
+            boiteAdmin.scrollTop = boiteAdmin.scrollHeight;
+        }
+        if (boiteAuditeur) {
+            if (boiteAuditeur.innerHTML.includes("Connecte-toi")) boiteAuditeur.innerHTML = "";
+            boiteAuditeur.innerHTML += ligneHTML;
+            boiteAuditeur.scrollTop = boiteAuditeur.scrollHeight;
+        }
+    }
+
+    function ajusterVolumeMicro() {
+        const pourcentage = document.getElementById('slider-vol-micro').value;
+        document.getElementById('val-vol-micro').innerText = pourcentage + "%";
+        if (gainNodeMicro && !microEnPause) gainNodeMicro.gain.value = pourcentage / 100;
+    }
+
+    function ajusterVolumePC() {
+        const pourcentage = document.getElementById('slider-vol-pc').value;
+        document.getElementById('val-vol-pc').innerText = pourcentage + "%";
+        if (gainNodePC) gainNodePC.gain.value = pourcentage / 100;
+    }
+
+    function ajusterVolumePlaylist() {
+        const pourcentage = document.getElementById('slider-vol-playlist').value;
+        document.getElementById('val-vol-playlist').innerText = pourcentage + "%";
+        if (gainNodePlaylist) gainNodePlaylist.gain.value = pourcentage / 100;
+    }
+
+    function jouerMusique(urlOuBlob, titre) {
+        if (!audioContext) {
+            alert("⚠️ Active d'abord la console de mixage (bouton bleu) avant de lancer une musique !");
+            return;
+        }
+        const lecteur = document.getElementById('lecteur-musique-studio');
+        document.getElementById('statut-musique').innerText = "⏳ Connexion à la piste...";
+        document.getElementById('statut-musique').style.color = "#ffa502";
+        
+        if (typeof urlOuBlob === 'string') {
+            lecteur.crossOrigin = "anonymous";
+        } else {
+            lecteur.removeAttribute('crossOrigin');
+        }
+        
+        lecteur.src = urlOuBlob;
+        lecteur.play()
+            .then(() => {
+                document.getElementById('statut-musique').innerText = "📻 En diffusion : " + titre;
+                document.getElementById('statut-musique').style.color = "#00d2ff";
+            })
+            .catch(err => { document.getElementById('statut-musique').innerText = "📻 Flux en cours de traitement..."; });
+    }
+
+    function chargerMusiquePerso() {
+        const input = document.getElementById('fichier-musique-perso');
+        if (input.files && input.files[0]) {
+            const fichier = input.files[0];
+            jouerMusique(URL.createObjectURL(fichier), fichier.name);
+        }
+    }
+
+    function arreterMusique() {
+        const lecteur = document.getElementById('lecteur-musique-studio');
+        lecteur.pause(); 
+        lecteur.src = "";
+        document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours";
+        document.getElementById('statut-musique').style.color = "#2ed573";
+    }
+
+    function basculerPause() {
+        if (!monFluxMicro) return;
+        microEnPause = !microEnPause;
+        const pisteMicro = monFluxMicro.getAudioTracks()[0];
+        if (microEnPause) {
+            pisteMicro.enabled = false;
+            document.getElementById('btn-pause-live').innerText = "▶️ REPRENDRE MICRO";
+            document.getElementById('btn-pause-live').style.background = "#2ed573";
+            document.getElementById('statut-micro-live').innerText = "⏸️ MON MICRO EN PAUSE";
+            document.getElementById('barre-vumetre').style.width = "0%";
+        } else {
+            pisteMicro.enabled = true;
+            document.getElementById('btn-pause-live').innerText = "⏸️ METTRE EN PAUSE";
+            document.getElementById('btn-pause-live').style.background = "#ffa502";
+            document.getElementById('statut-micro-live').innerText = modeStudioActuel === 'direct' ? "🎙️ EN DIRECT-STUDIO" : "🎙️ ENREGISTREMENT PODCAST";
+            ajusterVolumeMicro();
+        }
+    }
+
+    function animerVumetre() {
+        if (!analyserNode || microEnPause) {
+            document.getElementById('barre-vumetre').style.width = "0%";
+            boucleVumetre = requestAnimationFrame(animerVumetre);
+            return;
+        }
+        const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+        analyserNode.getByteFrequencyData(dataArray);
+        let total = 0;
+        for (let i = 0; i < dataArray.length; i++) total += dataArray[i];
+        let moyenne = total / dataArray.length;
+        document.getElementById('barre-vumetre').style.width = Math.min(moyenne * 2, 100) + "%";
+        boucleVumetre = requestAnimationFrame(animerVumetre);
+    }
+
+    function mettreAJourCompteur() {
+        const nombreAuditeurs = Object.keys(connexionsAuditeurs).length;
+        document.getElementById('admin-compteur').innerText = nombreAuditeurs;
+    }
+
+    function ouvrirFenetreChoixStudio() {
+        document.getElementById('fenetre-choix-studio').style.display = "flex";
+    }
+
+    function annulerChoixStudio() {
+        document.getElementById('fenetre-choix-studio').style.display = "none";
+    }
+
+    function validerChoixStudio(mode) {
+        document.getElementById('fenetre-choix-studio').style.display = "none";
+        modeStudioActuel = mode; 
+        lancerConfigurationStudio();
+    }
+
+    function lancerConfigurationStudio() {
+        const configurationsAudio = {
+            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+            video: false
+        };
+
+        navigator.mediaDevices.getUserMedia(configurationsAudio)
+            .then(stream => {
+                monFluxMicro = stream;
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                destinationMixee = audioContext.createMediaStreamDestination();
+
+                sourceNodeMicro = audioContext.createMediaStreamSource(stream);
+                gainNodeMicro = audioContext.createGain();
+                analyserNode = audioContext.createAnalyser();
+                analyserNode.fftSize = 256;
+                sourceNodeMicro.connect(analyserNode);
+                analyserNode.connect(gainNodeMicro);
+                gainNodeMicro.connect(destinationMixee);
+
+                const baliseMusique = document.getElementById('lecteur-musique-studio');
+                sourceNodePlaylist = audioContext.createMediaElementSource(baliseMusique);
+                gainNodePlaylist = audioContext.createGain();
+                sourceNodePlaylist.connect(gainNodePlaylist);
+                gainNodePlaylist.connect(destinationMixee);
+                gainNodePlaylist.connect(audioContext.destination);
+
+                gainNodePC = audioContext.createGain();
+                gainNodePC.connect(destinationMixee);
+
+                fluxMixe = destinationMixee.stream;
+
+                if (modeStudioActuel === "podcast") {
+                    morceauxAudioEnregistres = [];
+                    mediaRecorder = new MediaRecorder(fluxMixe);
+                    mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) morceauxAudioEnregistres.push(e.data); };
+                    mediaRecorder.onstop = function() {
+                        const blobPodcast = new Blob(morceauxAudioEnregistres, { type: 'audio/wav' });
+                        const urlFichier = URL.createObjectURL(blobPodcast);
+                        const lien = document.createElement('a');
+                        lien.href = urlFichier;
+                        lien.download = `Podcast_Transfr_${new Date().toLocaleDateString().replace(/\//g, '-')}.wav`;
+                        document.body.appendChild(lien);
+                        lien.click();
+                        document.body.removeChild(lien);
+                        alert("💾 Fichier audio enregistré sur ton PC ! Tu peux maintenant le publier en haut à droite avec ou sans mot de passe.");
+                    };
+                    mediaRecorder.start();
+                    configurerEvenementsStudio();
+                } 
+                else if (modeStudioActuel === "direct") {
+                    monPeer = new Peer(ID_RADIO_PRINCIPALE);
+                    monPeer.on('open', () => { configurerEvenementsStudio(); });
+                    monPeer.on('error', (err) => {
+                        if (err.type === 'unavailable-id') {
+                            monPeer = new Peer(); 
+                            monPeer.on('open', () => {
+                                let appelStudio = monPeer.call(ID_RADIO_PRINCIPALE, fluxMixe);
+                                configurerEvenementsStudio();
+                                appelStudio.on('stream', (flux) => { diffuserVoixCoDirecteur(flux); });
+                            });
+                        }
+                    });
+                }
+            })
+            .catch(err => { alert("Accès au micro refusé."); });
+    }
+
+    function configurerEvenementsStudio() {
+        document.getElementById('btn-lancer-live').style.display = "none";
+        document.getElementById('btn-pause-live').style.display = "inline-block";
+        document.getElementById('btn-couper-live').style.display = "inline-block";
+        
+        const badge = document.getElementById('badge-studio-actif');
+        const statutLabel = document.getElementById('statut-micro-live');
+
+        if (modeStudioActuel === "direct") {
+            badge.innerText = "● CONSOLE EN DIRECT (PUBLIC)";
+            badge.style.background = "rgba(46, 213, 115, 0.1)";
+            badge.style.color = "#2ed573";
+            statutLabel.innerText = "🎙️ STUDIO ACTIF (EN DIRECT)";
+            statutLabel.style.color = "#2ed573";
+        } else {
+            badge.innerText = "● ENREGISTREMENT PODCAST (PRIVÉ)";
+            badge.style.background = "rgba(255, 165, 0, 0.1)";
+            badge.style.color = "#ffa502";
+            statutLabel.innerText = "🎙️ ENREGISTREMENT EN COURS...";
+            statutLabel.style.color = "#ffa502";
+        }
+        
+        microEnPause = false;
+        ajusterVolumeMicro();
+        ajusterVolumePC();
+        ajusterVolumePlaylist();
+        animerVumetre();
+
+        if (modeStudioActuel === "direct" && monPeer) {
+            monPeer.on('call', (call) => { call.answer(fluxMixe); });
+            monPeer.on('connection', (conn) => {
+                conn.on('data', (data) => {
+                    if (data && data.type === 'connexion') {
+                        const call = monPeer.call(conn.peer, fluxMixe);
+                        connexionsAuditeurs[conn.peer] = { call: call, dataConn: conn };
+                        mettreAJourCompteur();
+                        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+                        if (timestampSauvegardé) conn.send({ type: 'planning-update', timestamp: timestampSauvegardé });
+                    }
+                    if (data && data.type === 'demande-planning') {
+                        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+                        if (timestampSauvegardé) conn.send({ type: 'planning-update', timestamp: timestampSauvegardé });
+                    }
+                    if (data && data.type === 'chat') {
+                        ajouterMessageAuTchatGlobal(data.pseudo, data.message);
+                        Object.keys(connexionsAuditeurs).forEach(pId => {
+                            let c = connexionsAuditeurs[pId].dataConn;
+                            if (c && c.open) c.send({ type: 'chat-diffuse', auteur: data.pseudo, message: data.message });
+                        });
+                    }
+                });
+                conn.on('close', () => { delete connexionsAuditeurs[conn.peer]; mettreAJourCompteur(); });
+            });
+        }
+    }
+
+    function diffuserVoixCoDirecteur(stream) {
+        let conteneur = document.getElementById('co-directeurs-audio-container');
+        let baliseAudio = document.createElement('audio');
+        baliseAudio.autoplay = true;
+        baliseAudio.srcObject = stream;
+        conteneur.appendChild(baliseAudio);
+        ajouterMessageAuTchatGlobal("🎙️ SYSTÈME", "Un Co-Directeur a rejoint la table de mixage !");
+    }
+
+    function couperLive() {
+        arreterMusique(); 
+
+        if (modeStudioActuel === "podcast" && mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+        }
+
+        if (modeStudioActuel === "direct") {
+            Object.keys(connexionsAuditeurs).forEach(peerId => {
+                let conn = connexionsAuditeurs[peerId].dataConn;
+                let call = connexionsAuditeurs[peerId].call;
+                if (conn && conn.open) {
+                    conn.send({ type: 'studio-deconnexion' });
+                    setTimeout(() => { conn.close(); if(call) call.close(); }, 200);
+                }
+            });
+        }
+        
+        if (monFluxMicro) { monFluxMicro.getTracks().forEach(track => track.stop()); monFluxMicro = null; }
+        if (boucleVumetre) { cancelAnimationFrame(boucleVumetre); boucleVumetre = null; }
+
+        if (audioContext) {
+            audioContext.close().then(() => {
+                audioContext = null; gainNodeMicro = null; gainNodePlaylist = null; gainNodePC = null;
+                sourceNodeMicro = null; sourceNodePlaylist = null; destinationMixee = null; fluxMixe = null; analyserNode = null;
+            });
+        }
+        
+        if (monPeer) { monPeer.destroy(); monPeer = null; }
+        
+        document.getElementById('barre-vumetre').style.width = "0%";
+        document.getElementById('co-directeurs-audio-container').innerHTML = "";
+        connexionsAuditeurs = {};
+        
+        document.getElementById('btn-lancer-live').style.display = "inline-block";
+        document.getElementById('btn-pause-live').style.display = "none";
+        document.getElementById('btn-couper-live').style.display = "none";
+        document.getElementById('statut-micro-live').innerText = "Studio déconnecté";
+        document.getElementById('statut-micro-live').style.color = "#ffa502";
+        
+        const badge = document.getElementById('badge-studio-actif');
+        badge.innerText = "● CONSOLE DE MIXAGE EN ATTENTE";
+        badge.style.background = "rgba(255, 165, 0, 0.1)";
+        badge.style.color = "#ffa502";
+
+        modeStudioActuel = "attente";
+        mettreAJourCompteur();
+
+        setTimeout(() => { if(modeStudioActuel === "attente") connecterAuStudio(); }, 1000);
+    }
+    </script>
+</body>
+</html>
