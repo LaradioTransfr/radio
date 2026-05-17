@@ -8,8 +8,8 @@
 </head>
 <body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; position: relative; min-height: 90vh;">
 
-    <button onclick="ouvrirConnexion()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); color: #666; border: 1px solid rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px;">
-        ⚙️ Admin
+    <button onclick="ouvrirConnexion()" style="position: absolute; top: 15px; right: 15px; background: #1e1e2f; color: #00d2ff; border: 2px solid #00d2ff; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; z-index: 10000; box-shadow: 0 4px 10px rgba(0,210,255,0.2);">
+        ⚙️ Espace Admin
     </button>
 
     <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 60px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
@@ -80,11 +80,14 @@
         </div>
     </div>
 
-    <div id="zone-connexion" style="display: none; text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; margin: 20px auto; border: 1px solid #3d3d5c; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; width: 90%; border: 2px solid #00d2ff; box-shadow: 0 0 25px rgba(0,0,0,0.7); z-index: 10001;">
         <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
+        <p style="color: #aaa; font-size: 12px; margin-bottom: 15px;">Entrez votre code secret pour ouvrir la table de mixage.</p>
         <input type="password" id="code-secret" placeholder="Entrez le code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center; font-size: 14px;">
         <br>
-        <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;">Valider</button>
+        <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%; font-size: 14px;">Valider</button>
+        <br><br>
+        <button onclick="ouvrirConnexion()" style="background: transparent; color: #666; border: none; cursor: pointer; font-size: 12px; text-decoration: underline;">Fermer</button>
     </div>
 
     <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 20px auto; padding: 10px;">
@@ -150,149 +153,4 @@
                     <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES DE LA TABLE DE MIXAGE</h4>
                     
                     <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎤 Mon Volume Micro :</span><span id="val-vol-micro" style="color: #2ed573; font-weight: bold;">100%</span></div>
-                        <input type="range" id="slider-vol-micro" min="0" max="100" value="100" oninput="ajusterVolumeMicro()" style="width: 100%; accent-color: #2ed573; cursor: pointer;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>💻 Volume des sons PC / Musiques :</span><span id="val-vol-pc" style="color: #ffa502; font-weight: bold;">100%</span></div>
-                        <input type="range" id="slider-vol-pc" min="0" max="100" value="100" oninput="ajusterVolumePC()" style="width: 100%; accent-color: #ffa502; cursor: pointer;">
-                    </div>
-
-                    <div>
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎵 Volume Playlist Intégrée :</span><span id="val-vol-playlist" style="color: #00d2ff; font-weight: bold;">70%</span></div>
-                        <input type="range" id="slider-vol-playlist" min="0" max="100" value="70" oninput="ajusterVolumePlaylist()" style="width: 100%; accent-color: #00d2ff; cursor: pointer;">
-                    </div>
-                </div>
-
-                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
-                    <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 12px;">💬 TCHAT GENERAL (REÇU & ENVOI)</h4>
-                    <div id="boite-tchat-admin" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; text-align: left; margin-bottom: 10px;">
-                        <p style="color: #555; margin: 0; font-style: italic;">En attente de messages...</p>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="admin-chat-message" placeholder="Écris une réponse visible par TOUS les auditeurs..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
-                        <button onclick="envoyerCommentaireAdmin()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 14px;">Répondre au Public</button>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                
-                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.15); height: fit-content;">
-                    <h3 style="color: #00d2ff; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎛️ BOÎTE À JINGLES & BRUITAGES</h3>
-                    
-                    <audio id="lecteur-jingle-instantane" crossorigin="anonymous"></audio>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                        <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/2/22/News_Opening_sound.wav', '🚨 Flash Info')" style="background: #222; color: #00d2ff; border: 1px solid #00d2ff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
-                            🚨 Flash Info
-                        </button>
-                        <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/3/30/Small_crowd_clapping_and_cheering.wav', '🎉 Applaudissements')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
-                            🎉 Applaudis.
-                        </button>
-                        <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/e/e6/Laugh_01.wav', '😂 Rires Studio')" style="background: #222; color: #ffa502; border: 1px solid #ffa502; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
-                            😂 Rires Studio
-                        </button>
-                        <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/c/c5/Bass_Drop_Effect.wav', '💥 Explosion / Drop')" style="background: #222; color: #ff4757; border: 1px solid #ff4757; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
-                            💥 Big Drop
-                        </button>
-                    </div>
-                    <div id="statut-jingle" style="margin-top: 12px; font-size: 11px; color: #666; text-align: center; font-style: italic;">Prêt à envoyer un effet à l'antenne...</div>
-                </div>
-
-                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
-                    <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
-                    
-                    <audio id="lecteur-musique-studio" loop crossorigin="anonymous" preload="none"></audio>
-
-                    <div style="margin-bottom: 15px;">
-                        <h4 style="color: #ff4757; margin-bottom: 8px; font-size: 14px;">🎸 POP ROCK / STYLE MÅNESKIN</h4>
-                        <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Gros Rock Classique Énergique')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Rock Classique - Piste 1</button>
-                        <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; text-align: left; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">⚡ Guitare Solo - Piste 2</button>
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <h4 style="color: #00d2ff; margin-bottom: 8px; font-size: 14px;">🎤 RAP / HIP-HOP BEATS</h4>
-                        <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; text-align: left; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-size: 13px;">🎹 Urban Hip-Hop - Piste 3</button>
-                    </div>
-
-                    <div style="background: rgba(255,165,0,0.05); padding: 12px; border-radius: 8px; border: 1px dashed #ffa502; text-align: center;">
-                        <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 8px; font-size: 13px;">📂 DIFFUSER UN MP3 DE TON PC</h4>
-                        <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; cursor: pointer;">
-                    </div>
-
-                    <div id="statut-musique" style="margin-top: 15px; background: #12121a; padding: 10px; border-radius: 6px; font-size: 12px; color: #2ed573; text-align: center; border: 1px solid #222;">📴 Aucune musique en cours</div>
-                    <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; font-weight: bold; width: 100%; margin-top: 10px; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px;">⏹️ Couper la musique</button>
-                </div>
-
-                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #2ed573; box-shadow: 0 0 20px rgba(46,213,115,0.15); height: fit-content;">
-                    <h3 style="color: #2ed573; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">📰 INFOS EN DIRECT</h3>
-                    
-                    <button onclick="recupererInfosFlash()" style="background: #2ed573; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px; margin-bottom: 15px;">
-                        🔄 Actualiser la Carte & les Actus
-                    </button>
-
-                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #2d2d44; text-align: center;">
-                        <h4 style="margin: 0 0 8px 0; color: #00d2ff; font-size: 13px;">🌤️ Carte Météo de la France :</h4>
-                        <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricWind=default&zoom=5&overlay=clouds&product=ecmwf&level=surface&lat=46.5&lon=2.5&detailLat=43.546&detailLon=1.536&detail=true" style="width: 100%; height: 320px; border: none; border-radius: 6px;" scrolling="no"></iframe>
-                    </div>
-
-                    <div style="background: #1e1e2f; padding: 10px; border-radius: 8px; border: 1px solid #2d2d44;">
-                        <h4 style="margin: 0 0 8px 0; color: #ffa502; font-size: 13px;">🔥 Actualités France :</h4>
-                        <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 150px; overflow-y: auto; text-align: left;">
-                            Les titres de l'actualité s'afficheront ici.
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-    <div id="co-directeurs-audio-container"></div>
-
-    <script>
-    const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
-    let monPeer = null;
-    let monFluxMicro = null;
-    let connexionsAuditeurs = {}; 
-    let connexionAuStudio = null;
-    let modeAdminActif = false;
-    let microEnPause = false;
-
-    let audioContext = null;
-    let gainNodeMicro = null;
-    let gainNodePlaylist = null;
-    let gainNodePC = null; 
-    let sourceNodeMicro = null;
-    let sourceNodePlaylist = null;
-    let sourceNodeJingle = null; 
-    let destinationMixee = null;
-    let fluxMixe = null;
-    
-    let boucleVumetre = null;
-    let analyserNode = null;
-
-    // Compte à Rebours
-    let horlogeInterval = null;
-    let dateCibleTimestamp = null;
-
-    // Mode Enregistrement Podcast
-    let modeStudioActuel = "attente"; 
-    let mediaRecorder = null;
-    let morceauxAudioEnregistres = [];
-
-    // Base de données locale pour stocker les podcasts publiés
-    let listePodcastsData = [];
-
-    function ouvrirConnexion() {
-        const zone = document.getElementById('zone-connexion');
-        zone.style.display = zone.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function verifierCode() {
-        const codeSaisi = document.getElementById('code-secret').value;
-        if (codeSaisi === '1944') {
-            document.getElementById('zone-connexion').style.
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎤 Mon Volume Micro :</span>
