@@ -209,9 +209,33 @@
                 </div>
             </div>
 
-            <!-- COLONNE DROITE : PLAYLIST & BOÎTE À INFOS -->
+            <!-- COLONNE DROITE : PLAYLIST, SAMPLER & BOÎTE À INFOS -->
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 
+                <!-- NEW : LA BOÎTE À JINGLES / SOUNDBOARD RADIO -->
+                <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.15); height: fit-content;">
+                    <h3 style="color: #00d2ff; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎛️ BOÎTE À JINGLES & BRUITAGES</h3>
+                    
+                    <!-- Lecteur audio masqué dédié aux petits bruitages instantanés -->
+                    <audio id="lecteur-jingle-instantane" crossorigin="anonymous"></audio>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <button onclick="lancerBruitageInstantane('https://assets.mixkit.co/active_storage/sfx/2836/2836-84.wav', '🚨 Flash Info')" style="background: #222; color: #00d2ff; border: 1px solid #00d2ff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
+                            🚨 Flash Info
+                        </button>
+                        <button onclick="lancerBruitageInstantane('https://assets.mixkit.co/active_storage/sfx/2800/2800-84.wav', '🎉 Applaudissements')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
+                            🎉 Applaudis.
+                        </button>
+                        <button onclick="lancerBruitageInstantane('https://assets.mixkit.co/active_storage/sfx/2847/2847-84.wav', '😂 Rires Studio')" style="background: #222; color: #ffa502; border: 1px solid #ffa502; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
+                            😂 Rires Studio
+                        </button>
+                        <button onclick="lancerBruitageInstantane('https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav', '💥 Explosion / Drop')" style="background: #222; color: #ff4757; border: 1px solid #ff4757; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center;">
+                            💥 Big Drop
+                        </button>
+                    </div>
+                    <div id="statut-jingle" style="margin-top: 12px; font-size: 11px; color: #666; text-align: center; font-style: italic;">Prêt à envoyer un effet à l'antenne...</div>
+                </div>
+
                 <!-- PLAYLIST DE TRANSFR -->
                 <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502; box-shadow: 0 0 20px rgba(255,165,0,0.15); height: fit-content;">
                     <h3 style="color: #ffa502; margin-top: 0; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">🎵 PLAYLIST DE TRANSFR</h3>
@@ -286,6 +310,7 @@
     let gainNodePC = null; 
     let sourceNodeMicro = null;
     let sourceNodePlaylist = null;
+    let sourceNodeJingle = null; // Node pour la boîte à jingle
     let destinationMixee = null;
     let fluxMixe = null;
     
@@ -316,7 +341,6 @@
             document.getElementById('panneau-admin').style.display = 'block';
             modeAdminActif = true;
             
-            // On rafraîchit l'affichage de la liste pour faire apparaître les boutons de suppression !
             afficherPodcastsPublics();
             recupererInfosFlash();
 
@@ -430,7 +454,6 @@
         alert("📢 Compte à rebours mis à jour et envoyé au public !");
     }
 
-    // Gestion de la Base de données des Podcasts
     function chargerPodcastsEnregistres() {
         const stockes = localStorage.getItem('transfr-podcasts-publics');
         if (stockes) {
@@ -510,7 +533,6 @@
             
             ligne.style.cssText = "background: rgba(255,255,255,0.03); border: 1px solid " + (estPrive ? "rgba(255,71,87,0.3)" : "rgba(255,165,0,0.15)") + "; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px;";
             
-            // AJOUT DU BOUTON SUPPRIMER UNIQUEMENT SI LE DIRECTEUR EST CONNECTÉ
             let boutonSupprimerHTML = "";
             if (modeAdminActif) {
                 boutonSupprimerHTML = `<button onclick="supprimerPodcast(${pod.id}, '${pod.titre.replace(/'/g, "\\'")}')" style="background: #ff4757; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; flex-shrink: 0; margin-left: 5px;">🗑️ Supprimer</button>`;
@@ -532,19 +554,12 @@
         });
     }
 
-    // NOUVELLE FONCTION : SUPPRESSION DU PODCAST PAR LE DIRECTEUR
     function supprimerPodcast(id, titre) {
         if (confirm(`⚠️ Es-tu sûr de vouloir supprimer définitivement le podcast "${titre}" ?`)) {
-            // Filtrer la liste pour enlever le podcast sélectionné
             listePodcastsData = listePodcastsData.filter(pod => pod.id !== id);
-            
-            // Sauvegarder dans la mémoire locale
             localStorage.setItem('transfr-podcasts-publics', JSON.stringify(listePodcastsData));
-            
-            // Mettre à jour l'affichage sur la page
             afficherPodcastsPublics();
 
-            // Si le podcast supprimé était en train de jouer, on coupe le lecteur
             const player = document.getElementById('audio-podcast-player');
             const conteneurLecteur = document.getElementById('lecteur-podcast-container');
             if (conteneurLecteur.style.display === "block" && document.getElementById('titre-podcast-en-cours').innerText.includes(titre)) {
@@ -553,7 +568,6 @@
                 conteneurLecteur.style.display = "none";
             }
 
-            // Envoyer un message aux auditeurs connectés pour qu'ils suppriment aussi de leur écran
             Object.keys(connexionsAuditeurs).forEach(pId => {
                 let c = connexionsAuditeurs[pId].dataConn;
                 if (c && c.open) c.send({ type: 'demande-podcasts-sync' });
@@ -567,7 +581,6 @@
         const pod = listePodcastsData.find(p => p.id === id);
         if (!pod) return;
 
-        // Si le podcast est privé, on demande le code PIN !
         if (pod.visibilite === 'prive') {
             const codeSaisi = prompt("🔒 Ce podcast est privé. Entre le code PIN secret fourni par le Directeur pour l'écouter :");
             if (codeSaisi !== pod.pin) {
@@ -576,7 +589,6 @@
             }
         }
 
-        // Arrêter le direct si en cours
         const baliseAudioLive = document.getElementById('audio-live');
         if (baliseAudioLive) baliseAudioLive.srcObject = null;
         document.getElementById('btn-ecouter').innerText = "▶️ Écouter le Direct";
@@ -742,6 +754,25 @@
         if (gainNodePlaylist) gainNodePlaylist.gain.value = pourcentage / 100;
     }
 
+    // FONCTION POUR LANCER LES JINGLES INSTANTANÉS (Lié au volume PC/Sons)
+    function lancerBruitageInstantane(url, nom) {
+        if (!audioContext) {
+            alert("⚠️ Active d'abord la console de mixage avant d'envoyer un jingle !");
+            return;
+        }
+        const lecteur = document.getElementById('lecteur-jingle-instantane');
+        document.getElementById('statut-jingle').innerText = "⚡ Lancement de : " + nom;
+        
+        lecteur.src = url;
+        lecteur.play()
+            .then(() => {
+                setTimeout(() => {
+                    document.getElementById('statut-jingle').innerText = "Prêt à envoyer un effet à l'antenne...";
+                }, 3000);
+            })
+            .catch(err => { console.log("Erreur jingle"); });
+    }
+
     function jouerMusique(urlOuBlob, titre) {
         if (!audioContext) {
             alert("⚠️ Active d'abord la console de mixage (bouton bleu) avant de lancer une musique !");
@@ -862,8 +893,13 @@
                 gainNodePlaylist.connect(destinationMixee);
                 gainNodePlaylist.connect(audioContext.destination);
 
-                gainNodePC = audioContext.createGain();
+                // Connexion du lecteur de jingles au flux final mixé envoyé au public
+                const baliseJingle = document.getElementById('lecteur-jingle-instantane');
+                sourceNodeJingle = audioContext.createMediaElementSource(baliseJingle);
+                gainNodePC = audioContext.createGain(); // Gère aussi les jingles
+                sourceNodeJingle.connect(gainNodePC);
                 gainNodePC.connect(destinationMixee);
+                gainNodePC.connect(audioContext.destination); // Pour que tu l'entendes dans tes haut-parleurs
 
                 fluxMixe = destinationMixee.stream;
 
@@ -875,12 +911,13 @@
                         const blobPodcast = new Blob(morceauxAudioEnregistres, { type: 'audio/wav' });
                         const urlFichier = URL.createObjectURL(blobPodcast);
                         const lien = document.createElement('a');
+                        textDate = new Date().toLocaleDateString().replace(/\//g, '-');
                         lien.href = urlFichier;
-                        lien.download = `Podcast_Transfr_${new Date().toLocaleDateString().replace(/\//g, '-')}.wav`;
+                        lien.download = `Podcast_Transfr_${textDate}.wav`;
                         document.body.appendChild(lien);
                         lien.click();
                         document.body.removeChild(lien);
-                        alert("💾 Fichier audio enregistré sur ton PC ! Tu peux maintenant le publier en haut à droite avec ou sans mot de passe.");
+                        alert("💾 Fichier audio enregistré sur ton PC ! Tu peux maintenant le publier avec ou sans code PIN.");
                     };
                     mediaRecorder.start();
                     configurerEvenementsStudio();
@@ -992,7 +1029,7 @@
         if (audioContext) {
             audioContext.close().then(() => {
                 audioContext = null; gainNodeMicro = null; gainNodePlaylist = null; gainNodePC = null;
-                sourceNodeMicro = null; sourceNodePlaylist = null; destinationMixee = null; fluxMixe = null; analyserNode = null;
+                sourceNodeMicro = null; sourceNodePlaylist = null; sourceNodeJingle = null; destinationMixee = null; fluxMixe = null; analyserNode = null;
             });
         }
         
