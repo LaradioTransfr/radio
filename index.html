@@ -263,8 +263,29 @@
     let dateCibleTimestamp = null;
     let modeStudioActuel = "attente"; 
     let mediaRecorder = null;
-    let morceauxAudioEnregistres = [];
+    let morceauxAudio Enregistres = [];
     let listePodcastsData = [];
+
+    // FONCTION POUR ACTIVER LA CONSOLE AUTOMATIQUEMENT
+    function activerModeDirecteurImmediat() {
+        document.getElementById('panneau-admin').style.display = 'block';
+        document.getElementById('lecteur-auditeur').style.display = 'none';
+        modeAdminActif = true;
+        
+        afficherPodcastsPublics();
+        recupererInfosFlash();
+
+        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
+        if (timestampSauvegardé) {
+            let d = new Date(parseInt(timestampSauvegardé));
+            let annee = d.getFullYear();
+            let mois = String(d.getMonth() + 1).padStart(2, '0');
+            let jour = String(d.getDate()).padStart(2, '0');
+            let heure = String(d.getHours()).padStart(2, '0');
+            let minute = String(d.getMinutes()).padStart(2, '0');
+            document.getElementById('admin-date-heure-precise').value = `${annee}-${mois}-${jour}T${heure}:${minute}`;
+        }
+    }
 
     function ouvrirConnexion() {
         document.getElementById('zone-connexion').style.display = 'block';
@@ -280,23 +301,7 @@
         const codeSaisi = document.getElementById('code-secret').value;
         if (codeSaisi === '1944') {
             document.getElementById('zone-connexion').style.display = 'none';
-            document.getElementById('panneau-admin').style.display = 'block';
-            document.getElementById('lecteur-auditeur').style.display = 'none';
-            modeAdminActif = true;
-            
-            afficherPodcastsPublics();
-            recupererInfosFlash();
-
-            const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
-            if (timestampSauvegardé) {
-                let d = new Date(parseInt(timestampSauvegardé));
-                let annee = d.getFullYear();
-                let mois = String(d.getMonth() + 1).padStart(2, '0');
-                let jour = String(d.getDate()).padStart(2, '0');
-                let heure = String(d.getHours()).padStart(2, '0');
-                let minute = String(d.getMinutes()).padStart(2, '0');
-                document.getElementById('admin-date-heure-precise').value = `${annee}-${mois}-${jour}T${heure}:${minute}`;
-            }
+            activerModeDirecteurImmediat();
         } else {
             alert('Code secret incorrect !');
         }
@@ -451,6 +456,12 @@
         const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
         if (timestampSauvegardé) démarrerCalculCompteARebours(timestampSauvegardé);
         chargerPodcastsEnregistres();
+
+        // RECHERCHE DU LIEN SPECIAL DIRECTEUR (?mode=directeur)
+        const parametresUrl = new URLSearchParams(window.location.search);
+        if (parametresUrl.get('mode') === 'directeur') {
+            activerModeDirecteurImmediat();
+        }
     });
 
     const peerAuditeur = new Peer();
@@ -589,21 +600,21 @@
                 analyserNode.connect(gainNodeMicro);
                 gainNodeMicro.connect(destinationMixee);
 
-                // 2. CONFIGURATION MUSIQUE (PLAYLIST) + CONNEXION HP LOCAL ET MIXER
+                // 2. CONFIGURATION MUSIQUE (PLAYLIST)
                 const lecteurMusique = document.getElementById('lecteur-musique-studio');
                 sourceNodePlaylist = audioContext.createMediaElementSource(lecteurMusique);
                 gainNodePlaylist = audioContext.createGain();
                 sourceNodePlaylist.connect(gainNodePlaylist);
-                gainNodePlaylist.connect(destinationMixee); // Envoi vers les auditeurs
-                gainNodePlaylist.connect(audioContext.destination); // Envoi vers tes haut-parleurs
+                gainNodePlaylist.connect(destinationMixee); 
+                gainNodePlaylist.connect(audioContext.destination); 
 
-                // 3. CONFIGURATION EFFETS (JINGLES / PC) + CONNEXION HP LOCAL ET MIXER
+                // 3. CONFIGURATION EFFETS (JINGLES / PC)
                 const lecteurJingle = document.getElementById('lecteur-jingle-instantane');
                 sourceNodeJingle = audioContext.createMediaElementSource(lecteurJingle);
                 gainNodePC = audioContext.createGain();
                 sourceNodeJingle.connect(gainNodePC);
-                gainNodePC.connect(destinationMixee); // Envoi vers les auditeurs
-                gainNodePC.connect(audioContext.destination); // Envoi vers tes haut-parleurs
+                gainNodePC.connect(destinationMixee); 
+                gainNodePC.connect(audioContext.destination); 
 
                 fluxMixe = destinationMixee.stream;
 
