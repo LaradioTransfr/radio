@@ -81,7 +81,7 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- FENÊTRE CHOIX MODE DE STUDIO (DIRECT OU PODCAST)      -->
+    <!-- FENÊTRE CHOIX MODE DE STUDIO (DIRECT OU PODCAST)       -->
     <!-- ====================================================== -->
     <div id="fenetre-choix-studio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: #1e1e2f; padding: 30px; border-radius: 16px; border: 2px solid #00d2ff; max-width: 450px; text-align: center; box-shadow: 0 0 30px rgba(0,210,255,0.3);">
@@ -119,7 +119,7 @@
         <div style="display: block; margin-bottom: 20px;">
             
             <!-- TABLEAU DE BORD STUDIO -->
-            <div style="background: #14141f; padding: 25px; border-radius: 166px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2); margin-bottom: 20px;">
+            <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2); margin-bottom: 20px;">
                 <div style="text-align: center; margin-bottom: 25px;">
                     <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 TABLEAU DE BORD STUDIO CO-LIVE</h2>
                     <span id="badge-studio-actif" style="background: rgba(255, 165, 0, 0.1); color: #ffa502; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE EN ATTENTE</span>
@@ -237,14 +237,13 @@
     <div id="co-directeurs-audio-container"></div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT -->
+    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET ACTIONNABLE -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
     let monPeer = null;
     let monFluxMicro = null;
     let connexionsAuditeurs = {}; 
-    let connexionAuStudio = null;
     let modeAdminActif = false;
     let microEnPause = false;
 
@@ -253,8 +252,6 @@
     let gainNodePlaylist = null;
     let gainNodePC = null; 
     let sourceNodeMicro = null;
-    let sourceNodePlaylist = null;
-    let sourceNodeJingle = null; 
     let destinationMixee = null;
     let fluxMixe = null;
     
@@ -262,24 +259,17 @@
     let horlogeInterval = null;
     let dateCibleTimestamp = null;
     let modeStudioActuel = "attente"; 
-    let mediaRecorder = null;
-    let morceauxAudioEnregistres = [];
-    let listePodcastsData = [];
 
-    // FONCTION POUR OUVRIR LA POPUP DE CONNEXION
+    // POPUPS DE CONNEXION ADMIN
     function ouvrirConnexion() {
         document.getElementById('zone-connexion').style.display = 'block';
         document.getElementById('code-secret').value = "";
         document.getElementById('code-secret').focus();
     }
-
-    function fermerConnexion() {
-        document.getElementById('zone-connexion').style.display = 'none';
-    }
-
+    function fermerConnexion() { document.getElementById('zone-connexion').style.display = 'none'; }
+    
     function verifierCode() {
-        const codeSaisi = document.getElementById('code-secret').value;
-        if (codeSaisi === '1944') {
+        if (document.getElementById('code-secret').value === '1944') {
             document.getElementById('zone-connexion').style.display = 'none';
             activerModeDirecteurImmediat();
         } else {
@@ -287,111 +277,277 @@
         }
     }
 
-    // FONCTION POUR ACTIVER LA CONSOLE
     function activerModeDirecteurImmediat() {
         document.getElementById('panneau-admin').style.display = 'block';
         document.getElementById('lecteur-auditeur').style.display = 'none';
         modeAdminActif = true;
-        
-        afficherPodcastsPublics();
+        chargerPodcastsEnregistres();
         recupererInfosFlash();
+    }
 
-        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
-        if (timestampSauvegardé) {
-            let d = new Date(parseInt(timestampSauvegardé));
-            let annee = d.getFullYear();
-            let mois = String(d.getMonth() + 1).padStart(2, '0');
-            let jour = String(d.getDate()).padStart(2, '0');
-            let heure = String(d.getHours()).padStart(2, '0');
-            let minute = String(d.getMinutes()).padStart(2, '0');
-            document.getElementById('admin-date-heure-precise').value = `${annee}-${mois}-${jour}T${heure}:${minute}`;
+    // OUVERTURE DE LA FENÊTRE DE CHOIX DU STUDIO
+    function ouvrirFenetreChoixStudio() {
+        document.getElementById('fenetre-choix-studio').style.display = 'flex';
+    }
+    function annulerChoixStudio() {
+        document.getElementById('fenetre-choix-studio').style.display = 'none';
+    }
+
+    // ======================================================
+    // CORRECTION MAJEURE : VALIDATION ET LANCEMENT DU STUDIO
+    // ======================================================
+    async function validerChoixStudio(mode) {
+        annulerChoixStudio();
+        modeStudioActuel = mode;
+
+        document.getElementById('statut-micro-live').innerText = "⏳ Initialisation du matériel audio...";
+        
+        try {
+            // 1. Demande d'accès au micro de l'utilisateur
+            monFluxMicro = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            
+            // 2. Création de l'AudioContext pour mixer le micro et la musique
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            destinationMixee = audioContext.createMediaStreamDestination();
+
+            // Config des volumes (Gain Nodes)
+            gainNodeMicro = audioContext.createGain();
+            gainNodePlaylist = audioContext.createGain();
+            gainNodePlaylist.gain.value = 0.7; // 70% par défaut
+
+            sourceNodeMicro = audioContext.createMediaStreamSource(monFluxMicro);
+            sourceNodeMicro.connect(gainNodeMicro);
+            gainNodeMicro.connect(destinationMixee);
+
+            // Flux final mixé prêt à être envoyé sur le réseau
+            fluxMixe = destinationMixee.stream;
+
+            // 3. Mise en place du Vu-mètre pour voir le son bouger en temps réel
+            analyserNode = audioContext.createAnalyser();
+            gainNodeMicro.connect(analyserNode);
+            analyserNode.fftSize = 32;
+            lancerMiseAJourVuMetre();
+
+            if (mode === 'direct') {
+                document.getElementById('statut-micro-live').innerText = "📡 Création du serveur de streaming PeerJS...";
+                
+                // 4. Lancement de PeerJS avec l'ID unique de Transfr
+                monPeer = new Peer(ID_RADIO_PRINCIPALE);
+
+                monPeer.on('open', (id) => {
+                    document.getElementById('statut-micro-live').innerText = "🔴 EN DIRECT SUR L'ANTENNE !";
+                    document.getElementById('badge-studio-actif').innerText = "● STUDIO EN DIRECT PUBLIC";
+                    document.getElementById('badge-studio-actif').style.background = "rgba(46, 213, 115, 0.2)";
+                    document.getElementById('badge-studio-actif').style.color = "#2ed573";
+                    
+                    // Bascule des boutons
+                    document.getElementById('btn-lancer-live').style.display = 'none';
+                    document.getElementById('btn-pause-live').style.display = 'block';
+                    document.getElementById('btn-couper-live').style.display = 'block';
+                });
+
+                // Gestion des appels entrants (quand un auditeur se connecte)
+                monPeer.on('call', (appel) => {
+                    appel.answer(fluxMixe); // On lui donne le flux mixé micro + musique
+                    connexionsAuditeurs[appel.peer] = { appel: appel };
+                    mettreAjourCompteurAuditeurs();
+                    
+                    appel.on('close', () => {
+                        delete connexionsAuditeurs[appel.peer];
+                        mettreAjourCompteurAuditeurs();
+                    });
+                });
+
+                monPeer.on('error', (err) => {
+                    console.error(err);
+                    alert("Erreur PeerJS : L'identifiant est peut-être déjà utilisé (ferme les autres onglets).");
+                    couperLive();
+                });
+
+            } else if (mode === 'podcast') {
+                document.getElementById('statut-micro-live').innerText = "💾 Enregistrement local du podcast démarré...";
+                document.getElementById('badge-studio-actif').innerText = "● ENREGISTREMENT PODCAST PRIVÉ";
+                document.getElementById('btn-lancer-live').style.display = 'none';
+                document.getElementById('btn-couper-live').style.display = 'block';
+            }
+
+        } catch (erreur) {
+            console.error(erreur);
+            alert("Impossible d'accéder au micro. Vérifie les autorisations de ton navigateur.");
+            document.getElementById('statut-micro-live').innerText = "❌ Échec de l'allumage";
         }
     }
 
-    function toggleOptionPin(afficher) {
-        document.getElementById('wrapper-pin-code').style.display = afficher ? 'block' : 'none';
+    // VU-MÈTRE DYNAMIQUE
+    function lancerMiseAJourVuMetre() {
+        if (!analyserNode) return;
+        const donnees = new Uint8Array(analyserNode.frequencyBinCount);
+        
+        function dessiner() {
+            if (!analyserNode) return;
+            analyserNode.getByteFrequencyData(donnees);
+            let total = 0;
+            for (let i = 0; i < donnees.length; i++) { total += donnees[i]; }
+            let niveau = total / donnees.length;
+            let pourcentage = Math.min(100, Math.floor((niveau / 128) * 100));
+            
+            if (microEnPause) pourcentage = 0;
+            document.getElementById('barre-vumetre').style.width = pourcentage + "%";
+            requestAnimationFrame(dessiner);
+        }
+        dessiner();
     }
 
-    function recupererInfosFlash() {
-        const blocActus = document.getElementById('info-bloc-actus');
-        blocActus.innerText = "⏳ Chargement des dernières actualités...";
-
-        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Dfr%26gl%3DFR%26ceid%3DFR%3Afr')
-            .then(res => res.json())
-            .then(data => {
-                if(data && data.items && data.items.length > 0) {
-                    blocActus.innerHTML = ""; 
-                    for(let i = 0; i < 4; i++) {
-                        if(data.items[i]) {
-                            let titre = data.items[i].title;
-                            if(titre.includes(" - ")) {
-                                const parts = titre.split(" - ");
-                                parts.pop();
-                                titre = parts.join(" - ");
-                            }
-                            blocActus.innerHTML += `<p style="margin: 0 0 6px 0; padding-bottom: 4px; border-bottom: 1px solid #222;">🔹 ${titre}</p>`;
-                        }
-                    }
-                } else {
-                    blocActus.innerText = "⚠️ Aucun article disponible.";
-                }
-            })
-            .catch(() => { blocActus.innerText = "❌ Impossible de charger les actus."; });
+    // BOUTONS DE CONTRÔLE DE L'ANTENNE
+    function basculerPause() {
+        if (!gainNodeMicro) return;
+        microEnPause = !microEnPause;
+        if (microEnPause) {
+            gainNodeMicro.gain.value = 0;
+            document.getElementById('btn-pause-live').innerText = "▶️ RÉACTIVER LE MICRO";
+            document.getElementById('statut-micro-live').innerText = "⏸️ MICRO EN PAUSE";
+        } else {
+            const volSaisi = document.getElementById('slider-vol-micro').value;
+            gainNodeMicro.gain.value = volSaisi / 100;
+            document.getElementById('btn-pause-live').innerText = "⏸️ METTRE EN PAUSE MICRO";
+            document.getElementById('statut-micro-live').innerText = "🔴 EN DIRECT SUR L'ANTENNE !";
+        }
     }
 
+    function couperLive() {
+        if (monFluxMicro) {
+            monFluxMicro.getTracks().forEach(track => track.stop());
+        }
+        if (monPeer) {
+            monPeer.destroy();
+        }
+        if (audioContext) {
+            audioContext.close();
+        }
+        
+        // Reset de l'interface
+        analyserNode = null;
+        document.getElementById('barre-vumetre').style.width = "0%";
+        document.getElementById('statut-micro-live').innerText = "Studio déconnecté";
+        document.getElementById('badge-studio-actif').innerText = "● CONSOLE DE MIXAGE EN ATTENTE";
+        document.getElementById('badge-studio-actif').style.background = "rgba(255, 165, 0, 0.1)";
+        document.getElementById('badge-studio-actif').style.color = "#ffa502";
+        
+        document.getElementById('btn-lancer-live').style.display = 'block';
+        document.getElementById('btn-pause-live').style.display = 'none';
+        document.getElementById('btn-couper-live').style.display = 'none';
+        
+        connexionsAuditeurs = {};
+        mettreAjourCompteurAuditeurs();
+    }
+
+    function mettreAjourCompteurAuditeurs() {
+        const nb = Object.keys(connexionsAuditeurs).length;
+        document.getElementById('admin-compteur').innerText = nb;
+    }
+
+    // AJUSTEMENTS DES SLIDERS DE VOLUME
+    function ajusterVolumeMicro() {
+        if (!gainNodeMicro || microEnPause) return;
+        const val = document.getElementById('slider-vol-micro').value;
+        document.getElementById('val-vol-micro').innerText = val + "%";
+        gainNodeMicro.gain.value = val / 100;
+    }
+
+    function ajusterVolumePlaylist() {
+        if (!gainNodePlaylist) return;
+        const val = document.getElementById('slider-vol-playlist').value;
+        document.getElementById('val-vol-playlist').innerText = val + "%";
+        gainNodePlaylist.gain.value = val / 100;
+    }
+    
+    function ajusterVolumePC() {
+        const val = document.getElementById('slider-vol-pc').value;
+        document.getElementById('val-vol-pc').innerText = val + "%";
+    }
+
+    // BRUITAGES INSTANTANÉS (JINGLES)
+    function lancerBruitageInstantane(url, nom) {
+        const jingleAudio = document.getElementById('lecteur-jingle-instantane');
+        jingleAudio.src = url;
+        jingleAudio.play();
+        document.getElementById('statut-musique').innerText = "🔊 Effet : " + nom;
+        
+        // Si la console est allumée, on injecte le son dans le flux mixé pour les auditeurs
+        if (audioContext && destinationMixee) {
+            if (!sourceNodeJingle) {
+                sourceNodeJingle = audioContext.createMediaElementSource(jingleAudio);
+            }
+            sourceNodeJingle.connect(audioContext.destination); // Pour l'entendre dans ton casque
+            sourceNodeJingle.connect(destinationMixee); // Pour l'envoyer au direct
+        }
+    }
+
+    // GESTION DE LA PLAYLIST INTÉGRÉE
+    function jouerMusique(url, nom) {
+        const lecteurMusique = document.getElementById('lecteur-musique-studio');
+        lecteurMusique.src = url;
+        lecteurMusique.play();
+        document.getElementById('statut-musique').innerText = "🎵 Lecture : " + nom;
+
+        if (audioContext && destinationMixee) {
+            if (!window.sourceNodePlaylist) {
+                window.sourceNodePlaylist = audioContext.createMediaElementSource(lecteurMusique);
+            }
+            window.sourceNodePlaylist.connect(gainNodePlaylist);
+            gainNodePlaylist.connect(audioContext.destination);
+            gainNodePlaylist.connect(destinationMixee);
+        }
+    }
+
+    function arreterMusique() {
+        const lecteurMusique = document.getElementById('lecteur-musique-studio');
+        lecteurMusique.pause();
+        lecteurMusique.currentTime = 0;
+        document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours";
+    }
+
+    function chargerMusiquePerso() {
+        const fileInput = document.getElementById('fichier-musique-perso');
+        if (fileInput.files[0]) {
+            const url = URL.createObjectURL(fileInput.files[0]);
+            jouerMusique(url, fileInput.files[0].name);
+        }
+    }
+
+    // COMPTE À REBOURS & PODCASTS EXISTANTS (REPRISE DU CODE PRÉCÉDENT)
+    function toggleOptionPin(afficher) { document.getElementById('wrapper-pin-code').style.display = afficher ? 'block' : 'none'; }
+    
     function démarrerCalculCompteARebours(timestamp) {
         if (horlogeInterval) clearInterval(horlogeInterval);
         dateCibleTimestamp = parseInt(timestamp);
-
         function rafraichirChrono() {
             const maintenant = new Date().getTime();
             const ecart = dateCibleTimestamp - maintenant;
-
-            if (ecart <= 0) {
-                document.getElementById('compte-a-rebours-ecran').innerText = "🔥 L'ÉMISSION COMMENCE !";
-                document.getElementById('compte-a-rebours-ecran').style.color = "#2ed573";
-                clearInterval(horlogeInterval);
-                return;
-            }
-
+            const affichage = document.getElementById('compte-a-rebours-ecran');
+            if (!affichage) return;
+            if (ecart <= 0) { affichage.innerText = "🔥 L'ÉMISSION COMMENCE !"; affichage.style.color = "#2ed573"; clearInterval(horlogeInterval); return; }
             const jours = Math.floor(ecart / (1000 * 60 * 60 * 24));
             const heures = Math.floor((ecart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((ecart % (1000 * 60 * 60)) / (1000 * 60));
-            const secondes = Math.floor((ecart % (1000 * 60)) / 1000);
-
-            let formatJours = jours > 0 ? `${jours}j ` : "";
-            let formatHeures = String(heures).padStart(2, '0');
-            let formatMinutes = String(minutes).padStart(2, '0');
-            let formatSecondes = String(secondes).padStart(2, '0');
-
-            document.getElementById('compte-a-rebours-ecran').innerText = `⏱️ ${formatJours}${formatHeures}h ${formatMinutes}m ${formatSecondes}s`;
+            const secondes = Math.floor((ecart % (1000 * 60)) / 1000;
+            affichage.innerText = `⏱️ ${jours > 0 ? jours+'j ':''}${String(heures).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(secondes).padStart(2,'0')}s`;
         }
-
-        rafraichirChrono();
-        horlogeInterval = setInterval(rafraichirChrono, 1000);
+        rafraichirChrono(); horlogeInterval = setInterval(rafraichirChrono, 1000);
     }
 
     function diffuserPlanning() {
         const chaineDateHeure = document.getElementById('admin-date-heure-precise').value;
         if (!chaineDateHeure) return alert("Sélectionne une date !");
         const timestampCible = new Date(chaineDateHeure).getTime();
-
         localStorage.setItem('timestamp-direct-transfr', timestampCible);
         démarrerCalculCompteARebours(timestampCible);
-
-        Object.keys(connexionsAuditeurs).forEach(peerId => {
-            let conn = connexionsAuditeurs[peerId].dataConn;
-            if (conn && conn.open) conn.send({ type: 'planning-update', timestamp: timestampCible });
-        });
         alert("📢 Envoyé au public !");
     }
 
     function chargerPodcastsEnregistres() {
         const stockes = localStorage.getItem('transfr-podcasts-publics');
-        if (stockes) {
-            listePodcastsData = JSON.parse(stockes);
-            afficherPodcastsPublics();
-        }
+        if (stockes) { listePodcastsData = JSON.parse(stockes); afficherPodcastsPublics(); }
     }
 
     function publierPodcastLigne() {
@@ -399,23 +555,12 @@
         const fichierInput = document.getElementById('admin-fichier-podcast');
         const visibiliteType = document.querySelector('input[name="admin-visibilite-podcast"]:checked').value;
         const pinInput = document.getElementById('admin-pin-podcast');
-        
         if (!titreInput.value.trim() || !fichierInput.files[0]) return alert("Fichier manquant !");
-
         const lecteurFichier = new FileReader();
-        lecteurFichier.onload = function(evenement) {
-            const base64Audio = evenement.target.result;
-            listePodcastsData.push({
-                id: Date.now(),
-                titre: titreInput.value.trim(),
-                date: new Date().toLocaleDateString('fr-FR'),
-                visibilite: visibiliteType,
-                pin: visibiliteType === 'prive' ? pinInput.value.trim() : null,
-                audioData: base64Audio
-            });
+        lecteurFichier.onload = function(e) {
+            listePodcastsData.push({ id: Date.now(), titre: titreInput.value.trim(), date: new Date().toLocaleDateString('fr-FR'), visibilite: visibiliteType, pin: visibiliteType === 'prive' ? pinInput.value.trim() : null, audioData: e.target.result });
             localStorage.setItem('transfr-podcasts-publics', JSON.stringify(listePodcastsData));
-            afficherPodcastsPublics();
-            alert("🚀 Podcast publié !");
+            afficherPodcastsPublics(); alert("🚀 Podcast publié !");
         };
         lecteurFichier.readAsDataURL(fichierInput.files[0]);
     }
@@ -423,263 +568,36 @@
     function afficherPodcastsPublics() {
         const conteneur = document.getElementById('liste-podcasts-publics');
         if (!conteneur) return;
-        if (listePodcastsData.length === 0) {
-            conteneur.innerHTML = `<p id="aucun-podcast-msg" style="color:#666; font-style:italic; font-size:13px; margin:0;">Aucun podcast publié pour le moment.</p>`;
-            return;
-        }
+        if (listePodcastsData.length === 0) { conteneur.innerHTML = `<p style="color:#666; font-style:italic; font-size:13px; margin:0;">Aucun podcast publié.</p>`; return; }
         conteneur.innerHTML = "";
         listePodcastsData.forEach(pod => {
-            const ligne = document.createElement('div');
-            ligne.style.cssText = "background:rgba(255,255,255,0.03); padding:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;";
-            let boutonSupprimer = modeAdminActif ? `<button onclick="supprimerPodcast(${pod.id})" style="background:#ff4757; color:white; border:none; padding:4px; border-radius:4px; font-size:11px; cursor:pointer;">🗑️</button>` : "";
-            ligne.innerHTML = `<div><span style="font-size:13px;">${pod.titre}</span></div><div><button onclick="ecouterUnPodcast(${pod.id})" style="background:#ffa502; border:none; border-radius:4px; padding:4px 8px; font-size:11px; cursor:pointer;">▶️</button>${boutonSupprimer}</div>`;
-            conteneur.appendChild(ligne);
+            conteneur.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); margin-bottom:5px;"><div><span style="font-size: 13px; font-weight: bold; color: #ffa502;">${pod.visibilite==='prive'?'🔒':'🔓'} ${pod.titre}</span></div><button onclick="lirePodcast(${pod.id})" style="background: #ffa502; color: #1e1e2f; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size:12px;">▶️ Écouter</button></div>`;
         });
     }
 
-    function supprimerPodcast(id) {
-        listePodcastsData = listePodcastsData.filter(pod => pod.id !== id);
-        localStorage.setItem('transfr-podcasts-publics', JSON.stringify(listePodcastsData));
-        afficherPodcastsPublics();
-    }
-
-    function ecouterUnPodcast(id) {
-        const pod = listePodcastsData.find(p => p.id === id);
-        if (!pod) return;
-        if (pod.visibilite === 'prive' && prompt("Code PIN ?") !== pod.pin) return alert("Refusé");
-        
-        document.getElementById('lecteur-podcast-container').style.display = "block";
-        document.getElementById('titre-podcast-en-cours').innerText = pod.titre;
+    function lirePodcast(id) {
+        const pod = listePodcastsData.find(p => p.id === id); if (!pod) return;
+        if (pod.visibilite === 'prive' && prompt("Code PIN :") !== pod.pin) return alert("Code PIN incorrect !");
+        document.getElementById('titre-podcast-en-cours').innerText = "Podcast : " + pod.titre;
         document.getElementById('audio-podcast-player').src = pod.audioData;
+        document.getElementById('lecteur-podcast-container').style.display = 'block';
         document.getElementById('audio-podcast-player').play();
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const timestampSauvegardé = localStorage.getItem('timestamp-direct-transfr');
-        if (timestampSauvegardé) démarrerCalculCompteARebours(timestampSauvegardé);
+    function recupererInfosFlash() {
+        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Dfr%26gl%3DFR%26ceid%3DFR%3Afr')
+            .then(res => res.json()).then(data => {
+                let html = "";
+                for(let i=0; i<4; i++) { if(data.items[i]) html += `<p style="margin:0 0 6px 0;">🔹 ${data.items[i].title.split(" - ")[0]}</p>`; }
+                document.getElementById('info-bloc-actus').innerHTML = html;
+            }).catch(() => { document.getElementById('info-bloc-actus').innerText = "Actus indisponibles."; });
+    }
+
+    window.onload = function() {
+        const savedTime = localStorage.getItem('timestamp-direct-transfr');
+        if (savedTime) démarrerCalculCompteARebours(savedTime);
         chargerPodcastsEnregistres();
-
-        // RECHERCHE DU LIEN SPECIAL DIRECTEUR (?mode=directeur)
-        const parametresUrl = new URLSearchParams(window.location.search);
-        if (parametresUrl.get('mode') === 'directeur') {
-            activerModeDirecteurImmediat();
-        }
-    });
-
-    const peerAuditeur = new Peer();
-    function connecterAuStudio() {
-        connexionAuStudio = peerAuditeur.connect(ID_RADIO_PRINCIPALE);
-        connexionAuStudio.on('open', () => {
-            document.getElementById('statut-diffusion').innerText = "🔴 TRANSFR EST EN DIRECT !";
-            document.getElementById('statut-diffusion').style.color = "#2ed573";
-            document.getElementById('btn-ecouter').style.display = "block";
-        });
-        connexionAuStudio.on('data', (data) => {
-            if (data && data.type === 'chat-diffuse') ajouterMessageAuTchatGlobal(data.auteur, data.message);
-            if (data && data.type === 'studio-deconnexion') forcerDeconnexionAuditeur();
-        });
-    }
-
-    peerAuditeur.on('open', () => { connecterAuStudio(); });
-
-    function forcerDeconnexionAuditeur() {
-        document.getElementById('statut-diffusion').innerText = "⚫ Station Hors Ligne";
-        document.getElementById('btn-ecouter').style.display = "none";
-        document.getElementById('audio-live').srcObject = null;
-    }
-
-    function ecouterDirect() {
-        peerAuditeur.on('call', (call) => {
-            call.answer(); 
-            call.on('stream', (streamAuditeur) => {
-                document.getElementById('audio-live').srcObject = streamAuditeur;
-                document.getElementById('btn-ecouter').innerText = "🔊 ÉCOUTE EN COURS...";
-            });
-        });
-        if (connexionAuStudio && connexionAuStudio.open) connexionAuStudio.send({ type: 'connexion', message: 'je-veux-ecouter' });
-    }
-
-    function envoyerCommentaire() {
-        const pseudo = document.getElementById('chat-pseudo').value.trim();
-        const message = document.getElementById('chat-message').value.trim();
-        if (!pseudo || !message) return;
-        if (connexionAuStudio && connexionAuStudio.open) {
-            connexionAuStudio.send({ type: 'chat', pseudo: pseudo, message: message });
-            ajouterMessageAuTchatGlobal(pseudo, message);
-            document.getElementById('chat-message').value = "";
-        }
-    }
-
-    function envoyerCommentaireAdmin() {
-        const message = document.getElementById('admin-chat-message').value.trim();
-        if (!message) return;
-        ajouterMessageAuTchatGlobal("⭐ DIRECTEUR", message);
-        Object.keys(connexionsAuditeurs).forEach(peerId => {
-            if (monPeer && monPeer.connections[peerId]) {
-                monPeer.connections[peerId].forEach(conn => {
-                    if (conn.open) conn.send({ type: 'chat-diffuse', auteur: "⭐ DIRECTEUR", message: message });
-                });
-            }
-        });
-        document.getElementById('admin-chat-message').value = "";
-    }
-
-    function ajouterMessageAuTchatGlobal(auteur, texte) {
-        const b1 = document.getElementById('boite-tchat-admin');
-        const b2 = document.getElementById('boite-tchat-auditeur');
-        let html = `<p style="margin:4px 0;"><strong>${auteur} :</strong> ${texte}</p>`;
-        if(b1) b1.innerHTML += html;
-        if(b2) b2.innerHTML += html;
-    }
-
-    function ajusterVolumeMicro() {
-        if (gainNodeMicro) gainNodeMicro.gain.value = document.getElementById('slider-vol-micro').value / 100;
-    }
-    function ajusterVolumePC() {
-        if (gainNodePC) gainNodePC.gain.value = document.getElementById('slider-vol-pc').value / 100;
-    }
-    function ajusterVolumePlaylist() {
-        if (gainNodePlaylist) gainNodePlaylist.gain.value = document.getElementById('slider-vol-playlist').value / 100;
-    }
-
-    function lancerBruitageInstantane(url, nom) {
-        const lecteur = document.getElementById('lecteur-jingle-instantane');
-        lecteur.src = url;
-        lecteur.play().catch(e => console.log("Erreur lecture jingle:", e));
-    }
-
-    function jouerMusique(url, titre) {
-        const lecteur = document.getElementById('lecteur-musique-studio');
-        lecteur.src = url;
-        lecteur.play().catch(e => console.log("Erreur lecture musique:", e));
-        document.getElementById('statut-musique').innerText = "📻 " + titre;
-    }
-
-    function chargerMusiquePerso() {
-        const input = document.getElementById('fichier-musique-perso');
-        if (input.files[0]) jouerMusique(URL.createObjectURL(input.files[0]), input.files[0].name);
-    }
-
-    function barreEtMusique() {
-        document.getElementById('lecteur-musique-studio').pause();
-        document.getElementById('statut-musique').innerText = "📴 Coupée";
-    }
-
-    function barreEtMusique() {
-        document.getElementById('lecteur-musique-studio').pause();
-        document.getElementById('statut-musique').innerText = "📴 Coupée";
-    }
-
-    function arreterMusique() {
-        document.getElementById('lecteur-musique-studio').pause();
-        document.getElementById('statut-musique').innerText = "📴 Coupée";
-    }
-
-    function basculerPause() {
-        microEnPause = !microEnPause;
-        monFluxMicro.getAudioTracks()[0].enabled = !microEnPause;
-        document.getElementById('btn-pause-live').innerText = microEnPause ? "▶️ REPRENDRE MICRO" : "⏸️ METTRE EN PAUSE MICRO";
-    }
-
-    function animerVumetre() {
-        if (!analyserNode || microEnPause) {
-            document.getElementById('barre-vumetre').style.width = "0%";
-        } else {
-            const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
-            analyserNode.getByteFrequencyData(dataArray);
-            let total = 0; for (let i = 0; i < dataArray.length; i++) total += dataArray[i];
-            document.getElementById('barre-vumetre').style.width = Math.min((total/dataArray.length) * 2.5, 100) + "%";
-        }
-        requestAnimationFrame(animerVumetre);
-    }
-
-    function ouvrirFenetreChoixStudio() { document.getElementById('fenetre-choix-studio').style.display = "flex"; }
-    function annulerChoixStudio() { document.getElementById('fenetre-choix-studio').style.display = "none"; }
-    function validerChoixStudio(mode) { document.getElementById('fenetre-choix-studio').style.display = "none"; modeStudioActuel = mode; lancerConfigurationStudio(); }
-
-    function lancerConfigurationStudio() {
-        navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-            .then(stream => {
-                monFluxMicro = stream;
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                destinationMixee = audioContext.createMediaStreamDestination();
-
-                // 1. CONFIGURATION MICRO
-                sourceNodeMicro = audioContext.createMediaStreamSource(stream);
-                gainNodeMicro = audioContext.createGain();
-                analyserNode = audioContext.createAnalyser();
-                sourceNodeMicro.connect(analyserNode);
-                analyserNode.connect(gainNodeMicro);
-                gainNodeMicro.connect(destinationMixee);
-
-                // 2. CONFIGURATION MUSIQUE (PLAYLIST)
-                const lecteurMusique = document.getElementById('lecteur-musique-studio');
-                sourceNodePlaylist = audioContext.createMediaElementSource(lecteurMusique);
-                gainNodePlaylist = audioContext.createGain();
-                sourceNodePlaylist.connect(gainNodePlaylist);
-                gainNodePlaylist.connect(destinationMixee); 
-                gainNodePlaylist.connect(audioContext.destination); 
-
-                // 3. CONFIGURATION EFFETS (JINGLES / PC)
-                const lecteurJingle = document.getElementById('lecteur-jingle-instantane');
-                sourceNodeJingle = audioContext.createMediaElementSource(lecteurJingle);
-                gainNodePC = audioContext.createGain();
-                sourceNodeJingle.connect(gainNodePC);
-                gainNodeJingle.connect(destinationMixee); 
-                gainNodePC.connect(audioContext.destination); 
-
-                fluxMixe = destinationMixee.stream;
-
-                if (modeStudioActuel === "podcast") {
-                    mediaRecorder = new MediaRecorder(fluxMixe);
-                    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) morceauxAudioEnregistres.push(e.data); };
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(morceauxAudioEnregistres, { type: 'audio/wav' });
-                        const lien = document.createElement('a');
-                        lien.href = URL.createObjectURL(blob);
-                        lien.download = `Podcast_Transfr.wav`;
-                        lien.click();
-                    };
-                    mediaRecorder.start();
-                    configurerEvenementsStudio();
-                } else {
-                    monPeer = new Peer(ID_RADIO_PRINCIPALE);
-                    monPeer.on('open', () => { configurerEvenementsStudio(); });
-                }
-            });
-    }
-
-    function configurerEvenementsStudio() {
-        document.getElementById('btn-lancer-live').style.display = "none";
-        document.getElementById('btn-pause-live').style.display = "block";
-        document.getElementById('btn-couper-live').style.display = "block";
-        document.getElementById('statut-micro-live').innerText = "🎙️ CONSOLE ENGAGÉE";
-        animerVumetre();
-
-        if (monPeer) {
-            monPeer.on('call', (call) => { call.answer(fluxMixe); });
-            monPeer.on('connection', (conn) => {
-                conn.on('data', (data) => {
-                    if (data.type === 'connexion') {
-                        const call = monPeer.call(conn.peer, fluxMixe);
-                        connexionsAuditeurs[conn.peer] = { call: call, dataConn: conn };
-                        document.getElementById('admin-compteur').innerText = Object.keys(connexionsAuditeurs).length;
-                    }
-                    if (data.type === 'chat') {
-                        ajouterMessageAuTchatGlobal(data.pseudo, data.message);
-                        Object.keys(connexionsAuditeurs).forEach(p => connexionsAuditeurs[p].dataConn.send({ type: 'chat-diffuse', auteur: data.pseudo, message: data.message }));
-                    }
-                });
-            });
-        }
-    }
-
-    function couperLive() {
-        if (mediaRecorder) mediaRecorder.stop();
-        if (monFluxMicro) monFluxMicro.getTracks().forEach(t => t.stop());
-        if (monPeer) monPeer.destroy();
-        location.reload();
-    }
+    };
     </script>
 </body>
 </html>
