@@ -237,7 +237,7 @@
     <div id="co-directeurs-audio-container"></div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET ACTIONNABLE -->
+    <!-- LOGIQUE JAVASCRIPT TOTALEMENT SÉCURISÉE ET CORRIGÉE    -->
     <!-- ====================================================== -->
     <script>
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
@@ -247,6 +247,9 @@
     let modeAdminActif = false;
     let microEnPause = false;
 
+    // LA CORRECTION EST ICI : Déclaration obligatoire de la liste des podcasts
+    let listePodcastsData = []; 
+
     let audioContext = null;
     let gainNodeMicro = null;
     let gainNodePlaylist = null;
@@ -254,6 +257,7 @@
     let sourceNodeMicro = null;
     let destinationMixee = null;
     let fluxMixe = null;
+    let sourceNodeJingle = null;
     
     let analyserNode = null;
     let horlogeInterval = null;
@@ -293,9 +297,7 @@
         document.getElementById('fenetre-choix-studio').style.display = 'none';
     }
 
-    // ======================================================
-    // CORRECTION MAJEURE : VALIDATION ET LANCEMENT DU STUDIO
-    // ======================================================
+    // VALIDATION ET LANCEMENT DU STUDIO AUDIO
     async function validerChoixStudio(mode) {
         annulerChoixStudio();
         modeStudioActuel = mode;
@@ -303,26 +305,20 @@
         document.getElementById('statut-micro-live').innerText = "⏳ Initialisation du matériel audio...";
         
         try {
-            // 1. Demande d'accès au micro de l'utilisateur
             monFluxMicro = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-            
-            // 2. Création de l'AudioContext pour mixer le micro et la musique
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             destinationMixee = audioContext.createMediaStreamDestination();
 
-            // Config des volumes (Gain Nodes)
             gainNodeMicro = audioContext.createGain();
             gainNodePlaylist = audioContext.createGain();
-            gainNodePlaylist.gain.value = 0.7; // 70% par défaut
+            gainNodePlaylist.gain.value = 0.7; 
 
             sourceNodeMicro = audioContext.createMediaStreamSource(monFluxMicro);
             sourceNodeMicro.connect(gainNodeMicro);
             gainNodeMicro.connect(destinationMixee);
 
-            // Flux final mixé prêt à être envoyé sur le réseau
             fluxMixe = destinationMixee.stream;
 
-            // 3. Mise en place du Vu-mètre pour voir le son bouger en temps réel
             analyserNode = audioContext.createAnalyser();
             gainNodeMicro.connect(analyserNode);
             analyserNode.fftSize = 32;
@@ -330,8 +326,6 @@
 
             if (mode === 'direct') {
                 document.getElementById('statut-micro-live').innerText = "📡 Création du serveur de streaming PeerJS...";
-                
-                // 4. Lancement de PeerJS avec l'ID unique de Transfr
                 monPeer = new Peer(ID_RADIO_PRINCIPALE);
 
                 monPeer.on('open', (id) => {
@@ -340,15 +334,13 @@
                     document.getElementById('badge-studio-actif').style.background = "rgba(46, 213, 115, 0.2)";
                     document.getElementById('badge-studio-actif').style.color = "#2ed573";
                     
-                    // Bascule des boutons
                     document.getElementById('btn-lancer-live').style.display = 'none';
                     document.getElementById('btn-pause-live').style.display = 'block';
                     document.getElementById('btn-couper-live').style.display = 'block';
                 });
 
-                // Gestion des appels entrants (quand un auditeur se connecte)
                 monPeer.on('call', (appel) => {
-                    appel.answer(fluxMixe); // On lui donne le flux mixé micro + musique
+                    appel.answer(fluxMixe); 
                     connexionsAuditeurs[appel.peer] = { appel: appel };
                     mettreAjourCompteurAuditeurs();
                     
@@ -360,7 +352,7 @@
 
                 monPeer.on('error', (err) => {
                     console.error(err);
-                    alert("Erreur PeerJS : L'identifiant est peut-être déjà utilisé (ferme les autres onglets).");
+                    alert("Erreur PeerJS : L'identifiant est déjà utilisé. Ferme les autres onglets.");
                     couperLive();
                 });
 
@@ -373,7 +365,7 @@
 
         } catch (erreur) {
             console.error(erreur);
-            alert("Impossible d'accéder au micro. Vérifie les autorisations de ton navigateur.");
+            alert("Impossible d'accéder au micro. Vérifie les autorisations.");
             document.getElementById('statut-micro-live').innerText = "❌ Échec de l'allumage";
         }
     }
@@ -415,17 +407,10 @@
     }
 
     function couperLive() {
-        if (monFluxMicro) {
-            monFluxMicro.getTracks().forEach(track => track.stop());
-        }
-        if (monPeer) {
-            monPeer.destroy();
-        }
-        if (audioContext) {
-            audioContext.close();
-        }
+        if (monFluxMicro) { monFluxMicro.getTracks().forEach(track => track.stop()); }
+        if (monPeer) { monPeer.destroy(); }
+        if (audioContext) { audioContext.close(); }
         
-        // Reset de l'interface
         analyserNode = null;
         document.getElementById('barre-vumetre').style.width = "0%";
         document.getElementById('statut-micro-live').innerText = "Studio déconnecté";
@@ -446,7 +431,7 @@
         document.getElementById('admin-compteur').innerText = nb;
     }
 
-    // AJUSTEMENTS DES SLIDERS DE VOLUME
+    // VOLUME SLIDERS
     function ajusterVolumeMicro() {
         if (!gainNodeMicro || microEnPause) return;
         const val = document.getElementById('slider-vol-micro').value;
@@ -466,24 +451,22 @@
         document.getElementById('val-vol-pc').innerText = val + "%";
     }
 
-    // BRUITAGES INSTANTANÉS (JINGLES)
+    // EFFETS ET JINGLES
     function lancerBruitageInstantane(url, nom) {
         const jingleAudio = document.getElementById('lecteur-jingle-instantane');
         jingleAudio.src = url;
         jingleAudio.play();
         document.getElementById('statut-musique').innerText = "🔊 Effet : " + nom;
         
-        // Si la console est allumée, on injecte le son dans le flux mixé pour les auditeurs
         if (audioContext && destinationMixee) {
             if (!sourceNodeJingle) {
                 sourceNodeJingle = audioContext.createMediaElementSource(jingleAudio);
             }
-            sourceNodeJingle.connect(audioContext.destination); // Pour l'entendre dans ton casque
-            sourceNodeJingle.connect(destinationMixee); // Pour l'envoyer au direct
+            sourceNodeJingle.connect(audioContext.destination); 
+            sourceNodeJingle.connect(destinationMixee); 
         }
     }
 
-    // GESTION DE LA PLAYLIST INTÉGRÉE
     function jouerMusique(url, nom) {
         const lecteurMusique = document.getElementById('lecteur-musique-studio');
         lecteurMusique.src = url;
@@ -515,7 +498,7 @@
         }
     }
 
-    // COMPTE À REBOURS & PODCASTS EXISTANTS (REPRISE DU CODE PRÉCÉDENT)
+    // COMPTE À REBOURS ET GESTIONNAIRE PODCASTS
     function toggleOptionPin(afficher) { document.getElementById('wrapper-pin-code').style.display = afficher ? 'block' : 'none'; }
     
     function démarrerCalculCompteARebours(timestamp) {
@@ -530,7 +513,7 @@
             const jours = Math.floor(ecart / (1000 * 60 * 60 * 24));
             const heures = Math.floor((ecart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((ecart % (1000 * 60 * 60)) / (1000 * 60));
-            const secondes = Math.floor((ecart % (1000 * 60)) / 1000;
+            const secondes = Math.floor((ecart % (1000 * 60)) / 1000);
             affichage.innerText = `⏱️ ${jours > 0 ? jours+'j ':''}${String(heures).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(secondes).padStart(2,'0')}s`;
         }
         rafraichirChrono(); horlogeInterval = setInterval(rafraichirChrono, 1000);
