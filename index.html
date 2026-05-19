@@ -1,18 +1,19 @@
 <!-- ====================================================== -->
-<!-- SECTION 1 : CRÉATION DE COMPTE & PROFIL AUDITEUR AVEC AVATAR & PAIEMENT -->
+<!-- SECTION 1 : CRÉATION DE COMPTE, CONNEXION & PROFIL AUDITEUR -->
 <!-- ====================================================== -->
 <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
     
-    <!-- ÉCRAN 1 : FORMULAIRE D'INSCRIPTION -->
+    <!-- ÉCRAN 1 : FORMULAIRE D'INSCRIPTION / CONNEXION -->
     <div id="bloc-inscription">
-        <h3 style="color: #00d2ff; margin-top: 0;">👤 CRÉER UN COMPTE TRANSFR (Gratuit la 1ère année !)</h3>
+        <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (Gratuit la 1ère année !)</h3>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <input type="text" id="inscription-pseudo" placeholder="Choisis ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
+            <input type="text" id="inscription-pseudo" placeholder="Entre ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
             <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">S'inscrire</button>
+            <button onclick="seConnecterAuditeur()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Se connecter</button>
         </div>
     </div>
     
-    <!-- ÉCRAN 2 : PROFIL ACTIF (AVEC PHOTO ET PAIEMENT) -->
+    <!-- ÉCRAN 2 : PROFIL ACTIF (AVEC PHOTO, DECONNEXION ET PAIEMENT) -->
     <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
         <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
             
@@ -29,16 +30,17 @@
                     <span style="font-size: 14px; color: #aaa;">Mon Compte :</span>
                     <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
                 </div>
-                <div>
+                <div style="margin-bottom: 5px;">
                     <span style="font-size: 14px; color: #aaa;">Statut Actuel :</span>
                     <span id="profil-statut" style="background: #2ed573; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit (1 an)</span>
                 </div>
+                <button onclick="deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
             </div>
 
             <!-- BOUTON DE PAIEMENT SÉCURISÉ INTÉGRÉ -->
             <div id="bloc-paiement-profil" style="background: rgba(255, 165, 0, 0.1); border: 1px solid #ffa502; padding: 12px 20px; border-radius: 8px; text-align: center;">
                 <div style="font-size: 11px; color: #ffa502; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">💳 ESPACE ABONNEMENT</div>
-                <button onclick="ouvrirAchatSecurise()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: transform 0.2s;">
+                <button onclick="ouvrirAchatSecurise()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">
                     Changer d'offre / Payer
                 </button>
             </div>
@@ -49,7 +51,7 @@
 
 <script>
 // ======================================================
-// AJOUTS JAVASCRIPT POUR LA PHOTO ET LE PAIEMENT
+// SCRIPT DE GESTION DES COMPTES (INSCRIPTION, CONNEXION, PHOTO, PAIEMENT)
 // ======================================================
 
 function creerCompte() {
@@ -58,26 +60,42 @@ function creerCompte() {
     if (!pseudo) return alert("Indique un pseudo !");
     
     let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-    if (!bddComptes[pseudo.toLowerCase()]) {
-        bddComptes[pseudo.toLowerCase()] = { 
-            pseudo: pseudo, 
-            statut: "Gratuit (1 an)",
-            avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" 
-        };
-        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+    if (bddComptes[pseudo.toLowerCase()]) {
+        return alert("Ce pseudo existe déjà ! Clique sur 'Se connecter' si c'est ton compte.");
     }
+    
+    bddComptes[pseudo.toLowerCase()] = { 
+        pseudo: pseudo, 
+        statut: "Gratuit (1 an)",
+        avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" 
+    };
+    localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
     compteActuel = bddComptes[pseudo.toLowerCase()];
     connexionInterfaceCompte();
+}
+
+// NOUVELLE FONCTION : SE CONNECTER
+function seConnecterAuditeur() {
+    const inputPseudo = document.getElementById('inscription-pseudo');
+    const pseudo = inputPseudo.value.trim();
+    if (!pseudo) return alert("Rentre ton pseudo pour te connecter !");
+    
+    let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+    if (bddComptes[pseudo.toLowerCase()]) {
+        compteActuel = bddComptes[pseudo.toLowerCase()];
+        connexionInterfaceCompte();
+    } else {
+        alert("❌ Ce pseudo n'existe pas. Vérifie l'écriture ou crée un compte !");
+    }
 }
 
 function connexionInterfaceCompte() {
     if (!compteActuel) return;
     document.getElementById('bloc-inscription').style.display = 'none';
-    document.getElementById('bloc-profil-actif').style.display = 'flex'; // Devient flex pour s'afficher correctement
+    document.getElementById('bloc-profil-actif').style.display = 'flex';
     document.getElementById('profil-pseudo').innerText = compteActuel.pseudo;
     document.getElementById('profil-statut').innerText = compteActuel.statut;
     
-    // Charger la photo si elle existe
     if (compteActuel.avatar) {
         document.getElementById('profil-photo-img').src = compteActuel.avatar;
     }
@@ -85,15 +103,21 @@ function connexionInterfaceCompte() {
     document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté en tant que ${compteActuel.pseudo}. Bienvenue !</p>`;
 }
 
-// Fonction pour changer la photo de profil
+// NOUVELLE FONCTION : SE DÉCONNECTER
+function deconnexionAuditeur() {
+    compteActuel = null;
+    document.getElementById('bloc-inscription').style.display = 'block';
+    document.getElementById('bloc-profil-actif').style.display = 'none';
+    document.getElementById('inscription-pseudo').value = "";
+    document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>`;
+}
+
 function changerMaPhoto(input) {
     if (input.files && input.files[0] && compteActuel) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            // Mettre à jour l'image à l'écran
             document.getElementById('profil-photo-img').src = e.target.result;
             
-            // Sauvegarder dans la base de données locale
             let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
             bddComptes[compteActuel.pseudo.toLowerCase()].avatar = e.target.result;
             localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
@@ -104,7 +128,6 @@ function changerMaPhoto(input) {
     }
 }
 
-// Fenêtre de simulation de paiement
 function ouvrirAchatSecurise() {
     if (!compteActuel) return;
     let choix = prompt(
@@ -131,7 +154,7 @@ function ouvrirAchatSecurise() {
         alert("❌ Option invalide.");
         return;
     } else {
-        return; // Annulé
+        return;
     }
 
     localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
