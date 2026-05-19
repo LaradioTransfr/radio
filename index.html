@@ -300,12 +300,14 @@
     <!-- LOGIQUE JAVASCRIPT GLOBALE SÉCURISÉE                    -->
     <!-- ====================================================== -->
     <script>
+    // VARIABLE TRÈS IMPORTANTE PLACÉE EN HAUT POUR ÉVITER LES BUGS
+    let compteActuel = null; 
+
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
     let monPeer = null, monFluxMicro = null, connexionsAuditeurs = {}; 
     let modeAdminActif = false, microEnPause = false, listePodcastsData = []; 
     let audioContext = null, gainNodeMicro = null, gainNodePlaylist = null, destinationMixee = null, fluxMixe = null, sourceNodeJingle = null, analyserNode = null;
     let horlogeInterval = null, dateCibleTimestamp = null;
-    let compteActuel = null;
 
     // SYSTEME DE COMPTE UTILISATEUR (INSCRIPTION, CONNEXION, DECONNEXION)
     function creerCompte() {
@@ -381,7 +383,11 @@
     }
 
     function ouvrirAchatSecurise() {
-        if (!compteActuel) return;
+        if (!compteActuel) {
+            alert("❌ Tu dois être connecté à ton profil pour ouvrir l'espace paiement !");
+            return;
+        }
+        
         let choix = prompt(
             "💳 PASSERELLE DE PAIEMENT TRANSFR\n\n" +
             "Choisis ton mode en tapant le numéro (1, 2 ou 3) :\n" +
@@ -545,6 +551,7 @@
         }
     }
 
+    function vitesseLecture(vitesse) { document.getElementById('lecteur-musique-studio').playbackRate = vitesse; }
     function arreterMusique() { document.getElementById('lecteur-musique-studio').pause(); document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours"; }
     function chargerMusiquePerso() { const file = document.getElementById('fichier-musique-perso').files[0]; if (file) jouerMusique(URL.createObjectURL(file), file.name); }
 
