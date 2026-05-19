@@ -2,21 +2,27 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radio Transfr - Studio Expert Pro</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
+        body { background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; color: white; }
+        
+        /* C'est ici que se cache ton design "joli" */
         .zone-cliquable-profil { cursor: pointer; transition: background 0.2s; padding: 10px; border-radius: 8px; user-select: none; }
         .zone-cliquable-profil:hover { background: rgba(0, 210, 255, 0.08); }
+        
         .pseudo-super { color: #00d2ff; font-weight: bold; }
         .pseudo-pro { color: #2ed573; font-weight: bold; text-shadow: 0 0 8px #2ed573; }
         .pseudo-superpro { color: #9b59b6; font-weight: bold; text-shadow: 0 0 10px #9b59b6; animation: brille 1.5s infinite alternate; }
         @keyframes brille { from { text-shadow: 0 0 5px #9b59b6; } to { text-shadow: 0 0 15px #d988ff; } }
+        
+        /* Style des conteneurs */
+        .container { max-width: 1100px; margin: 0 auto; }
+        .box { background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44; }
     </style>
 </head>
-<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; color: white;">
+<body>
 
-    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
         <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
             🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
         </div>
@@ -25,7 +31,7 @@
         </div>
     </div>
 
-    <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
+    <div id="zone-compte-utilisateur" class="container box" style="margin-bottom: 20px;">
         <div id="bloc-inscription">
             <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR</h3>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -41,13 +47,13 @@
         </div>
     </div>
 
-    <div id="panneau-admin" style="display: none; max-width: 1100px; margin: 30px auto; background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6;">
+    <div id="panneau-admin" class="container box" style="display: none; border: 2px solid #9b59b6; margin-top: 20px;">
         <h3 style="color: #9b59b6;">🛠️ CONSOLE DIRECTEUR</h3>
-        <input type="text" id="admin-offre-pseudo" placeholder="Pseudo..." style="padding: 10px;">
-        <button onclick="donnerPointsDirecteur()" style="background: #ffa502; border: none; padding: 10px; cursor: pointer;">🎁 DONNER POINTS MAX</button>
+        <input type="text" id="admin-offre-pseudo" placeholder="Pseudo..." style="padding: 10px; border-radius: 5px;">
+        <button onclick="donnerPointsDirecteur()" style="background: #ffa502; border: none; padding: 10px; cursor: pointer; font-weight: bold;">🎁 DONNER +50 POINTS</button>
     </div>
 
-    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e2f; padding: 20px; border: 1px solid #00d2ff;">
+    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e2f; padding: 20px; border: 1px solid #00d2ff; border-radius: 10px;">
         <input type="password" id="code-secret" placeholder="Code secret...">
         <button onclick="verifierCode()">Valider</button>
     </div>
@@ -59,16 +65,11 @@
         let pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
         let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
         if(!bdd[pseudoCible.toLowerCase()]) return alert("Utilisateur introuvable !");
-        
-        // Nombre maximum géré par JavaScript
-        let pointsMax = 9007199254740991;
-        
-        bdd[pseudoCible.toLowerCase()].points = pointsMax;
+        bdd[pseudoCible.toLowerCase()].points = (bdd[pseudoCible.toLowerCase()].points || 0) + 50;
         localStorage.setItem('transfr-comptes', JSON.stringify(bdd));
-        alert("🎁 Points maximum envoyés à " + pseudoCible + " !");
-        
+        alert("🎁 50 points offerts à " + pseudoCible + " !");
         if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudoCible.toLowerCase()){
-            compteActuel.points = pointsMax;
+            compteActuel.points = bdd[pseudoCible.toLowerCase()].points;
             document.getElementById('valeur-points-haut').innerText = compteActuel.points;
         }
     }
