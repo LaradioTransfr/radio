@@ -329,20 +329,35 @@
         document.getElementById('conteneur-tarifs-global').style.display = 'none';
     }
 
-    // CHANGEMENT D'OFFRE : S'APPLIQUE, ENREGISTRE, PUIS CACHE AUTOMATIQUEMENT LA ZONE
+    // CHANGEMENT D'OFFRE : DEMANDE LE PAIEMENT PUIS APPLIQUE LE GRADE
     function choisirOffre(nomOffre) {
-        if (!compteActuel) return;
-        alert(`Félicitations ! Ton compte passe maintenant au : ${nomOffre}`);
+        if (!compteActuel) return alert("Tu dois d'abord être connecté à un compte !");
         
-        compteActuel.statut = nomOffre;
-        document.getElementById('profil-statut').innerText = compteActuel.statut;
+        // Fausse demande de paiement
+        let moyenPaiement = prompt(`Vous avez choisi le : ${nomOffre}\n\nComment souhaitez-vous régler ?\nÉcrivez "CARTE" ou "PAYPAL" :`);
         
-        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-        bddComptes[compteActuel.pseudo.toLowerCase()].statut = nomOffre;
-        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        if (moyenPaiement === null || moyenPaiement.trim() === "") {
+            alert("Paiement annulé. Le grade n'a pas été appliqué.");
+            return;
+        }
         
-        // Cache la zone instantanément !
-        document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
+        let choixNettoye = moyenPaiement.trim().toUpperCase();
+        
+        if (choixNettoye === "CARTE" || choixNettoye === "PAYPAL") {
+            alert(`💸 Paiement simulé avec succès par ${choixNettoye} !\nFélicitations, ton compte passe maintenant au : ${nomOffre}`);
+            
+            compteActuel.statut = nomOffre;
+            document.getElementById('profil-statut').innerText = compteActuel.statut;
+            
+            let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+            bddComptes[compteActuel.pseudo.toLowerCase()].statut = nomOffre;
+            localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+            
+            // Masque la grille automatiquement
+            document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
+        } else {
+            alert("❌ Mode de paiement invalide. Veuillez écrire CARTE ou PAYPAL.");
+        }
     }
 
     function creerCompte() {
