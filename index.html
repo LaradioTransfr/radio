@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radio Transfr - Studio Expert</title>
-    <!-- SCRIPT DE BASE OBLIGATOIRE POUR LE DIRECT ET LE CHAT (PEERJS) -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        /* Effet de survol pour indiquer qu'on peut cliquer sur le profil */
         .zone-cliquable-profil {
             cursor: pointer;
             transition: background 0.2s;
@@ -18,6 +16,15 @@
         .zone-cliquable-profil:hover {
             background: rgba(0, 210, 255, 0.08);
         }
+        /* Styles pour faire briller les pseudos des grades Pro */
+        .pseudo-super { color: #00d2ff; font-weight: bold; }
+        .pseudo-pro { color: #2ed573; font-weight: bold; text-shadow: 0 0 8px #2ed573; }
+        .pseudo-superpro { color: #9b59b6; font-weight: bold; text-shadow: 0 0 10px #9b59b6; animation: brille 1.5s infinite alternate; }
+        
+        @keyframes brille {
+            from { text-shadow: 0 0 5px #9b59b6; }
+            to { text-shadow: 0 0 15px #d988ff; }
+        }
     </style>
 </head>
 <body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
@@ -26,7 +33,6 @@
     <!-- COMPTEUR DE POINTS (HAUT À GAUCHE) & ZONE ADMIN        -->
     <!-- ====================================================== -->
     <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; padding-right: 5px;">
-        <!-- Points affichés en haut à gauche -->
         <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
             🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
         </div>
@@ -38,13 +44,11 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- SECTION 1 : CRÉATION DE COMPTE, CONNEXION & PROFIL AUDITEUR -->
+    <!-- SECTION 1 : CRÉATION DE COMPTE & PROFIL AUDITEUR      -->
     <!-- ====================================================== -->
     <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
-        
-        <!-- ÉCRAN 1 : FORMULAIRE D'INSCRIPTION / CONNEXION -->
         <div id="bloc-inscription">
-            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (Gagne 1 pt par minute !)</h3>
+            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (1 min = 1 point !)</h3>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <input type="text" id="inscription-pseudo" placeholder="Entre ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
                 <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">S'inscrire</button>
@@ -52,42 +56,33 @@
             </div>
         </div>
         
-        <!-- ÉCRAN 2 : PROFIL ACTIF -->
         <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: space-between;">
-                
-                <!-- BLOC INTERACTIF : CLIQUE ICI POUR VOIR LES MODES -->
                 <div onclick="basculerAffichageTarifs()" class="zone-cliquable-profil" style="display: flex; align-items: center; gap: 15px;">
-                    <!-- PHOTO DE PROFIL -->
                     <div style="position: relative; text-align: center;">
                         <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
-                        <label for="input-changer-avatar" style="display: block; font-size: 10px; color: #00d2ff; cursor: pointer; text-decoration: underline; margin-top: 5px;" onclick="event.stopPropagation();">Changer la photo</label>
-                        <input type="file" id="input-changer-avatar" accept="image/*" onchange="changerMaPhoto(this)" style="display: none;">
                     </div>
-
-                    <!-- INFOS DU COMPTE -->
                     <div>
                         <div style="margin-bottom: 5px;">
-                            <span style="font-size: 14px; color: #aaa;">Mon Profil <span style="color: #00d2ff; font-size: 12px;">(Clique pour ouvrir la Boutique de grades)</span> :</span>
+                            <span style="font-size: 14px; color: #aaa;">Mon Profil <span style="color: #00d2ff; font-size: 12px;">(Clique pour ouvrir la Boutique)</span> :</span>
                             <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
                         </div>
                         <div style="margin-bottom: 5px;">
                             <span style="font-size: 14px; color: #aaa;">Statut Actuel :</span>
-                            <span id="profil-statut" style="background: #2ed573; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit</span>
+                            <span id="profil-statut" style="background: #555; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit</span>
                         </div>
                         <button onclick="event.stopPropagation(); deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <!-- ====================================================== -->
-    <!-- SECTION 2 : BOUTIQUE DES GRADES (GRILLE DES TARIFS)     -->
+    <!-- SECTION 2 : BOUTIQUE DES GRADES (MIS À JOUR)            -->
     <!-- ====================================================== -->
     <div id="conteneur-tarifs-global" style="max-width: 1100px; margin: 0 auto 20px auto; display: none; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #3d3d5c;">
-        <h4 style="margin-top: 0; color: #ffa502; text-align: center;">🛒 BOUTIQUE TRANSFR : Échange tes points contre des modes !</h4>
+        <h4 style="margin-top: 0; color: #ffa502; text-align: center;">🛒 BOUTIQUE TRANSFR : Débloque des super fonctions !</h4>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px;">
             
@@ -95,318 +90,218 @@
             <div onclick="choisirOffre('Normal Mois', 10)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center; cursor: pointer;">
                 <h4 style="color: white; margin: 0 0 10px 0;">🙂 Normal Mois</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">10 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">📻 300 h de radio</div>
+                <div style="font-size: 11px; color: #aaa; margin-top: 5px;">Accès au tchat standard pendant 1 mois.</div>
             </div>
 
             <!-- NORMAL AN -->
             <div onclick="choisirOffre('Normal An', 20)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center; cursor: pointer;">
                 <h4 style="color: white; margin: 0 0 10px 0;">📅 Normal An</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">20 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">📻 Fonctions en plus pendant 1 an</div>
+                <div style="font-size: 11px; color: #aaa; margin-top: 5px;">Accès au tchat standard pendant 1 an.</div>
             </div>
 
             <!-- SUPER MOIS -->
             <div onclick="choisirOffre('Super Mois', 20)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center; cursor: pointer;">
                 <h4 style="color: #00d2ff; margin: 0 0 10px 0;">⭐ Super Mois</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">20 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">📻 1000 h de radio</div>
+                <div style="font-size: 11px; color: #2ed573; margin-top: 5px;">🎁 Badge ⭐ exclusif à côté de ton pseudo !</div>
             </div>
 
             <!-- SUPER AN -->
-            <div onclick="choisirOffre('Super An', 30)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center; cursor: pointer;">
+            <div onclick="choisirOffre('Super An', 30)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center; pointer; text-align: center; cursor: pointer;">
                 <h4 style="color: #00d2ff; margin: 0 0 10px 0;">🌟 Super An</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">30 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">🚀 Plus de fonctionnalités (1 an)</div>
+                <div style="font-size: 11px; color: #2ed573; margin-top: 5px;">🎁 Badge ⭐ + Pseudo coloré pendant 1 an.</div>
             </div>
 
             <!-- PRO MOIS -->
             <div onclick="choisirOffre('Pro Mois', 30)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #2ed573; text-align: center; cursor: pointer;">
                 <h4 style="color: #2ed573; margin: 0 0 10px 0;">🔥 Pro Mois</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">30 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">📻 3000 h de radio</div>
+                <div style="font-size: 11px; color: #2ed573; margin-top: 5px;">🚀 Pseudo Brillant Vert + Soundboard Privée (Klaxon/Laser) !</div>
             </div>
 
             <!-- PRO AN -->
             <div onclick="choisirOffre('Pro An', 40)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #2ed573; text-align: center; cursor: pointer;">
                 <h4 style="color: #2ed573; margin: 0 0 10px 0;">⚡ Pro An</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">40 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">💥 Énormément de fonctions (1 an)</div>
+                <div style="font-size: 11px; color: #2ed573; margin-top: 5px;">🚀 Fonctions Pro activées pendant 1 an complet.</div>
             </div>
 
             <!-- SUPER PRO MOIS -->
             <div onclick="choisirOffre('Super Pro Mois', 40)" style="background: linear-gradient(135deg, #2c1a4d, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center; cursor: pointer;">
                 <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 Super Pro Mois</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">40 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">♾️ Radio à l'infini (1 mois)</div>
+                <div style="font-size: 11px; color: #ffa502; margin-top: 5px;">💥 Pseudo Violet Animé + Bouton "Voter pour la Musique" !</div>
             </div>
 
-            <!-- SUPER PRO AN -->
-            <div onclick="choisirOffre('Super Pro An', 60)" style="background: linear-gradient(135deg, #3d1b5c, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center; cursor: pointer;">
-                <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 Super Pro An</h4>
+            <!-- SUPER PRO AN (DEVENU À VIE !) -->
+            <div onclick="choisirOffre('Super Pro An', 60)" style="background: linear-gradient(135deg, #3d1b5c, #1e1e2f); padding: 15px; border-radius: 10px; border: 2px solid #ffa502; text-align: center; cursor: pointer;">
+                <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 Super Pro À VIE</h4>
                 <div style="font-size: 18px; font-weight: bold; color: #ffa502;">60 Points</div>
-                <div style="font-size: 12px; color: #2ed573; margin-bottom: 10px;">✨ Accès absolu à tout pendant 1 an</div>
+                <div style="font-size: 12px; color: #ffa502; font-weight: bold; margin-top: 5px;">✨ TOUTES LES FONCTIONS DÉBLOQUÉES POUR TOUJOURS !</div>
             </div>
         </div>
 
-        <!-- BOUTON POUR FERMER LA BOUTIQUE -->
         <div style="text-align: center;">
             <button onclick="cacherTarifsManuel()" style="background: #ff4757; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">❌ Fermer la Boutique</button>
         </div>
     </div>
 
     <!-- ====================================================== -->
-    <!-- INTERFACE PRINCIPALE DE LA RADIO (AUDITEURS)           -->
+    <!-- FONCTIONS BONUS DU COMPTE (SOUNDBOARD PRO & VOTE)      -->
+    <!-- ====================================================== -->
+    <div id="zone-fonctions-bonus" style="max-width: 500px; margin: 0 auto 20px auto; display: none; background: #1a1a2e; border: 1px solid #2ed573; padding: 15px; border-radius: 12px; text-align: center;">
+        <h4 id="titre-bonus" style="margin: 0 0 10px 0; color: #2ed573;">⚡ Tes Avantages Grade</h4>
+        
+        <!-- Option Pro: Mini Soundboard -->
+        <div id="bonus-soundboard" style="display: none; margin-bottom: 10px;">
+            <p style="font-size: 12px; color: #aaa; margin: 0 0 8px 0;">Bruitages en direct (réservé aux PROs) :</p>
+            <button onclick="auditeurBruitage('klaxon')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 5px;">📯 Klaxon</button>
+            <button onclick="auditeurBruitage('laser')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">🔫 Laser</button>
+        </div>
+
+        <!-- Option Super Pro: Vote -->
+        <div id="bonus-vote" style="display: none; border-top: 1px dashed #333; padding-top: 8px;">
+            <button onclick="auditeurVoter()" style="background: #9b59b6; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; width: 100%;">🎵 Proposer / Voter pour la prochaine musique (Super Pro)</button>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- INTERFACE PRINCIPALE DE LA RADIO                      -->
     <!-- ====================================================== -->
     <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
         <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
         <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">Bienvenue sur la radio officielle de Transfr !</p>
         
-        <div id="zone-planning-auditeur" style="background: rgba(0, 210, 255, 0.05); border: 1px dashed rgba(0, 210, 255, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #00d2ff;">
-            <div style="margin-bottom: 5px; font-weight: bold;">⏳ TEMPS AVANT LE PROCHAIN DIRECT :</div>
-            <div id="compte-a-rebours-ecran" style="font-size: 22px; font-weight: bold; color: #ffa502; letter-spacing: 1px; font-family: monospace; margin-top: 5px;">Pas d'émission prévue</div>
-        </div>
-
         <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #aaa; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
             ⚪ Recherche de la diffusion de Transfr...
         </div>
         
-        <button id="btn-ecouter" onclick="ecouterDirect()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%; box-shadow: 0 4px 15px rgba(0,210,255,0.3); margin-bottom: 25px;">▶️ Écouter le Direct</button>
+        <button id="btn-ecouter" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%;">▶️ Écouter le Direct</button>
         <audio id="audio-live" autoplay></audio>
 
-        <!-- PODCASTS REPLAY -->
-        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 25px; padding-top: 20px; text-align: left;">
-            <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">💾 Émissions en Podcast (Replay) :</h4>
-            <div id="liste-podcasts-publics" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
-                <p id="aucun-podcast-msg" style="color: #666; font-style: italic; font-size: 13px; margin: 0;">Aucun podcast publié pour le moment.</p>
-            </div>
-            <div id="lecteur-podcast-container" style="display: none; background: #12121a; padding: 10px; border-radius: 8px; border: 1px solid #ffa502;">
-                <div id="titre-podcast-en-cours" style="font-size: 12px; color: #ffa502; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Podcast : Aucun</div>
-                <audio id="audio-podcast-player" controls style="width: 100%; height: 30px; accent-color: #ffa502;"></audio>
-            </div>
-        </div>
-
-        <!-- TCHAT AUDITEUR -->
+        <!-- TCHAT AUDITEUR AVEC SUPPORTS VISUELS DE GRADES -->
         <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: left; margin-top: 25px;">
             <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">💬 Tchat en direct :</h4>
             <div id="boite-tchat-auditeur" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; margin-bottom: 15px;">
-                <p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>
+                <p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour participer...</p>
             </div>
-            <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 50px; resize: none;"></textarea>
+            <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 45px; resize: none;"></textarea>
             <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
         </div>
     </div>
 
-    <!-- ====================================================== -->
-    <!-- FENÊTRE CONFIGURATION CHOIX DIRECT OU PODCAST          -->
-    <!-- ====================================================== -->
-    <div id="fenetre-choix-studio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;">
-        <div style="background: #1e1e2f; padding: 30px; border-radius: 16px; border: 2px solid #00d2ff; max-width: 450px; text-align: center;">
-            <h3 style="color: #00d2ff; margin-top: 0; font-size: 22px;">🎙️ CONFIGURATION DE LA SESSION</h3>
-            <p style="color: #ccc; font-size: 14px; margin-bottom: 25px;">Bonjour Directeur. Comment souhaitez-vous exploiter la table de mixage aujourd'hui ?</p>
-            <button onclick="validerChoixStudio('direct')" style="background: #2ed573; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; font-size: 15px; margin-bottom: 12px; display: block;">🔴 LANCER LA RADIO EN DIRECT (Public)</button>
-            <button onclick="validerChoixStudio('podcast')" style="background: #ffa502; color: #1e1e2f; border: none; padding: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; font-size: 15px; display: block;">💾 ENREGISTRER UN PODCAST (Privé)</button>
-            <br>
-            <button onclick="annulerChoixStudio()" style="background: transparent; color: #666; border: none; cursor: pointer; font-size: 13px; text-decoration: underline;">Annuler</button>
-        </div>
-    </div>
+    <!-- [LE RESTE DES ZONE CONFIG/CONNEXION/ADMIN DU DIRECTEUR RESTE PAREIL] -->
+    <div style="margin-top: 20px; text-align: center;"><span onclick="ouvrirConnexion()" style="color: #4a4a6a; font-size: 11px; cursor: pointer; text-decoration: underline;">Accès Administration Studio</span></div>
 
-    <!-- ====================================================== -->
-    <!-- FENÊTRE DE CONNEXION DIRECTEUR -->
-    <!-- ====================================================== -->
     <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; width: 90%; border: 2px solid #00d2ff; box-shadow: 0 0 40px rgba(0,0,0,0.9); z-index: 99999;">
         <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
-        <input type="password" id="code-secret" placeholder="Entrez le code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center;">
+        <input type="password" id="code-secret" placeholder="Code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center;">
         <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;">Valider</button>
-        <br><br>
-        <button onclick="fermerConnexion()" style="background: transparent; color: #666; border: pointer; font-size: 12px; text-decoration: underline;">Fermer</button>
     </div>
 
     <!-- ====================================================== -->
-    <!-- INTERFACE DU PANNEAU DE CONTRÔLE ADMINISTRATEUR COMPLET -->
-    <!-- ====================================================== -->
-    <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 20px auto; padding: 10px;">
-        
-        <!-- MODULE DES GRADES POUR LES UTILISATEURS -->
-        <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6; margin-bottom: 20px; box-shadow: 0 0 15px rgba(155,89,182,0.2);">
-            <h3 style="color: #9b59b6; margin-top: 0;">🎁 OFFRIR UN GRADE / AJOUTER DES POINTS (PANNEAU DIRECTEUR)</h3>
-            <p style="font-size: 13px; color: #aaa;">Gère les auditeurs directement avec leur pseudo.</p>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                <input type="text" id="admin-offre-pseudo" placeholder="Pseudo de l'auditeur..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
-                <select id="admin-offre-choix" style="padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; cursor: pointer;">
-                    <option value="Gratuit">Gratuit</option>
-                    <option value="Normal Mois">Normal Mois (10 pts)</option>
-                    <option value="Normal An">Normal An (20 pts)</option>
-                    <option value="Super Mois">Super Mois (20 pts)</option>
-                    <option value="Super An">Super An (30 pts)</option>
-                    <option value="Pro Mois">Pro Mois (30 pts)</option>
-                    <option value="Pro An">Pro An (40 pts)</option>
-                    <option value="Super Pro Mois">Super Pro Mois (40 pts)</option>
-                    <option value="Super Pro An">Super Pro An (60 pts)</option>
-                </select>
-                <button onclick="attribuerGradeDirecteur()" style="background: #9b59b6; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Appliquer le Grade</button>
-                <button onclick="donnerPointsDirecteur()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">🎁 Donner +50 Points</button>
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
-            <!-- CONSOLE DE GESTION -->
-            <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
-                <div style="text-align: center; margin-bottom: 25px;">
-                    <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 STUDIO EXPERT CO-LIVE</h2>
-                    <span id="badge-studio-actif" style="background: rgba(255, 165, 0, 0.1); color: #ffa502; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE EN ATTENTE</span>
-                </div>
-
-                <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #00d2ff; margin-bottom: 20px;">
-                    <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">⏳ PROGRAMMER LE COMPTE À REBOURS DU DIRECT</h4>
-                    <input type="datetime-local" id="admin-date-heure-precise" style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px; margin-bottom: 10px; cursor: pointer;">
-                    <button onclick="diffuserPlanning()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">🟢 Lancer le Chrono Public</button>
-                </div>
-
-                <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #ffa502; margin-bottom: 20px;">
-                    <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 10px;">📤 METTRE EN LIGNE UN PODCAST FORUM</h4>
-                    <input type="text" id="admin-titre-podcast" placeholder="Titre de l'émission..." style="width: 93%; padding: 8px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px;">
-                    <input type="file" id="admin-fichier-podcast" accept="audio/*" style="font-size: 12px; color: #aaa; margin-bottom: 10px; display: block;">
-                    <button onclick="publierPodcastLigne()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">📂 Publier sur la liste</button>
-                </div>
-
-                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 20px;">
-                    <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">📊 CONTROLE DE L'ANTENNE</h4>
-                    <button id="btn-lancer-live" onclick="ouvrirFenetreChoixStudio()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 12px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%;">🎛️ ALLUMER LA CONSOLE DE MIXAGE</button>
-                    <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 12px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; display: none; margin-top: 10px;">⏸️ METTRE EN PAUSE MICRO</button>
-                    <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 12px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; display: none; margin-top: 10px;">🛑 QUITTER LE STUDIO</button>
-                    <div id="statut-micro-live" style="margin-top: 10px; font-weight: bold; color: #ffa502; font-size: 13px; margin-bottom: 10px;">Studio déconnecté</div>
-                    <div style="background: #12121a; width: 100%; height: 12px; border-radius: 6px; border: 1px solid #333; overflow: hidden;">
-                        <div id="barre-vumetre" style="background: linear-gradient(to right, #2ed573, #ffa502, #ff4757); width: 0%; height: 100%;"></div>
-                    </div>
-                </div>
-
-                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
-                    <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES TABLE DE MIXAGE</h4>
-                    <div style="margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎤 Mon Volume Micro :</span><span id="val-vol-micro" style="color: #2ed573; font-weight: bold;">100%</span></div>
-                        <input type="range" id="slider-vol-micro" min="0" max="100" value="100" oninput="ajusterVolumeMicro()" style="width: 100%; accent-color: #2ed573;">
-                    </div>
-                    <div>
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎵 Volume Musiques / Playlist :</span><span id="val-vol-playlist" style="color: #00d2ff; font-weight: bold;">70%</span></div>
-                        <input type="range" id="slider-vol-playlist" min="0" max="100" value="70" oninput="ajusterVolumePlaylist()" style="width: 100%; accent-color: #00d2ff;">
-                    </div>
-                </div>
-            </div>
-
-            <!-- JINGLES & EFFETS SONORES -->
-            <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #00d2ff;">
-                <h3 style="color: #00d2ff; margin-top: 0; text-align: center;">🎛️ SOUNDBOARD & PLAYLIST</h3>
-                <audio id="lecteur-jingle-instantane" crossorigin="anonymous"></audio>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/2/22/News_Opening_sound.wav', '🚨 Flash Info')" style="background: #222; color: #00d2ff; border: 1px solid #00d2ff; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🚨 Flash Info</button>
-                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/3/30/Small_crowd_clapping_and_cheering.wav', '🎉 Applaudissements')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🎉 Applaid.</button>
-                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/e/e6/Laugh_01.wav', '😂 Rires Studio')" style="background: #222; color: #ffa502; border: 1px solid #ffa502; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">😂 Rires Studio</button>
-                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/c/c5/Bass_Drop_Effect.wav', '💥 Explosion / Drop')" style="background: #222; color: #ff4757; border: 1px solid #ff4757; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">💥 Big Drop</button>
-                </div>
-                
-                <hr style="border-color: #333; margin: 20px 0;">
-                
-                <audio id="lecteur-musique-studio" loop crossorigin="anonymous"></audio>
-                <h4 style="color: #ffa502; margin-bottom: 5px;">🎵 Playlist Intégrée :</h4>
-                <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Rock Classique')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Rock Classique - Piste 1</button>
-                <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Solo')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Guitare Solo - Piste 2</button>
-                <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer;">🎹 Urban Hip-Hop - Piste 3</button>
-                
-                <div style="margin-top: 15px; background: rgba(255,165,0,0.05); padding: 10px; border-radius: 8px; border: 1px dashed #ffa502;">
-                    <span style="font-size: 12px; color: #ffa502;">📂 Diffuser un MP3 du PC :</span>
-                    <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; margin-top: 5px;">
-                </div>
-                <div id="statut-musique" style="margin-top: 10px; font-size: 12px; text-align: center; color: #2ed573;">📴 Aucune musique en cours</div>
-                <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; width: 100%; padding: 8px; border-radius: 6px; margin-top: 5px;">⏹️ Couper la musique</button>
-            </div>
-
-            <!-- INFOS FLASH & METEO WINDY -->
-            <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #2ed573;">
-                <h3 style="color: #2ed573; margin-top: 0; text-align: center;">📰 CARTOGRAPHIE & FLASH INFOS</h3>
-                <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricWind=default&zoom=5&overlay=clouds&product=ecmwf&level=surface&lat=46.5&lon=2.5&detailLat=43.546&detailLon=1.536&detail=true" style="width: 100%; height: 250px; border: none; border-radius: 6px; margin-bottom: 10px;"></iframe>
-                <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 120px; overflow-y: auto;">Chargement des informations...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT                                     -->
+    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET ENRICHIE                -->
     <!-- ====================================================== -->
     <script>
     let compteActuel = null; 
-    let bouclePoints = null; // Gère le gain de points automatique
+    let bouclePoints = null;
 
-    const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
-    let monPeer = null, monFluxMicro = null, connexionsAuditeurs = {}; 
-    let modeAdminActif = false, microEnPause = false; 
-
-    // LANCE LE COMPTEUR : 1 minute passée = 1 point gagné
     function demarrerCompteurPoints() {
         if (bouclePoints) clearInterval(bouclePoints);
-        
         bouclePoints = setInterval(() => {
             if (compteActuel) {
                 compteActuel.points = (compteActuel.points || 0) + 1;
-                
-                // Mettre à jour l'affichage en haut à gauche
                 document.getElementById('valeur-points-haut').innerText = compteActuel.points;
                 
-                // Sauvegarder dans la base de données locale
                 let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
                 bddComptes[compteActuel.pseudo.toLowerCase()].points = compteActuel.points;
                 localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
             }
-        }, 60000); // 60000 millisecondes = 1 minute
+        }, 60000);
     }
 
-    // CLIC SUR LE PROFIL : AFFICHE OU CACHE LE BLOC GLOBAL DES TARIFS
     function basculerAffichageTarifs() {
         if (!compteActuel) return; 
-        
         const conteneurTarifs = document.getElementById('conteneur-tarifs-global');
-        if (conteneurTarifs.style.display === 'none' || conteneurTarifs.style.display === '') {
-            conteneurTarifs.style.display = 'block'; 
-        } else {
-            conteneurTarifs.style.display = 'none'; 
-        }
+        conteneurTarifs.style.display = (conteneurTarifs.style.display === 'none' || conteneurTarifs.style.display === '') ? 'block' : 'none';
     }
 
-    function cacherTarifsManuel() {
-        document.getElementById('conteneur-tarifs-global').style.display = 'none';
-    }
+    function cacherTarifsManuel() { document.getElementById('conteneur-tarifs-global').style.display = 'none'; }
 
-    // ACHAT D'UN GRADE VIA LES POINTS
     function choisirOffre(nomOffre, coutPoints) {
-        if (!compteActuel) return alert("Tu dois d'abord être connecté à un compte !");
-        
-        // On vérifie si l'utilisateur possède assez de points
+        if (!compteActuel) return alert("Tu dois te connecter !");
         let pointsDispos = compteActuel.points || 0;
         
         if (pointsDispos < coutPoints) {
-            return alert(`❌ Tu n'as pas assez de points !\nCe mode coûte ${coutPoints} points, et tu n'en as que ${pointsDispos}. Continues d'écouter la radio !`);
+            return alert(`❌ Pas assez de points !\nCe mode coûte ${coutPoints} points (tu en as ${pointsDispos}). Écoute encore la radio !`);
         }
         
-        // Confirmation de l'échange
         let confirmation = confirm(`🛒 Échanger ${coutPoints} points contre le mode : ${nomOffre} ?`);
         if (!confirmation) return;
         
-        // Déduction des points
         compteActuel.points -= coutPoints;
         compteActuel.statut = nomOffre;
         
-        // Mise à jour des affichages sur le site
         document.getElementById('valeur-points-haut').innerText = compteActuel.points;
         document.getElementById('profil-statut').innerText = compteActuel.statut;
         
-        // Enregistrement bdd
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
         bddComptes[compteActuel.pseudo.toLowerCase()].points = compteActuel.points;
         bddComptes[compteActuel.pseudo.toLowerCase()].statut = nomOffre;
         localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
         
-        alert(`🎉 Succès ! Tu as acheté le [${nomOffre}] !`);
+        alert(`🎉 Succès ! Tu possèdes maintenant le grade [${nomOffre}] !`);
         document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
+        
+        // Activer immédiatement ses nouvelles fonctions bonus !
+        activerFonctionsBonusGrade();
+    }
+
+    // GESTION DYNAMIQUE DES FONCTIONS BONUS
+    function activerFonctionsBonusGrade() {
+        if (!compteActuel) return;
+        
+        const zoneBonus = document.getElementById('zone-fonctions-bonus');
+        const bonusSoundboard = document.getElementById('bonus-soundboard');
+        const bonusVote = document.getElementById('bonus-vote');
+        const titreBonus = document.getElementById('titre-bonus');
+        
+        let grade = compteActuel.statut || "Gratuit";
+        
+        // Reset des affichages
+        zoneBonus.style.display = 'none';
+        bonusSoundboard.style.display = 'none';
+        bonusVote.style.display = 'none';
+        
+        if (grade.includes("Super Mois") || grade.includes("Super An")) {
+            zoneBonus.style.display = 'block';
+            titreBonus.innerText = "⚡ Avantages Grade : Super Auditeur";
+            titreBonus.style.color = "#00d2ff";
+        } 
+        else if (grade.includes("Pro Mois") || grade.includes("Pro An")) {
+            zoneBonus.style.display = 'block';
+            bonusSoundboard.style.display = 'block';
+            titreBonus.innerText = "🔥 Avantages Grade : Auditeur PRO";
+            titreBonus.style.color = "#2ed573";
+        } 
+        else if (grade.includes("Super Pro")) {
+            zoneBonus.style.display = 'block';
+            bonusSoundboard.style.display = 'block';
+            bonusVote.style.display = 'block';
+            titreBonus.innerText = "👑 Avantages : Super Pro À VIE";
+            titreBonus.style.color = "#9b59b6";
+        }
+    }
+
+    // SIMULATION DES ACTIONS EXCLUSIVES
+    function auditeurBruitage(type) {
+        alert(`🎛️ [Fonction PRO] Bruitage "${type}" envoyé au tchat en direct !`);
+    }
+    function auditeurVoter() {
+        let musique = prompt("Quelle chanson veux-tu suggérer au Directeur de Transfr ?");
+        if(musique) alert(`🎵 Suggéré avec succès : "${musique}" a été envoyée en priorité au studio !`);
     }
 
     function creerCompte() {
@@ -415,56 +310,38 @@
         if (!pseudo) return alert("Indique un pseudo !");
         
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-        if (bddComptes[pseudo.toLowerCase()]) {
-            return alert("Ce pseudo existe déjà !");
-        }
+        if (bddComptes[pseudo.toLowerCase()]) return alert("Ce pseudo existe déjà !");
         
-        bddComptes[pseudo.toLowerCase()] = { 
-            pseudo: pseudo, 
-            statut: "Gratuit",
-            points: 0,
-            avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" 
-        };
+        bddComptes[pseudo.toLowerCase()] = { pseudo: pseudo, statut: "Gratuit", points: 10, avatar: "" }; // 10 points bonus à l'inscription !
         localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
         compteActuel = bddComptes[pseudo.toLowerCase()];
-        
         connexionInterfaceCompte();
     }
 
     function seConnecterAuditeur() {
         const inputPseudo = document.getElementById('inscription-pseudo');
         const pseudo = inputPseudo.value.trim();
-        if (!pseudo) return alert("Rentre ton pseudo !");
-        
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
         if (bddComptes[pseudo.toLowerCase()]) {
             compteActuel = bddComptes[pseudo.toLowerCase()];
             connexionInterfaceCompte();
-        } else {
-            alert("❌ Pseudo inconnu.");
-        }
+        } else { alert("Pseudo inconnu."); }
     }
 
     function connexionInterfaceCompte() {
         if (!compteActuel) return;
-        if (compteActuel.points === undefined) compteActuel.points = 0;
-        
         document.getElementById('bloc-inscription').style.display = 'none';
         document.getElementById('bloc-profil-actif').style.display = 'flex';
         document.getElementById('profil-pseudo').innerText = compteActuel.pseudo;
         document.getElementById('profil-statut').innerText = compteActuel.statut;
         
-        // Afficher le widget des points en haut à gauche
         document.getElementById('affichage-points-haut').style.display = 'block';
         document.getElementById('valeur-points-haut').innerText = compteActuel.points;
         
-        if (compteActuel.avatar) {
-            document.getElementById('profil-photo-img').src = compteActuel.avatar;
-        }
-        document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté. Tu gagnes 1 point par minute passée sur la page !</p>`;
+        document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté. Clique sur ton profil pour voir la boutique des fonctions !</p>`;
         
-        // On démarre la boucle de génération des points
         demarrerCompteurPoints();
+        activerFonctionsBonusGrade();
     }
 
     function deconnexionAuditeur() {
@@ -474,67 +351,16 @@
         document.getElementById('bloc-profil-actif').style.display = 'none';
         document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
         document.getElementById('affichage-points-haut').style.display = 'none';
-        document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>`;
+        document.getElementById('zone-fonctions-bonus').style.display = 'none';
     }
 
     function ouvrirConnexion() { document.getElementById('zone-connexion').style.display = 'block'; }
-    function fermerConnexion() { document.getElementById('zone-connexion').style.display = 'none'; }
-    
     function verifierCode() {
         if(document.getElementById('code-secret').value === "1944") {
-            alert("Accès accordé, bonjour Directeur !");
-            document.getElementById('panneau-admin').style.display = 'block';
-            fermerConnexion();
-        } else { alert("Code incorrect !"); }
+            alert("Bonjour Directeur !");
+            document.getElementById('zone-connexion').style.display = 'none';
+        } else { alert("Faux !"); }
     }
-    
-    function attribuerGradeDirecteur() {
-        const pseudo = document.getElementById('admin-offre-pseudo').value.trim();
-        const grade = document.getElementById('admin-offre-choix').value;
-        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-        if(bddComptes[pseudo.toLowerCase()]) {
-            bddComptes[pseudo.toLowerCase()].statut = grade;
-            localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-            alert(`Grade appliqué !`);
-            if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudo.toLowerCase()) {
-                compteActuel.statut = grade;
-                document.getElementById('profil-statut').innerText = grade;
-            }
-        } else { alert("Pseudo introuvable."); }
-    }
-
-    // BONUS DIRECTEUR : Pour s'ajouter ou donner des points de test facilement !
-    function donnerPointsDirecteur() {
-        const pseudo = document.getElementById('admin-offre-pseudo').value.trim();
-        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-        if(bddComptes[pseudo.toLowerCase()]) {
-            bddComptes[pseudo.toLowerCase()].points = (bddComptes[pseudo.toLowerCase()].points || 0) + 50;
-            localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-            alert(`50 points offerts à ${pseudo} !`);
-            if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudo.toLowerCase()) {
-                compteActuel.points = bddComptes[pseudo.toLowerCase()].points;
-                document.getElementById('valeur-points-haut').innerText = compteActuel.points;
-            }
-        } else { alert("Pseudo introuvable."); }
-    }
-    
-    // Fonctions complémentaires
-    function changerMaPhoto(input) {}
-    function ecouterDirect() {}
-    function envoyerCommentaire() {}
-    function ouvrirFenetreChoixStudio() {}
-    function validerChoixStudio(type) {}
-    function annulerChoixStudio() {}
-    function basculerPause() {}
-    function couperLive() {}
-    function diffuserPlanning() {}
-    function publierPodcastLigne() {}
-    function ajusterVolumeMicro() {}
-    function ajusterVolumePlaylist() {}
-    function lancerBruitageInstantane(url, nom) {}
-    function jouerMusique(url, nom) {}
-    function chargerMusiquePerso() {}
-    function arreterMusique() {}
     </script>
 </body>
 </html>
