@@ -1,36 +1,115 @@
-<!-- ... (Tout le début de ton code reste identique jusqu'à la fonction) ... -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Transfr - Studio Expert Pro</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        .zone-cliquable-profil { cursor: pointer; transition: background 0.2s; padding: 10px; border-radius: 8px; user-select: none; }
+        .zone-cliquable-profil:hover { background: rgba(0, 210, 255, 0.08); }
+        .pseudo-super { color: #00d2ff; font-weight: bold; }
+        .pseudo-pro { color: #2ed573; font-weight: bold; text-shadow: 0 0 8px #2ed573; }
+        .pseudo-superpro { color: #9b59b6; font-weight: bold; text-shadow: 0 0 10px #9b59b6; animation: brille 1.5s infinite alternate; }
+        @keyframes brille { from { text-shadow: 0 0 5px #9b59b6; } to { text-shadow: 0 0 15px #d988ff; } }
+    </style>
+</head>
+<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', sans-serif; color: white;">
+
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+        <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
+            🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
+        </div>
+        <div style="margin-left: auto;">
+            <span onclick="ouvrirConnexion()" style="color: #4a4a6a; font-size: 12px; cursor: pointer; text-decoration: underline; opacity: 0.7;">[ Zone Admin ]</span>
+        </div>
+    </div>
+
+    <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
+        <div id="bloc-inscription">
+            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="inscription-pseudo" placeholder="Ton pseudo..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
+                <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer;">S'inscrire</button>
+                <button onclick="seConnecterAuditeur()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer;">Se connecter</button>
+            </div>
+        </div>
+        <div id="bloc-profil-actif" style="display: none;">
+            <p>Pseudo : <strong id="profil-pseudo" style="color: #00d2ff;"></strong></p>
+            <p>Statut : <span id="profil-statut" style="background: #555; padding: 2px 8px; border-radius: 10px;">Gratuit</span></p>
+            <button onclick="deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
+        </div>
+    </div>
+
+    <div id="panneau-admin" style="display: none; max-width: 1100px; margin: 30px auto; background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6;">
+        <h3 style="color: #9b59b6;">🛠️ CONSOLE DIRECTEUR</h3>
+        <input type="text" id="admin-offre-pseudo" placeholder="Pseudo..." style="padding: 10px;">
+        <button onclick="donnerPointsDirecteur()" style="background: #ffa502; border: none; padding: 10px; cursor: pointer;">🎁 DONNER POINTS MAX</button>
+    </div>
+
+    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e2f; padding: 20px; border: 1px solid #00d2ff;">
+        <input type="password" id="code-secret" placeholder="Code secret...">
+        <button onclick="verifierCode()">Valider</button>
+    </div>
 
     <script>
-    let compteActuel = null; 
-    let bouclePoints = null;
-
-    // ... (Tes autres fonctions restent inchangées) ...
+    let compteActuel = null;
 
     function donnerPointsDirecteur() {
         let pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
-        if(!pseudoCible) return alert("Indique le pseudo de l'auditeur !");
+        let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if(!bdd[pseudoCible.toLowerCase()]) return alert("Utilisateur introuvable !");
         
-        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-        if(!bddComptes[pseudoCible.toLowerCase()]) return alert("Cet auditeur n'existe pas !");
+        // Nombre maximum géré par JavaScript
+        let pointsMax = 9007199254740991;
         
-        // Ton nouveau nombre géant
-        let pointsGeants = 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999;
-        
-        bddComptes[pseudoCible.toLowerCase()].points = pointsGeants;
-        
-        // ANCIEN CODE GARDÉ EN MÉMOIRE :
-        // bddComptes[pseudoCible.toLowerCase()].points = (bddComptes[pseudoCible.toLowerCase()].points || 0) + 50;
-        
-        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-        alert(`🎁 Points infinis offerts à [${pseudoCible}] !`);
+        bdd[pseudoCible.toLowerCase()].points = pointsMax;
+        localStorage.setItem('transfr-comptes', JSON.stringify(bdd));
+        alert("🎁 Points maximum envoyés à " + pseudoCible + " !");
         
         if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudoCible.toLowerCase()){
-            compteActuel.points = pointsGeants;
+            compteActuel.points = pointsMax;
             document.getElementById('valeur-points-haut').innerText = compteActuel.points;
         }
     }
 
-    // ... (Le reste de ton code ne change pas) ...
+    function creerCompte() {
+        const pseudo = document.getElementById('inscription-pseudo').value.trim();
+        if (!pseudo) return;
+        let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        bdd[pseudo.toLowerCase()] = { pseudo: pseudo, points: 10, statut: "Gratuit" };
+        localStorage.setItem('transfr-comptes', JSON.stringify(bdd));
+        alert("Compte créé !");
+    }
+
+    function seConnecterAuditeur() {
+        const pseudo = document.getElementById('inscription-pseudo').value.trim();
+        let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if(bdd[pseudo.toLowerCase()]) {
+            compteActuel = bdd[pseudo.toLowerCase()];
+            document.getElementById('bloc-inscription').style.display = 'none';
+            document.getElementById('bloc-profil-actif').style.display = 'block';
+            document.getElementById('profil-pseudo').innerText = compteActuel.pseudo;
+            document.getElementById('affichage-points-haut').style.display = 'block';
+            document.getElementById('valeur-points-haut').innerText = compteActuel.points;
+        }
+    }
+
+    function deconnexionAuditeur() {
+        compteActuel = null;
+        document.getElementById('bloc-inscription').style.display = 'block';
+        document.getElementById('bloc-profil-actif').style.display = 'none';
+        document.getElementById('affichage-points-haut').style.display = 'none';
+    }
+
+    function ouvrirConnexion() { document.getElementById('zone-connexion').style.display = 'block'; }
+
+    function verifierCode() {
+        if(document.getElementById('code-secret').value === "1944") {
+            document.getElementById('panneau-admin').style.display = 'block';
+            document.getElementById('zone-connexion').style.display = 'none';
+        } else { alert("Code incorrect !"); }
+    }
     </script>
 </body>
 </html>
