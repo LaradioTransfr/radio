@@ -70,9 +70,9 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- SECTION 2 : GRILLE DES TARIFS ET FORMULES              -->
+    <!-- SECTION 2 : GRILLE DES TARIFS (MASQUÉE PAR DÉFAUT)    -->
     <!-- ====================================================== -->
-    <div id="zone-tarifs-radio" style="max-width: 1100px; margin: 0 auto 20px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+    <div id="zone-tarifs-radio" style="max-width: 1100px; margin: 0 auto 20px auto; display: none; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
         <div style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center;">
             <h4 style="color: white; margin: 0 0 10px 0;">🙂 Mode Normal</h4>
             <div style="font-size: 18px; font-weight: bold; color: #ffa502;">1 € / mois</div>
@@ -327,7 +327,10 @@
         };
         localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
         compteActuel = bddComptes[pseudo.toLowerCase()];
+        
+        // CORRECTION INTERFACE : On passe en connecté ET on affiche la page des tarifs !
         connexionInterfaceCompte();
+        document.getElementById('zone-tarifs-radio').style.display = 'grid'; 
     }
 
     function seConnecterAuditeur() {
@@ -339,6 +342,9 @@
         if (bddComptes[pseudo.toLowerCase()]) {
             compteActuel = bddComptes[pseudo.toLowerCase()];
             connexionInterfaceCompte();
+            
+            // Si l'utilisateur est déjà connecté, on peut aussi afficher sa grille s'il veut changer
+            document.getElementById('zone-tarifs-radio').style.display = 'grid';
         } else {
             alert("❌ Ce pseudo n'existe pas. Vérifie l'écriture ou crée un compte !");
         }
@@ -363,6 +369,10 @@
         document.getElementById('bloc-inscription').style.display = 'block';
         document.getElementById('bloc-profil-actif').style.display = 'none';
         document.getElementById('inscription-pseudo').value = "";
+        
+        // Quand on se déconnecte, on cache à nouveau la zone des tarifs
+        document.getElementById('zone-tarifs-radio').style.display = 'none';
+        
         document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>`;
     }
 
@@ -387,6 +397,9 @@
             alert("❌ Tu dois être connecté à ton profil pour ouvrir l'espace paiement !");
             return;
         }
+        
+        // S'assurer que la grille est bien visible quand on clique sur le bouton de paiement
+        document.getElementById('zone-tarifs-radio').style.display = 'grid';
         
         let choix = prompt(
             "💳 PASSERELLE DE PAIEMENT TRANSFR\n\n" +
