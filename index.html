@@ -2,107 +2,58 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Expert Pro</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <title>Radio Transfr</title>
     <style>
-        .zone-cliquable-profil { cursor: pointer; transition: background 0.2s; padding: 10px; border-radius: 8px; user-select: none; }
-        .zone-cliquable-profil:hover { background: rgba(0, 210, 255, 0.08); }
-        .live-banner { background: linear-gradient(90deg, #00d2ff, #9b59b6); padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; margin: 0 auto 20px auto; max-width: 1100px; color: white; font-size: 18px; }
-        .pseudo-super { color: #00d2ff; font-weight: bold; }
-        .pseudo-pro { color: #2ed573; font-weight: bold; }
-        .pseudo-superpro { color: #9b59b6; font-weight: bold; animation: brille 1.5s infinite alternate; }
-        @keyframes brille { from { text-shadow: 0 0 5px #9b59b6; } to { text-shadow: 0 0 15px #d988ff; } }
+        body { background: #0c0c14; color: white; font-family: sans-serif; padding: 20px; }
+        .box { background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 20px; }
+        .live-banner { background: #14141f; border: 1px solid #00d2ff; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 20px; }
     </style>
 </head>
-<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white;">
+<body>
 
-    <!-- AJOUT : BANDEAU PROCHAIN LIVE -->
-    <div id="zone-prochain-live" class="live-banner">
-        🕒 Prochain Live Transfr : <span id="affichage-heure-live">Chargement...</span>
+    <!-- Bandeau Live -->
+    <div class="live-banner">
+        Prochain Direct : <span id="affichage-heure-live">À venir</span>
     </div>
 
-    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
-        <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
-            🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
-        </div>
-        <div style="margin-left: auto;">
-            <span onclick="ouvrirConnexion()" style="color: #4a4a6a; font-size: 12px; cursor: pointer; text-decoration: underline;">[ Zone Admin ]</span>
-        </div>
+    <!-- Console Admin -->
+    <div id="panneau-admin" class="box" style="display: none;">
+        <h3>Console Admin</h3>
+        <input type="text" id="input-heure" placeholder="Heure du live...">
+        <button onclick="majHeure()">Mettre à jour l'heure</button>
+        <br><br>
+        <input type="text" id="pseudo-points" placeholder="Pseudo...">
+        <button onclick="ajouterPoints()">Ajouter 50 points</button>
     </div>
 
-    <!-- Reste de ton code original (Zone Profil, Boutique, Lecteur, etc.) -->
-    <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
-        <div id="bloc-inscription">
-            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR</h3>
-            <input type="text" id="inscription-pseudo" placeholder="Ton pseudo...">
-            <button onclick="creerCompte()">S'inscrire</button>
-            <button onclick="seConnecterAuditeur()">Se connecter</button>
-        </div>
-        <div id="bloc-profil-actif" style="display: none;">
-            <strong>Profil : <span id="profil-pseudo"></span></strong> | Statut : <span id="profil-statut"></span>
-            <button onclick="deconnexionAuditeur()">Se déconnecter</button>
-        </div>
-    </div>
-
-    <!-- Panneau Admin avec la nouvelle option -->
-    <div id="panneau-admin" style="display: none; max-width: 1100px; margin: 20px auto; background: #14141f; padding: 20px; border: 2px solid #9b59b6; border-radius: 16px;">
-        <h3 style="color: #9b59b6;">🛠️ CONSOLE DIRECTEUR</h3>
-        
-        <!-- AJOUT : Modification Heure -->
-        <div style="margin-bottom: 20px; padding: 10px; background: #1e1e2f; border-radius: 8px;">
-            <input type="text" id="input-heure-live" placeholder="Ex: Mercredi 14h">
-            <button onclick="mettreAJourHeure()">Mettre à jour l'heure</button>
-        </div>
-
-        <input type="text" id="admin-offre-pseudo" placeholder="Pseudo auditeur...">
-        <button onclick="donnerPointsDirecteur()">🎁 Offrir +50 Points</button>
-    </div>
-
-    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e2f; padding: 20px; border: 2px solid #00d2ff; z-index: 999;">
-        <input type="password" id="code-secret" placeholder="Code secret...">
-        <button onclick="verifierCode()">Valider</button>
-    </div>
+    <button onclick="document.getElementById('panneau-admin').style.display = 'block'">Admin</button>
 
     <script>
-        // --- NOUVELLES FONCTIONS LIVE ---
-        function mettreAJourHeure() {
-            const heure = document.getElementById('input-heure-live').value;
-            localStorage.setItem('transfr-prochain-live', heure);
-            document.getElementById('affichage-heure-live').innerText = heure;
-            alert("Heure mise à jour !");
-        }
-
+        // Charger l'heure et les points au démarrage
         window.onload = function() {
-            const heureSauvee = localStorage.getItem('transfr-prochain-live') || "Bientôt le prochain live !";
-            document.getElementById('affichage-heure-live').innerText = heureSauvee;
-            // ... (tes autres fonctions chargement ici)
+            document.getElementById('affichage-heure-live').innerText = localStorage.getItem('transfr-live') || "À venir";
         };
 
-        // --- TES FONCTIONS ORIGINALES ---
-        let compteActuel = null;
-        function donnerPointsDirecteur() {
-            let pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
-            let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-            if(bdd[pseudoCible.toLowerCase()]) {
-                bdd[pseudoCible.toLowerCase()].points = (bdd[pseudoCible.toLowerCase()].points || 0) + 50;
-                localStorage.setItem('transfr-comptes', JSON.stringify(bdd));
-                alert("🎁 50 points offerts à " + pseudoCible);
+        // Mettre à jour l'heure
+        function majHeure() {
+            let heure = document.getElementById('input-heure').value;
+            localStorage.setItem('transfr-live', heure);
+            document.getElementById('affichage-heure-live').innerText = heure;
+        }
+
+        // Ajouter des points
+        function ajouterPoints() {
+            let pseudo = document.getElementById('pseudo-points').value.toLowerCase();
+            let comptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+            
+            if(comptes[pseudo]) {
+                comptes[pseudo].points = (comptes[pseudo].points || 0) + 50;
+                localStorage.setItem('transfr-comptes', JSON.stringify(comptes));
+                alert("50 points ajoutés à " + pseudo);
+            } else {
+                alert("Compte inconnu !");
             }
         }
-
-        function ouvrirConnexion() { document.getElementById('zone-connexion').style.display = 'block'; }
-        
-        function verifierCode() {
-            if(document.getElementById('code-secret').value === "1944") {
-                document.getElementById('panneau-admin').style.display = 'block';
-                document.getElementById('zone-connexion').style.display = 'none';
-            } else { alert("Code incorrect !"); }
-        }
-
-        function creerCompte() { /* ton code original */ }
-        function seConnecterAuditeur() { /* ton code original */ }
-        function deconnexionAuditeur() { /* ton code original */ }
     </script>
 </body>
 </html>
