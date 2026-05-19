@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Expert</title>
+    <title>Radio Transfr - Studio Expert Pro</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         .zone-cliquable-profil {
@@ -63,7 +63,7 @@
                     </div>
                     <div>
                         <div style="margin-bottom: 5px;">
-                            <span style="font-size: 14px; color: #aaa;">Mon Profil <span style="color: #00d2ff; font-size: 12px;">(Clique pour ouvrir la Boutique)</span> :</span>
+                            <span style="font-size: 14px; color: #aaa;">Mon Profil <span style="color: #00d2ff; font-size: 12px;">(Clique pour la Boutique)</span> :</span>
                             <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
                         </div>
                         <div style="margin-bottom: 5px;">
@@ -123,7 +123,7 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- FONCTIONS BONUS DU COMPTE (SOUNDBOARD PRO & VOTE)      -->
+    <!-- FONCTIONS BONUS DU COMPTE                              -->
     <!-- ====================================================== -->
     <div id="zone-fonctions-bonus" style="max-width: 500px; margin: 0 auto 20px auto; display: none; background: #1a1a2e; border: 1px solid #2ed573; padding: 15px; border-radius: 12px; text-align: center;">
         <h4 id="titre-bonus" style="margin: 0 0 10px 0; color: #2ed573;">⚡ Tes Avantages Grade</h4>
@@ -161,7 +161,7 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- FENÊTRE DE CONNEXION DIRECTEUR -->
+    <!-- FENÊTRE DE CONNEXION DIRECTEUR                         -->
     <!-- ====================================================== -->
     <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; width: 90%; border: 2px solid #00d2ff; box-shadow: 0 0 40px rgba(0,0,0,0.9); z-index: 99999;">
         <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
@@ -170,58 +170,93 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- INTERFACE DU PANNEAU DE CONTRÔLE ADMINISTRATEUR COMPLET -->
+    <!-- INTERFACE DU PANNEAU DE CONTRÔLE ADMINISTRATEUR ULTRA RECOMPLÉTÉ -->
     <!-- ====================================================== -->
-    <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 20px auto; padding: 10px;">
+    <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 30px auto; padding: 10px;">
+        
+        <!-- MODULE DE GESTION DES GRADES ET POINTS -->
         <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6; margin-bottom: 20px;">
-            <h3 style="color: #9b59b6; margin-top: 0;">🎁 OFFRIR UN GRADE / AJOUTER DES POINTS</h3>
+            <h3 style="color: #9b59b6; margin-top: 0;">🎁 CONTRÔLE DES AUDITEURS (Points & Forfaits)</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                 <input type="text" id="admin-offre-pseudo" placeholder="Pseudo de l'auditeur..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
                 <select id="admin-offre-choix" style="padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
                     <option value="Gratuit">Gratuit</option>
-                    <option value="Normal Mois">Normal Mois (10 pts)</option>
-                    <option value="Normal An">Normal An (20 pts)</option>
-                    <option value="Super Mois">Super Mois (20 pts)</option>
-                    <option value="Super An">Super An (30 pts)</option>
-                    <option value="Pro Mois">Pro Mois (30 pts)</option>
-                    <option value="Pro An">Pro An (40 pts)</option>
-                    <option value="Super Pro Mois">Super Pro Mois (40 pts)</option>
-                    <option value="Super Pro An">Super Pro À VIE (60 pts)</option>
+                    <option value="Normal Mois">Normal Mois</option>
+                    <option value="Normal An">Normal An</option>
+                    <option value="Super Mois">Super Mois</option>
+                    <option value="Super An">Super An</option>
+                    <option value="Pro Mois">Pro Mois</option>
+                    <option value="Pro An">Pro An</option>
+                    <option value="Super Pro Mois">Super Pro Mois</option>
+                    <option value="Super Pro An">Super Pro À VIE</option>
                 </select>
                 <button onclick="attribuerGradeDirecteur()" style="background: #9b59b6; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Appliquer le Grade</button>
-                <button onclick="donnerPointsDirecteur()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">🎁 Donner +50 Points</button>
+                <button onclick="donnerPointsDirecteur()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">🎁 Offrir +50 Points</button>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
-            <!-- CONSOLE DE MIXAGE -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 20px;">
+            
+            <!-- CONSOLE DE MIXAGE ET MICRO -->
             <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff;">
                 <h2 style="color: #00d2ff; text-align: center; margin: 0 0 20px 0;">🎙️ CONSOLE DE MIXAGE TRANSFR</h2>
-                
-                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 20px;">
-                    <button id="btn-lancer-live" style="background: #2ed573; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%;">🔴 ALLUMER LE MICRO / DIRECT</button>
+                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 20px; text-align: center;">
+                    <button id="btn-lancer-live" style="background: #2ed573; color: white; border: none; padding: 14px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 15px;">🔴 ALLUMER LE MICRO / LANCER LE DIRECT</button>
+                    <p style="font-size: 11px; color: #888; margin-top: 8px; margin-bottom: 0;">ID Studio PeerJS : <span id="mon-id-peer" style="color: #ffa502; font-weight: bold;">En attente...</span></p>
                 </div>
-
                 <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
-                    <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES TABLE DE MIXAGE</h4>
+                    <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 12px;">🎛️ NIVEAUX VOLUMES</h4>
+                    <label style="font-size: 12px; color: #aaa;">🎤 Volume Micro :</label>
                     <input type="range" id="slider-vol-micro" min="0" max="100" value="100" style="width: 100%; margin-bottom: 15px;">
-                    <input type="range" id="slider-vol-playlist" min="0" max="100" value="70" style="width: 100%;">
+                    <label style="font-size: 12px; color: #aaa;">🎵 Volume Musique de fond :</label>
+                    <input type="range" id="slider-vol-playlist" min="0" max="100" value="50" style="width: 100%;">
                 </div>
             </div>
 
-            <!-- SOUNDBOARD STUDIO -->
-            <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #00d2ff;">
-                <h3 style="color: #00d2ff; margin-top: 0; text-align: center;">🎛️ SOUNDBOARD STUDIO</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button onclick="alert('🚨 Flash Info lancé !')" style="background: #222; color: #00d2ff; border: 1px solid #00d2ff; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🚨 Flash Info</button>
-                    <button onclick="alert('🎉 Applaudissements lancés !')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🎉 Applaud.</button>
+            <!-- PLAYLIST DE SELECTION MUSICALE (FREE MUSIC) -->
+            <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; display: flex; flex-direction: column;">
+                <h3 style="color: #00d2ff; margin-top: 0; text-align: center;">🎵 GESTIONNAIRE DE PLAYLIST</h3>
+                <div style="background: #12121a; border-radius: 8px; padding: 10px; height: 140px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 13px; margin-bottom: 10px;" id="liste-morceaux-playlist">
+                    <div style="padding: 6px; background: #1e1e2f; margin-bottom: 5px; border-radius: 4px; display: flex; justify-content: space-between;"><span>🎹 LAKEY INSPIRED - Chill Day</span> <span style="color: #2ed573; font-weight: bold;">Sélectionné</span></div>
+                    <div style="padding: 6px; background: #12121a; margin-bottom: 5px; border-radius: 4px; color: #aaa;">🍃 Idealism - phantasia</div>
+                    <div style="padding: 6px; background: #12121a; margin-bottom: 5px; border-radius: 4px; color: #aaa;">⚡ Tobu - Hope</div>
+                    <div style="padding: 6px; background: #12121a; margin-bottom: 5px; border-radius: 4px; color: #aaa;">🐾 TheFatRat - Unity</div>
+                    <div style="padding: 6px; background: #12121a; margin-bottom: 5px; border-radius: 4px; color: #aaa;">🎬 Kevin MacLeod - Monkeys Spinning Monkeys</div>
                 </div>
+                <button onclick="ajouterLienMusique()" style="background: transparent; color: #00d2ff; border: 1px dashed #00d2ff; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; width: 100%;">➕ Ajouter un fichier MP3 / Lien YouTube Audio Library</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+            <!-- SOUNDBOARD JINGLES & EFFETS -->
+            <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #2ed573;">
+                <h3 style="color: #2ed573; margin-top: 0; text-align: center;">🎛️ SOUNDBOARD COMMANDE DIRECTE</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button onclick="lancerJingle('flash')" style="background: #222; color: #00d2ff; border: 1px solid #00d2ff; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🚨 Flash Info</button>
+                    <button onclick="lancerJingle('applaudissements')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🎉 Applaud.</button>
+                    <button onclick="lancerJingle('rire')" style="background: #222; color: #ffa502; border: 1px solid #ffa502; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">😂 Rires</button>
+                    <button onclick="lancerJingle('pub')" style="background: #222; color: #ea2027; border: 1px solid #ea2027; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">📺 Pause Pub</button>
+                </div>
+            </div>
+
+            <!-- MODULE METEO AUTOMATIQUE -->
+            <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #ffa502;">
+                <h3 style="color: #ffa502; margin-top: 0; text-align: center;">🌤️ BULLETIN MÉTÉO EN DIRECT</h3>
+                <div style="background: #1e1e2f; padding: 12px; border-radius: 8px; border: 1px solid #2d2d44; margin-bottom: 15px;">
+                    <p style="margin: 0 0 8px 0; font-size: 13px; color: #aaa;">Sélectionne le temps pour générer le flash météo :</p>
+                    <select id="selecteur-meteo" style="width: 100%; padding: 8px; border-radius: 6px; background: #12121a; color: white; border: 1px solid #3d3d5c;">
+                        <option value="soleil">☀️ Grand Soleil sur toute la France</option>
+                        <option value="pluie">🌧️ Pluies battantes et orages prévus</option>
+                        <option value="nuage">☁️ Temps nuageux et frais ce matin</option>
+                    </select>
+                </div>
+                <button onclick="diffuserMeteoLive()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer;">📢 Diffuser le Flash Météo</button>
             </div>
         </div>
     </div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT CORRIGÉE                            -->
+    <!-- LOGIQUE JAVASCRIPT CORRIGÉE ET COMPLÈTE                -->
     <!-- ====================================================== -->
     <script>
     let compteActuel = null; 
@@ -309,8 +344,55 @@
         }
     }
 
-    function auditeurBruitage(type) { alert(`🎛️ Bruitage "${type}" envoyé !`); }
-    function auditeurVoter() { alert(`🎵 Proposition envoyée au studio !`); }
+    function auditeurBruitage(type) { alert(`🎛️ Bruitage "${type}" envoyé au tchat en direct !`); }
+    function auditeurVoter() { alert(`🎵 Ta proposition musicale a été envoyée au studio !`); }
+
+    // FONCTIONS EXCLUSIVES DU COMPTE DIRECTEUR
+    function attribuerGradeDirecteur() {
+        let pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
+        let gradeChoisi = document.getElementById('admin-offre-choix').value;
+        if(!pseudoCible) return alert("Indique le pseudo de l'auditeur !");
+        
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if(!bddComptes[pseudoCible.toLowerCase()]) return alert("Cet auditeur n'existe pas encore !");
+        
+        bddComptes[pseudoCible.toLowerCase()].statut = gradeChoisi;
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        alert(`🎯 Le grade de [${pseudoCible}] a été mis sur : ${gradeChoisi}`);
+        
+        if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudoCible.toLowerCase()){
+            compteActuel.statut = gradeChoisi;
+            document.getElementById('profil-statut').innerText = gradeChoisi;
+            activerFonctionsBonusGrade();
+        }
+    }
+
+    function donnerPointsDirecteur() {
+        let pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
+        if(!pseudoCible) return alert("Indique le pseudo de l'auditeur !");
+        
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if(!bddComptes[pseudoCible.toLowerCase()]) return alert("Cet auditeur n'existe pas !");
+        
+        bddComptes[pseudoCible.toLowerCase()].points = (bddComptes[pseudoCible.toLowerCase()].points || 0) + 50;
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        alert(`🎁 +50 points offerts à [${pseudoCible}] !`);
+        
+        if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudoCible.toLowerCase()){
+            compteActuel.points += 50;
+            document.getElementById('valeur-points-haut').innerText = compteActuel.points;
+        }
+    }
+
+    function lancerJingle(type) { alert(`🎵 [Studio Jingle] Effet lancé en direct : ${type.toUpperCase()} !`); }
+    function diffuserMeteoLive() {
+        let choix = document.getElementById('selecteur-meteo').value;
+        alert(`🌤️ [Flash Météo Direct] Alerte lancée : Option "${choix}" envoyée à tous les auditeurs !`);
+    }
+    function ajouterLienMusique() {
+        let lien = prompt("Copie le lien de ta musique (YouTube Audio Library ou fichier .mp3) :");
+        if(lien) alert("Musique ajoutée avec succès à ta file d'attente !");
+    }
 
     function creerCompte() {
         const inputPseudo = document.getElementById('inscription-pseudo');
@@ -359,12 +441,11 @@
     }
 
     function ouvrirConnexion() { document.getElementById('zone-connexion').style.display = 'block'; }
-    
-    // CORRECTION : Active l'affichage du panneau admin de la page !
     function verifierCode() {
         if(document.getElementById('code-secret').value === "1944") {
-            alert("Bonjour Directeur !");
-            document.getElementById('panneau-admin').style.display = 'block'; // Fait apparaître le panneau !
+            alert("Bonjour Directeur Macéo ! Lancement de la console...");
+            document.getElementById('panneau-admin').style.display = 'block'; 
+            document.getElementById('mon-id-peer').innerText = "TRANSFR-STUDIO-MAIN";
             document.getElementById('zone-connexion').style.display = 'none';
         } else { alert("Code secret incorrect !"); }
     }
