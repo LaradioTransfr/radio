@@ -3,48 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Inscription & Studio Expert</title>
+    <title>Radio Transfr - Studio Expert</title>
     <!-- SCRIPT DE BASE OBLIGATOIRE POUR LE DIRECT ET LE CHAT (PEERJS) -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        /* --- AJOUTS DE STYLE POUR L'ANIMATION DU BOUTON ET DE LA FENÊTRE DE PAIEMENT --- */
-        #payment-modal {
-            position: fixed;
-            background-color: #2ec4b6;
-            color: white;
-            border: none;
+        /* Effet de survol pour indiquer qu'on peut cliquer sur le profil */
+        .zone-cliquable-profil {
             cursor: pointer;
-            font-weight: bold;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            z-index: 10000;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: background 0.2s;
+            padding: 10px;
+            border-radius: 8px;
+            user-select: none;
         }
-
-        /* État initial : bouton caché ou discret */
-        .mode-rond {
-            top: 20px;
-            right: 20px;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            font-size: 24px;
-        }
-
-        /* État déplié : Fenêtre centrale de validation */
-        .mode-agrandi {
-            top: 50%;
-            right: 50%;
-            transform: translate(50%, -50%);
-            width: 320px;
-            height: 170px;
-            border-radius: 14px;
-            font-size: 16px;
-            flex-direction: column;
-            background-color: #ffa502;
-            color: #1e1e2f;
+        .zone-cliquable-profil:hover {
+            background: rgba(0, 210, 255, 0.08);
         }
     </style>
 </head>
@@ -74,36 +46,31 @@
             </div>
         </div>
         
-        <!-- ÉCRAN 2 : PROFIL ACTIF (AVEC PHOTO, DECONNEXION ET PAIEMENT) -->
+        <!-- ÉCRAN 2 : PROFIL ACTIF -->
         <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
             <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
                 
-                <!-- BLOC PHOTO DE PROFIL -->
-                <div style="position: relative; text-align: center;">
-                    <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
-                    <label for="input-changer-avatar" style="display: block; font-size: 10px; color: #00d2ff; cursor: pointer; text-decoration: underline; margin-top: 5px;">Changer la photo</label>
-                    <input type="file" id="input-changer-avatar" accept="image/*" onchange="changerMaPhoto(this)" style="display: none;">
-                </div>
-
-                <!-- INFOS DU COMPTE -->
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 5px;">
-                        <span style="font-size: 14px; color: #aaa;">Mon Compte :</span>
-                        <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
+                <!-- BLOC INTERACTIF : CLIQUE ICI POUR VOIR LES MODES -->
+                <div onclick="basculerAffichageTarifs()" class="zone-cliquable-profil" style="display: flex; align-items: center; gap: 15px;">
+                    <!-- PHOTO DE PROFIL -->
+                    <div style="position: relative; text-align: center;">
+                        <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
+                        <label for="input-changer-avatar" style="display: block; font-size: 10px; color: #00d2ff; cursor: pointer; text-decoration: underline; margin-top: 5px;" onclick="event.stopPropagation();">Changer la photo</label>
+                        <input type="file" id="input-changer-avatar" accept="image/*" onchange="changerMaPhoto(this)" style="display: none;">
                     </div>
-                    <div style="margin-bottom: 5px;">
-                        <span style="font-size: 14px; color: #aaa;">Statut Actuel :</span>
-                        <span id="profil-statut" style="background: #2ed573; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit (1 an)</span>
-                    </div>
-                    <button onclick="deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
-                </div>
 
-                <!-- BOUTON DE PAIEMENT SÉCURISÉ INTÉGRÉ -->
-                <div id="bloc-paiement-profil" style="background: rgba(255, 165, 0, 0.1); border: 1px solid #ffa502; padding: 12px 20px; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 11px; color: #ffa502; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">💳 ESPACE ABONNEMENT</div>
-                    <button onclick="ouvrirAchatSecurise()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">
-                        Changer d'offre / Payer
-                    </button>
+                    <!-- INFOS DU COMPTE -->
+                    <div>
+                        <div style="margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: #aaa;">Mon Profil <span style="color: #00d2ff; font-size: 12px;">(Clique ici pour voir/cacher les modes)</span> :</span>
+                            <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: #aaa;">Statut Actuel :</span>
+                            <span id="profil-statut" style="background: #2ed573; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit (1 an)</span>
+                        </div>
+                        <button onclick="event.stopPropagation(); deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
+                    </div>
                 </div>
 
             </div>
@@ -111,51 +78,60 @@
     </div>
 
     <!-- ====================================================== -->
-    <!-- SECTION 2 : GRILLE DES TARIFS (MASQUÉE PAR DÉFAUT)    -->
+    <!-- SECTION 2 : GRILLE DES TARIFS (MASQUÉE PAR DÉFAUT !)   -->
     <!-- ====================================================== -->
-    <div id="zone-tarifs-radio" style="max-width: 1100px; margin: 0 auto 20px auto; display: none; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-        <div style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center;">
-            <h4 style="color: white; margin: 0 0 10px 0;">🙂 Mode Normal</h4>
-            <div style="font-size: 18px; font-weight: bold; color: #ffa502;">1 € / mois</div>
-            <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 3 € / an</div>
-            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
-                <li>🤖 IA intégrée</li>
-                <li>📻 300 h de radio</li>
-                <li>➕ Fonctions en plus</li>
-            </ul>
+    <div id="conteneur-tarifs-global" style="max-width: 1100px; margin: 0 auto 20px auto; display: none; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #3d3d5c;">
+        <h4 style="margin-top: 0; color: #ffa502; text-align: center;">💎 Choisissez votre mode d'écoute :</h4>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+            <div onclick="choisirOffre('Mode Normal')" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center; cursor: pointer;">
+                <h4 style="color: white; margin: 0 0 10px 0;">🙂 Mode Normal</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">1 € / mois</div>
+                <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 3 € / an</div>
+                <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc; pointer-events: none;">
+                    <li>🤖 IA intégrée</li>
+                    <li>📻 300 h de radio</li>
+                    <li>➕ Fonctions en plus</li>
+                </ul>
+            </div>
+
+            <div onclick="choisirOffre('Mode Super')" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center; cursor: pointer;">
+                <h4 style="color: #00d2ff; margin: 0 0 10px 0;">⭐ Mode Super</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">2 € / mois</div>
+                <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 4 € / an</div>
+                <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc; pointer-events: none;">
+                    <li>🤖 IA intégrée</li>
+                    <li>📻 1000 h de radio</li>
+                    <li>🚀 Plus de fonctionnalités</li>
+                </ul>
+            </div>
+
+            <div onclick="choisirOffre('Format PRO')" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #2ed573; text-align: center; cursor: pointer;">
+                <h4 style="color: #2ed573; margin: 0 0 10px 0;">🔥 Format PRO</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">3 € / mois</div>
+                <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 5 € / an</div>
+                <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc; pointer-events: none;">
+                    <li>🤖 IA intégrée</li>
+                    <li>📻 3000 h de radio</li>
+                    <li>💥 Énormément de fonctions</li>
+                </ul>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #2c1a4d, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center;">
+                <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 SUPER PRO</h4>
+                <div style="font-size: 19px; font-weight: bold; color: #ffa502;">À VIE ✨</div>
+                <div style="font-size: 11px; color: #aaa; margin-bottom: 10px;">(Offert par le Directeur)</div>
+                <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
+                    <li>🤖 IA Premium intégrée</li>
+                    <li>♾️ Radio À L'INFINI</li>
+                    <li>⚡ Accès absolu à tout</li>
+                </ul>
+            </div>
         </div>
 
-        <div style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center;">
-            <h4 style="color: #00d2ff; margin: 0 0 10px 0;">⭐ Mode Super</h4>
-            <div style="font-size: 18px; font-weight: bold; color: #ffa502;">2 € / mois</div>
-            <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 4 € / an</div>
-            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
-                <li>🤖 IA intégrée</li>
-                <li>📻 1000 h de radio</li>
-                <li>🚀 Plus de fonctionnalités</li>
-            </ul>
-        </div>
-
-        <div style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #2ed573; text-align: center;">
-            <h4 style="color: #2ed573; margin: 0 0 10px 0;">🔥 Format PRO</h4>
-            <div style="font-size: 18px; font-weight: bold; color: #ffa502;">3 € / mois</div>
-            <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 5 € / an</div>
-            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
-                <li>🤖 IA intégrée</li>
-                <li>📻 3000 h de radio</li>
-                <li>💥 Énormément de fonctions</li>
-            </ul>
-        </div>
-
-        <div style="background: linear-gradient(135deg, #2c1a4d, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center;">
-            <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 SUPER PRO</h4>
-            <div style="font-size: 19px; font-weight: bold; color: #ffa502;">À VIE ✨</div>
-            <div style="font-size: 11px; color: #aaa; margin-bottom: 10px;">(Offert par le Directeur)</div>
-            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
-                <li>🤖 IA Premium intégrée</li>
-                <li>♾️ Radio À L'INFINI</li>
-                <li>⚡ Accès absolu à tout</li>
-            </ul>
+        <!-- BOUTON MANUEL POUR FERMER SANS ACHETER -->
+        <div style="text-align: center;">
+            <button onclick="cacherTarifsManuel()" style="background: #ff4757; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">❌ Fermer les modes</button>
         </div>
     </div>
 
@@ -200,13 +176,6 @@
             <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
         </div>
     </div>
-
-    <!-- ====================================================== -->
-    <!-- MODULE DE PAIEMENT INTEGRI (BOUTON DEPLIABLE)          -->
-    <!-- ====================================================== -->
-    <button id="payment-modal" class="mode-rond" onclick="gererClicPaiement()">
-        <span id="payment-text">€</span>
-    </button>
 
     <!-- ====================================================== -->
     <!-- FENÊTRE CONFIGURATION CHOIX DIRECT OU PODCAST          -->
@@ -255,24 +224,20 @@
             </div>
         </div>
 
-        <!-- REPOUSSE DE LA GRANDE GRILLE DES MODULES DU STUDIO -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
-            
-            <!-- COLONNE CONSOLE DE GESTION -->
+            <!-- CONSOLE DE GESTION -->
             <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
                 <div style="text-align: center; margin-bottom: 25px;">
                     <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 STUDIO EXPERT CO-LIVE</h2>
                     <span id="badge-studio-actif" style="background: rgba(255, 165, 0, 0.1); color: #ffa502; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE EN ATTENTE</span>
                 </div>
 
-                <!-- COMPTE À REBOURS DU DIRECT -->
                 <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #00d2ff; margin-bottom: 20px;">
                     <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">⏳ PROGRAMMER LE COMPTE À REBOURS DU DIRECT</h4>
                     <input type="datetime-local" id="admin-date-heure-precise" style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px; margin-bottom: 10px; cursor: pointer;">
                     <button onclick="diffuserPlanning()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">🟢 Lancer le Chrono Public</button>
                 </div>
 
-                <!-- PUBLICATION DES PODCASTS REPLAY -->
                 <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #ffa502; margin-bottom: 20px;">
                     <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 10px;">📤 METTRE EN LIGNE UN PODCAST FORUM</h4>
                     <input type="text" id="admin-titre-podcast" placeholder="Titre de l'émission..." style="width: 93%; padding: 8px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px;">
@@ -280,7 +245,6 @@
                     <button onclick="publierPodcastLigne()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">📂 Publier sur la liste</button>
                 </div>
 
-                <!-- ANTENNE & VU-METRE -->
                 <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 20px;">
                     <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">📊 CONTROLE DE L'ANTENNE</h4>
                     <button id="btn-lancer-live" onclick="ouvrirFenetreChoixStudio()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 12px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%;">🎛️ ALLUMER LA CONSOLE DE MIXAGE</button>
@@ -292,7 +256,6 @@
                     </div>
                 </div>
 
-                <!-- VOLUMES DE LA TABLE DE MIXAGE -->
                 <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
                     <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES TABLE DE MIXAGE</h4>
                     <div style="margin-bottom: 15px;">
@@ -306,14 +269,14 @@
                 </div>
             </div>
 
-            <!-- COLONNE JINGLES & EFFETS SONORES -->
+            <!-- JINGLES & EFFETS SONORES -->
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #00d2ff;">
                 <h3 style="color: #00d2ff; margin-top: 0; text-align: center;">🎛️ SOUNDBOARD & PLAYLIST</h3>
                 <audio id="lecteur-jingle-instantane" crossorigin="anonymous"></audio>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/2/22/News_Opening_sound.wav', '🚨 Flash Info')" style="background: #222; color: #00d2ff; border: 1px solid #00d2ff; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🚨 Flash Info</button>
-                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/3/30/Small_crowd_clapping_and_cheering.wav', '🎉 Applaudissements')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🎉 Applaudis.</button>
+                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/3/30/Small_crowd_clapping_and_cheering.wav', '🎉 Applaudissements')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🎉 Applaid.</button>
                     <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/e/e6/Laugh_01.wav', '😂 Rires Studio')" style="background: #222; color: #ffa502; border: 1px solid #ffa502; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">😂 Rires Studio</button>
                     <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/c/c5/Bass_Drop_Effect.wav', '💥 Explosion / Drop')" style="background: #222; color: #ff4757; border: 1px solid #ff4757; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">💥 Big Drop</button>
                 </div>
@@ -322,8 +285,8 @@
                 
                 <audio id="lecteur-musique-studio" loop crossorigin="anonymous"></audio>
                 <h4 style="color: #ffa502; margin-bottom: 5px;">🎵 Playlist Intégrée :</h4>
-                <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Rock Classique Énergique')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Rock Classique - Piste 1</button>
-                <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Guitare Solo - Piste 2</button>
+                <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Rock Classique')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Rock Classique - Piste 1</button>
+                <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Solo')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Guitare Solo - Piste 2</button>
                 <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer;">🎹 Urban Hip-Hop - Piste 3</button>
                 
                 <div style="margin-top: 15px; background: rgba(255,165,0,0.05); padding: 10px; border-radius: 8px; border: 1px dashed #ffa502;">
@@ -334,31 +297,58 @@
                 <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; width: 100%; padding: 8px; border-radius: 6px; margin-top: 5px;">⏹️ Couper la musique</button>
             </div>
 
-            <!-- COLONNE INFOS FLASH & METEO WINDY -->
+            <!-- INFOS FLASH & METEO WINDY -->
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #2ed573;">
                 <h3 style="color: #2ed573; margin-top: 0; text-align: center;">📰 CARTOGRAPHIE & FLASH INFOS</h3>
                 <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricWind=default&zoom=5&overlay=clouds&product=ecmwf&level=surface&lat=46.5&lon=2.5&detailLat=43.546&detailLon=1.536&detail=true" style="width: 100%; height: 250px; border: none; border-radius: 6px; margin-bottom: 10px;"></iframe>
-                <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 120px; overflow-y: auto;">Chargement des informations en temps réel...</div>
+                <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 120px; overflow-y: auto;">Chargement des informations...</div>
             </div>
-
         </div>
     </div>
 
     <!-- ====================================================== -->
-    <!-- LOGIQUE JAVASCRIPT GLOBALE SÉCURISÉE                    -->
+    <!-- LOGIQUE JAVASCRIPT                                     -->
     <!-- ====================================================== -->
     <script>
-    // VARIABLE TRÈS IMPORTANTE PLACÉE EN HAUT POUR ÉVITER LES BUGS
     let compteActuel = null; 
 
     const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
     let monPeer = null, monFluxMicro = null, connexionsAuditeurs = {}; 
-    let modeAdminActif = false, microEnPause = false, listePodcastsData = []; 
-    let audioContext = null, gainNodeMicro = null, gainNodePlaylist = null, destinationMixee = null, fluxMixe = null, sourceNodeJingle = null, analyserNode = null;
-    let horlogeInterval = null, dateCibleTimestamp = null;
-    let estPaiementOuvert = false; // Gère l'état du bouton de paiement déplié
+    let modeAdminActif = false, microEnPause = false; 
 
-    // SYSTEME DE COMPTE UTILISATEUR (INSCRIPTION, CONNEXION, DECONNEXION)
+    // CLIC SUR LE PROFIL : AFFICHE OU CACHE LE BLOC GLOBAL
+    function basculerAffichageTarifs() {
+        if (!compteActuel) return; 
+        
+        const conteneurTarifs = document.getElementById('conteneur-tarifs-global');
+        if (conteneurTarifs.style.display === 'none' || conteneurTarifs.style.display === '') {
+            conteneurTarifs.style.display = 'block'; 
+        } else {
+            conteneurTarifs.style.display = 'none'; 
+        }
+    }
+
+    // BOUTON MANUEL POUR RE-CACHER LA GRILLE
+    function cacherTarifsManuel() {
+        document.getElementById('conteneur-tarifs-global').style.display = 'none';
+    }
+
+    // CHANGEMENT D'OFFRE : S'APPLIQUE, ENREGISTRE, PUIS CACHE AUTOMATIQUEMENT LA ZONE
+    function choisirOffre(nomOffre) {
+        if (!compteActuel) return;
+        alert(`Félicitations ! Ton compte passe maintenant au : ${nomOffre}`);
+        
+        compteActuel.statut = nomOffre + " (Abonné)";
+        document.getElementById('profil-statut').innerText = compteActuel.statut;
+        
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        bddComptes[compteActuel.pseudo.toLowerCase()].statut = nomOffre + " (Abonné)";
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        
+        // Cache la zone instantanément !
+        document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
+    }
+
     function creerCompte() {
         const inputPseudo = document.getElementById('inscription-pseudo');
         const pseudo = inputPseudo.value.trim();
@@ -366,7 +356,7 @@
         
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
         if (bddComptes[pseudo.toLowerCase()]) {
-            return alert("Ce pseudo existe déjà ! Clique sur 'Se connecter' si c'est ton compte.");
+            return alert("Ce pseudo existe déjà !");
         }
         
         bddComptes[pseudo.toLowerCase()] = { 
@@ -377,25 +367,20 @@
         localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
         compteActuel = bddComptes[pseudo.toLowerCase()];
         
-        // CORRECTION INTERFACE : On passe en connecté ET on affiche la page des tarifs !
         connexionInterfaceCompte();
-        document.getElementById('zone-tarifs-radio').style.display = 'grid'; 
     }
 
     function seConnecterAuditeur() {
         const inputPseudo = document.getElementById('inscription-pseudo');
         const pseudo = inputPseudo.value.trim();
-        if (!pseudo) return alert("Rentre ton pseudo pour te connecter !");
+        if (!pseudo) return alert("Rentre ton pseudo !");
         
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
         if (bddComptes[pseudo.toLowerCase()]) {
             compteActuel = bddComptes[pseudo.toLowerCase()];
             connexionInterfaceCompte();
-            
-            // Si l'utilisateur est déjà connecté, on peut aussi afficher sa grille s'il veut changer
-            document.getElementById('zone-tarifs-radio').style.display = 'grid';
         } else {
-            alert("❌ Ce pseudo n'existe pas. Vérifie l'écriture ou crée un compte !");
+            alert("❌ Pseudo inconnu.");
         }
     }
 
@@ -409,106 +394,40 @@
         if (compteActuel.avatar) {
             document.getElementById('profil-photo-img').src = compteActuel.avatar;
         }
-        
-        document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté en tant que ${compteActuel.pseudo}. Bienvenue !</p>`;
+        document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté en tant que ${compteActuel.pseudo}. Clique sur ton profil pour voir/cacher les modes !</p>`;
     }
 
     function deconnexionAuditeur() {
         compteActuel = null;
         document.getElementById('bloc-inscription').style.display = 'block';
         document.getElementById('bloc-profil-actif').style.display = 'none';
-        document.getElementById('inscription-pseudo').value = "";
-        
-        // Quand on se déconnecte, on cache à nouveau la zone des tarifs
-        document.getElementById('zone-tarifs-radio').style.display = 'none';
-        fermerAchatSecurise(); // Cache aussi le module de paiement s'il était ouvert
-        
+        document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
         document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>`;
     }
 
-    // --- INTERACTION AVEC LE NOUVEAU MODULE DE PAIEMENT INTÉGRÉ ---
-    function ouvrirAchatSecurise() {
-        if (!compteActuel) return alert("Connecte-toi d'abord pour accéder à l'espace de paiement !");
-        
-        // Force l'affichage de la grille de tarifs s'il elle n'y était pas
-        document.getElementById('zone-tarifs-radio').style.display = 'grid';
-        
-        // Fait apparaître et anime le bouton de paiement
-        const widget = document.getElementById('payment-modal');
-        widget.style.display = 'flex';
-        setTimeout(() => {
-            widget.classList.remove('mode-rond');
-            widget.classList.add('mode-agrandi');
-            document.getElementById('payment-text').innerHTML = "Confirmer le paiement<br><small>via TransfrPay (Sécurisé)</small>";
-            estPaiementOuvert = true;
-        }, 50);
-    }
-
-    function gererClicPaiement() {
-        if (!estPaiementOuvert) return;
-
-        // Message de réussite
-        alert(`Félicitations ! Ton paiement via TransfrPay a été validé avec succès. Ton compte est mis à jour.`);
-        
-        // Simulation de mise à jour du grade (Format PRO par exemple)
-        if (compteActuel) {
-            compteActuel.statut = "Format PRO (Abonné)";
-            document.getElementById('profil-statut').innerText = compteActuel.statut;
-            
-            // On sauvegarde le nouveau statut en BDD locale
-            let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-            bddComptes[compteActuel.pseudo.toLowerCase()].statut = "Format PRO (Abonné)";
-            localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-        }
-
-        fermerAchatSecurise();
-    }
-
-    function fermerAchatSecurise() {
-        const widget = document.getElementById('payment-modal');
-        widget.classList.remove('mode-agrandi');
-        widget.classList.add('mode-rond');
-        document.getElementById('payment-text').innerHTML = "€";
-        setTimeout(() => { widget.style.display = 'none'; }, 400);
-        estPaiementOuvert = false;
-    }
-
-    // --- LE RESTE DES FONCTIONS DU STUDIO (PEERJS, BRUITAGES, ADMIN...) ---
-    function ouvrirConnexion() {
-        document.getElementById('zone-connexion').style.display = 'block';
-    }
-    function fermerConnexion() {
-        document.getElementById('zone-connexion').style.display = 'none';
-    }
+    function ouvrirConnexion() { document.getElementById('zone-connexion').style.display = 'block'; }
+    function fermerConnexion() { document.getElementById('zone-connexion').style.display = 'none'; }
+    
     function verifierCode() {
-        const code = document.getElementById('code-secret').value;
-        if(code === "1234") { // Remplace par ton code secret à toi
+        if(document.getElementById('code-secret').value === "1944") {
             alert("Accès accordé, bonjour Directeur !");
             document.getElementById('panneau-admin').style.display = 'block';
             fermerConnexion();
-        } else {
-            alert("Code incorrect !");
-        }
+        } else { alert("Code incorrect !"); }
     }
+    
     function attribuerGradeDirecteur() {
         const pseudo = document.getElementById('admin-offre-pseudo').value.trim();
         const grade = document.getElementById('admin-offre-choix').value;
-        if(!pseudo) return alert("Indique le pseudo de l'auditeur !");
-        
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
         if(bddComptes[pseudo.toLowerCase()]) {
             bddComptes[pseudo.toLowerCase()].statut = grade;
             localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-            alert(`Le grade "${grade}" a bien été donné à ${pseudo} !`);
-            if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudo.toLowerCase()) {
-                compteActuel.statut = grade;
-                connexionInterfaceCompte();
-            }
-        } else {
-            alert("Cet auditeur n'a pas encore créé de compte sur ce PC.");
+            alert(`Grade appliqué !`);
         }
     }
-    // Reste des fonctions vides pour éviter que PeerJS ne plante s'ils manquent au chargement
+    
+    // Fonctions vides obligatoires pour éviter le plantage
     function changerMaPhoto(input) {}
     function ecouterDirect() {}
     function envoyerCommentaire() {}
