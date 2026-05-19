@@ -1,164 +1,617 @@
-<!-- ====================================================== -->
-<!-- SECTION 1 : CRÉATION DE COMPTE, CONNEXION & PROFIL AUDITEUR -->
-<!-- ====================================================== -->
-<div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
-    
-    <!-- ÉCRAN 1 : FORMULAIRE D'INSCRIPTION / CONNEXION -->
-    <div id="bloc-inscription">
-        <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (Gratuit la 1ère année !)</h3>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <input type="text" id="inscription-pseudo" placeholder="Entre ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
-            <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">S'inscrire</button>
-            <button onclick="seConnecterAuditeur()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Se connecter</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Transfr - Inscription & Studio Expert</title>
+    <!-- SCRIPT DE BASE OBLIGATOIRE POUR LE DIRECT ET LE CHAT (PEERJS) -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
+
+    <!-- ====================================================== -->
+    <!-- BOUTON ADMIN : VISIBLE POUR TOI, DISCRET POUR LES AUTRES -->
+    <!-- ====================================================== -->
+    <div style="text-align: right; max-width: 1100px; margin: 0 auto; padding-bottom: 10px; padding-right: 5px;">
+        <span onclick="ouvrirConnexion()" style="color: #4a4a6a; font-size: 12px; cursor: pointer; user-select: none; font-weight: bold; text-decoration: underline; opacity: 0.7; transition: opacity 0.2s;">
+            [ Zone Admin ]
+        </span>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- SECTION 1 : CRÉATION DE COMPTE, CONNEXION & PROFIL AUDITEUR -->
+    <!-- ====================================================== -->
+    <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
+        
+        <!-- ÉCRAN 1 : FORMULAIRE D'INSCRIPTION / CONNEXION -->
+        <div id="bloc-inscription">
+            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (Gratuit la 1ère année !)</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="inscription-pseudo" placeholder="Entre ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
+                <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">S'inscrire</button>
+                <button onclick="seConnecterAuditeur()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Se connecter</button>
+            </div>
+        </div>
+        
+        <!-- ÉCRAN 2 : PROFIL ACTIF (AVEC PHOTO, DECONNEXION ET PAIEMENT) -->
+        <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                
+                <!-- BLOC PHOTO DE PROFIL -->
+                <div style="position: relative; text-align: center;">
+                    <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
+                    <label for="input-changer-avatar" style="display: block; font-size: 10px; color: #00d2ff; cursor: pointer; text-decoration: underline; margin-top: 5px;">Changer la photo</label>
+                    <input type="file" id="input-changer-avatar" accept="image/*" onchange="changerMaPhoto(this)" style="display: none;">
+                </div>
+
+                <!-- INFOS DU COMPTE -->
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 5px;">
+                        <span style="font-size: 14px; color: #aaa;">Mon Compte :</span>
+                        <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <span style="font-size: 14px; color: #aaa;">Statut Actuel :</span>
+                        <span id="profil-statut" style="background: #2ed573; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit (1 an)</span>
+                    </div>
+                    <button onclick="deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
+                </div>
+
+                <!-- BOUTON DE PAIEMENT SÉCURISÉ INTÉGRÉ -->
+                <div id="bloc-paiement-profil" style="background: rgba(255, 165, 0, 0.1); border: 1px solid #ffa502; padding: 12px 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 11px; color: #ffa502; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">💳 ESPACE ABONNEMENT</div>
+                    <button onclick="ouvrirAchatSecurise()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">
+                        Changer d'offre / Payer
+                    </button>
+                </div>
+
+            </div>
         </div>
     </div>
-    
-    <!-- ÉCRAN 2 : PROFIL ACTIF (AVEC PHOTO, DECONNEXION ET PAIEMENT) -->
-    <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
-        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+
+    <!-- ====================================================== -->
+    <!-- SECTION 2 : GRILLE DES TARIFS ET FORMULES              -->
+    <!-- ====================================================== -->
+    <div id="zone-tarifs-radio" style="max-width: 1100px; margin: 0 auto 20px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <div style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center;">
+            <h4 style="color: white; margin: 0 0 10px 0;">🙂 Mode Normal</h4>
+            <div style="font-size: 18px; font-weight: bold; color: #ffa502;">1 € / mois</div>
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 3 € / an</div>
+            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
+                <li>🤖 IA intégrée</li>
+                <li>📻 300 h de radio</li>
+                <li>➕ Fonctions en plus</li>
+            </ul>
+        </div>
+
+        <div style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center;">
+            <h4 style="color: #00d2ff; margin: 0 0 10px 0;">⭐ Mode Super</h4>
+            <div style="font-size: 18px; font-weight: bold; color: #ffa502;">2 € / mois</div>
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 4 € / an</div>
+            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
+                <li>🤖 IA intégrée</li>
+                <li>📻 1000 h de radio</li>
+                <li>🚀 Plus de fonctionnalités</li>
+            </ul>
+        </div>
+
+        <div style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #2ed573; text-align: center;">
+            <h4 style="color: #2ed573; margin: 0 0 10px 0;">🔥 Format PRO</h4>
+            <div style="font-size: 18px; font-weight: bold; color: #ffa502;">3 € / mois</div>
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 10px;">ou 5 € / an</div>
+            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
+                <li>🤖 IA intégrée</li>
+                <li>📻 3000 h de radio</li>
+                <li>💥 Énormément de fonctions</li>
+            </ul>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #2c1a4d, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center;">
+            <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 SUPER PRO</h4>
+            <div style="font-size: 19px; font-weight: bold; color: #ffa502;">À VIE ✨</div>
+            <div style="font-size: 11px; color: #aaa; margin-bottom: 10px;">(Offert par le Directeur)</div>
+            <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
+                <li>🤖 IA Premium intégrée</li>
+                <li>♾️ Radio À L'INFINI</li>
+                <li>⚡ Accès absolu à tout</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- INTERFACE PRINCIPALE DE LA RADIO (AUDITEURS)           -->
+    <!-- ====================================================== -->
+    <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
+        <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
+        <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">Bienvenue sur la radio officielle de Transfr !</p>
+        
+        <div id="zone-planning-auditeur" style="background: rgba(0, 210, 255, 0.05); border: 1px dashed rgba(0, 210, 255, 0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #00d2ff;">
+            <div style="margin-bottom: 5px; font-weight: bold;">⏳ TEMPS AVANT LE PROCHAIN DIRECT :</div>
+            <div id="compte-a-rebours-ecran" style="font-size: 22px; font-weight: bold; color: #ffa502; letter-spacing: 1px; font-family: monospace; margin-top: 5px;">Pas d'émission prévue</div>
+        </div>
+
+        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #aaa; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
+            ⚪ Recherche de la diffusion de Transfr...
+        </div>
+        
+        <button id="btn-ecouter" onclick="ecouterDirect()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%; box-shadow: 0 4px 15px rgba(0,210,255,0.3); margin-bottom: 25px;">▶️ Écouter le Direct</button>
+        <audio id="audio-live" autoplay></audio>
+
+        <!-- PODCASTS REPLAY -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 25px; padding-top: 20px; text-align: left;">
+            <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">💾 Émissions en Podcast (Replay) :</h4>
+            <div id="liste-podcasts-publics" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
+                <p id="aucun-podcast-msg" style="color: #666; font-style: italic; font-size: 13px; margin: 0;">Aucun podcast publié pour le moment.</p>
+            </div>
+            <div id="lecteur-podcast-container" style="display: none; background: #12121a; padding: 10px; border-radius: 8px; border: 1px solid #ffa502;">
+                <div id="titre-podcast-en-cours" style="font-size: 12px; color: #ffa502; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Podcast : Aucun</div>
+                <audio id="audio-podcast-player" controls style="width: 100%; height: 30px; accent-color: #ffa502;"></audio>
+            </div>
+        </div>
+
+        <!-- TCHAT AUDITEUR -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: left; margin-top: 25px;">
+            <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">💬 Tchat en direct :</h4>
+            <div id="boite-tchat-auditeur" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; margin-bottom: 15px;">
+                <p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>
+            </div>
+            <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 50px; resize: none;"></textarea>
+            <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- FENÊTRE CONFIGURATION CHOIX DIRECT OU PODCAST          -->
+    <!-- ====================================================== -->
+    <div id="fenetre-choix-studio" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #1e1e2f; padding: 30px; border-radius: 16px; border: 2px solid #00d2ff; max-width: 450px; text-align: center;">
+            <h3 style="color: #00d2ff; margin-top: 0; font-size: 22px;">🎙️ CONFIGURATION DE LA SESSION</h3>
+            <p style="color: #ccc; font-size: 14px; margin-bottom: 25px;">Bonjour Directeur. Comment souhaitez-vous exploiter la table de mixage aujourd'hui ?</p>
+            <button onclick="validerChoixStudio('direct')" style="background: #2ed573; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; font-size: 15px; margin-bottom: 12px; display: block;">🔴 LANCER LA RADIO EN DIRECT (Public)</button>
+            <button onclick="validerChoixStudio('podcast')" style="background: #ffa502; color: #1e1e2f; border: none; padding: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; font-size: 15px; display: block;">💾 ENREGISTRER UN PODCAST (Privé)</button>
+            <br>
+            <button onclick="annulerChoixStudio()" style="background: transparent; color: #666; border: none; cursor: pointer; font-size: 13px; text-decoration: underline;">Annuler</button>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- FENÊTRE DE CONNEXION DIRECTEUR -->
+    <!-- ====================================================== -->
+    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; width: 90%; border: 2px solid #00d2ff; box-shadow: 0 0 40px rgba(0,0,0,0.9); z-index: 99999;">
+        <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
+        <input type="password" id="code-secret" placeholder="Entrez le code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center;">
+        <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;">Valider</button>
+        <br><br>
+        <button onclick="fermerConnexion()" style="background: transparent; color: #666; border: none; cursor: pointer; font-size: 12px; text-decoration: underline;">Fermer</button>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- INTERFACE DU PANNEAU DE CONTRÔLE ADMINISTRATEUR COMPLET -->
+    <!-- ====================================================== -->
+    <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 20px auto; padding: 10px;">
+        
+        <!-- MODULE DES GRADES POUR LES UTILISATEURS -->
+        <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6; margin-bottom: 20px; box-shadow: 0 0 15px rgba(155,89,182,0.2);">
+            <h3 style="color: #9b59b6; margin-top: 0;">🎁 OFFRIR UN GRADE (PANNEAU DIRECTEUR)</h3>
+            <p style="font-size: 13px; color: #aaa;">Attribue instantanément un format ou un grade premium gratuit à un utilisateur via son pseudo.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <input type="text" id="admin-offre-pseudo" placeholder="Pseudo de l'auditeur..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
+                <select id="admin-offre-choix" style="padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; cursor: pointer;">
+                    <option value="Gratuit (1 an)">Gratuit (1 an d'essai)</option>
+                    <option value="Mode Normal">Mode Normal (1€/m - 3€/an)</option>
+                    <option value="Mode Super">Mode Super (2€/m - 4€/an)</option>
+                    <option value="Format PRO">Format PRO (3€/m - 5€/an)</option>
+                    <option value="👑 SUPER PRO (À VIE)">👑 SUPER PRO (À Vie - Infini)</option>
+                </select>
+                <button onclick="attribuerGradeDirecteur()" style="background: #9b59b6; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Appliquer le Grade</button>
+            </div>
+        </div>
+
+        <!-- REPOUSSE DE LA GRANDE GRILLE DES MODULES DU STUDIO -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
             
-            <!-- BLOC PHOTO DE PROFIL -->
-            <div style="position: relative; text-align: center;">
-                <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
-                <label for="input-changer-avatar" style="display: block; font-size: 10px; color: #00d2ff; cursor: pointer; text-decoration: underline; margin-top: 5px;">Changer la photo</label>
-                <input type="file" id="input-changer-avatar" accept="image/*" onchange="changerMaPhoto(this)" style="display: none;">
+            <!-- COLONNE CONSOLE DE GESTION -->
+            <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h2 style="color: #00d2ff; margin: 0; font-size: 24px;">🚀 STUDIO EXPERT CO-LIVE</h2>
+                    <span id="badge-studio-actif" style="background: rgba(255, 165, 0, 0.1); color: #ffa502; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 8px;">● CONSOLE DE MIXAGE EN ATTENTE</span>
+                </div>
+
+                <!-- COMPTE À REBOURS DU DIRECT -->
+                <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #00d2ff; margin-bottom: 20px;">
+                    <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">⏳ PROGRAMMER LE COMPTE À REBOURS DU DIRECT</h4>
+                    <input type="datetime-local" id="admin-date-heure-precise" style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px; margin-bottom: 10px; cursor: pointer;">
+                    <button onclick="diffuserPlanning()" style="background: #2ed573; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">🟢 Lancer le Chrono Public</button>
+                </div>
+
+                <!-- PUBLICATION DES PODCASTS REPLAY -->
+                <div style="background: #1e1e2f; padding: 15px; border-radius: 12px; border: 1px solid #ffa502; margin-bottom: 20px;">
+                    <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 10px;">📤 METTRE EN LIGNE UN PODCAST FORUM</h4>
+                    <input type="text" id="admin-titre-podcast" placeholder="Titre de l'émission..." style="width: 93%; padding: 8px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px;">
+                    <input type="file" id="admin-fichier-podcast" accept="audio/*" style="font-size: 12px; color: #aaa; margin-bottom: 10px; display: block;">
+                    <button onclick="publierPodcastLigne()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">📂 Publier sur la liste</button>
+                </div>
+
+                <!-- ANTENNE & VU-METRE -->
+                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 20px;">
+                    <h4 style="color: #ffa502; margin-top: 0; margin-bottom: 12px;">📊 CONTROLE DE L'ANTENNE</h4>
+                    <button id="btn-lancer-live" onclick="ouvrirFenetreChoixStudio()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 12px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%;">🎛️ ALLUMER LA CONSOLE DE MIXAGE</button>
+                    <button id="btn-pause-live" onclick="basculerPause()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 12px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; display: none; margin-top: 10px;">⏸️ METTRE EN PAUSE MICRO</button>
+                    <button id="btn-couper-live" onclick="couperLive()" style="background: #ff4757; color: white; border: none; padding: 12px 15px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; display: none; margin-top: 10px;">🛑 QUITTER LE STUDIO</button>
+                    <div id="statut-micro-live" style="margin-top: 10px; font-weight: bold; color: #ffa502; font-size: 13px; margin-bottom: 10px;">Studio déconnecté</div>
+                    <div style="background: #12121a; width: 100%; height: 12px; border-radius: 6px; border: 1px solid #333; overflow: hidden;">
+                        <div id="barre-vumetre" style="background: linear-gradient(to right, #2ed573, #ffa502, #ff4757); width: 0%; height: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- VOLUMES DE LA TABLE DE MIXAGE -->
+                <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
+                    <h4 style="color: #2ed573; margin-top: 0; margin-bottom: 15px;">🎛️ VOLUMES TABLE DE MIXAGE</h4>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎤 Mon Volume Micro :</span><span id="val-vol-micro" style="color: #2ed573; font-weight: bold;">100%</span></div>
+                        <input type="range" id="slider-vol-micro" min="0" max="100" value="100" oninput="ajusterVolumeMicro()" style="width: 100%; accent-color: #2ed573;">
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 5px;"><span>🎵 Volume Musiques / Playlist :</span><span id="val-vol-playlist" style="color: #00d2ff; font-weight: bold;">70%</span></div>
+                        <input type="range" id="slider-vol-playlist" min="0" max="100" value="70" oninput="ajusterVolumePlaylist()" style="width: 100%; accent-color: #00d2ff;">
+                    </div>
+                </div>
             </div>
 
-            <!-- INFOS DU COMPTE -->
-            <div style="flex: 1;">
-                <div style="margin-bottom: 5px;">
-                    <span style="font-size: 14px; color: #aaa;">Mon Compte :</span>
-                    <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
+            <!-- COLONNE JINGLES & EFFETS SONORES -->
+            <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #00d2ff;">
+                <h3 style="color: #00d2ff; margin-top: 0; text-align: center;">🎛️ SOUNDBOARD & PLAYLIST</h3>
+                <audio id="lecteur-jingle-instantane" crossorigin="anonymous"></audio>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/2/22/News_Opening_sound.wav', '🚨 Flash Info')" style="background: #222; color: #00d2ff; border: 1px solid #00d2ff; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🚨 Flash Info</button>
+                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/3/30/Small_crowd_clapping_and_cheering.wav', '🎉 Applaudissements')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">🎉 Applaudis.</button>
+                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/e/e6/Laugh_01.wav', '😂 Rires Studio')" style="background: #222; color: #ffa502; border: 1px solid #ffa502; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">😂 Rires Studio</button>
+                    <button onclick="lancerBruitageInstantane('https://upload.wikimedia.org/wikipedia/commons/c/c5/Bass_Drop_Effect.wav', '💥 Explosion / Drop')" style="background: #222; color: #ff4757; border: 1px solid #ff4757; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">💥 Big Drop</button>
                 </div>
-                <div style="margin-bottom: 5px;">
-                    <span style="font-size: 14px; color: #aaa;">Statut Actuel :</span>
-                    <span id="profil-statut" style="background: #2ed573; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit (1 an)</span>
+                
+                <hr style="border-color: #333; margin: 20px 0;">
+                
+                <audio id="lecteur-musique-studio" loop crossorigin="anonymous"></audio>
+                <h4 style="color: #ffa502; margin-bottom: 5px;">🎵 Playlist Intégrée :</h4>
+                <button onclick="jouerMusique('https://archive.org/download/78_rock-around-the-clock_bill-haley-and-his-comets-max-c.-freedman-jimmy-de-knight_gbia7008336b/01%20-%20Rock%20Around%20the%20Clock.mp3', 'Rock Classique Énergique')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Rock Classique - Piste 1</button>
+                <button onclick="jouerMusique('https://archive.org/download/free-rock-instrumental-track-extended-mix/Free%20Rock%20Instrumental%20Track%20%28Extended%20Mix%29.mp3', 'Guitare Distorsion Direct')" style="background: #222; color: #fff; border: 1px solid #ff4757; width: 100%; padding: 8px; border-radius: 6px; margin-bottom: 5px; cursor: pointer;">⚡ Guitare Solo - Piste 2</button>
+                <button onclick="jouerMusique('https://archive.org/download/90s-hip-hop-instrumental-mix-oldschool-beats/90s%20Hip%20Hop%20Instrumental%20Mix%20Oldschool%20Beats.mp3', 'Rap OldSchool Beat')" style="background: #222; color: #fff; border: 1px solid #00d2ff; width: 100%; padding: 8px; border-radius: 6px; cursor: pointer;">🎹 Urban Hip-Hop - Piste 3</button>
+                
+                <div style="margin-top: 15px; background: rgba(255,165,0,0.05); padding: 10px; border-radius: 8px; border: 1px dashed #ffa502;">
+                    <span style="font-size: 12px; color: #ffa502;">📂 Diffuser un MP3 du PC :</span>
+                    <input type="file" id="fichier-musique-perso" accept="audio/*" onchange="chargerMusiquePerso()" style="font-size: 11px; width: 100%; color: #aaa; margin-top: 5px;">
                 </div>
-                <button onclick="deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
+                <div id="statut-musique" style="margin-top: 10px; font-size: 12px; text-align: center; color: #2ed573;">📴 Aucune musique en cours</div>
+                <button onclick="arreterMusique()" style="background: #ff4757; color: white; border: none; width: 100%; padding: 8px; border-radius: 6px; margin-top: 5px;">⏹️ Couper la musique</button>
             </div>
 
-            <!-- BOUTON DE PAIEMENT SÉCURISÉ INTÉGRÉ -->
-            <div id="bloc-paiement-profil" style="background: rgba(255, 165, 0, 0.1); border: 1px solid #ffa502; padding: 12px 20px; border-radius: 8px; text-align: center;">
-                <div style="font-size: 11px; color: #ffa502; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">💳 ESPACE ABONNEMENT</div>
-                <button onclick="ouvrirAchatSecurise()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 8px 16px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer;">
-                    Changer d'offre / Payer
-                </button>
+            <!-- COLONNE INFOS FLASH & METEO WINDY -->
+            <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #2ed573;">
+                <h3 style="color: #2ed573; margin-top: 0; text-align: center;">📰 CARTOGRAPHIE & FLASH INFOS</h3>
+                <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricWind=default&zoom=5&overlay=clouds&product=ecmwf&level=surface&lat=46.5&lon=2.5&detailLat=43.546&detailLon=1.536&detail=true" style="width: 100%; height: 250px; border: none; border-radius: 6px; margin-bottom: 10px;"></iframe>
+                <div id="info-bloc-actus" style="font-size: 12px; color: #ccc; max-height: 120px; overflow-y: auto;">Chargement des informations en temps réel...</div>
             </div>
 
         </div>
     </div>
-</div>
 
-<script>
-// ======================================================
-// SCRIPT DE GESTION DES COMPTES (INSCRIPTION, CONNEXION, PHOTO, PAIEMENT)
-// ======================================================
+    <!-- ====================================================== -->
+    <!-- LOGIQUE JAVASCRIPT GLOBALE SÉCURISÉE                    -->
+    <!-- ====================================================== -->
+    <script>
+    const ID_RADIO_PRINCIPALE = "transfr-live-studio-maceo"; 
+    let monPeer = null, monFluxMicro = null, connexionsAuditeurs = {}; 
+    let modeAdminActif = false, microEnPause = false, listePodcastsData = []; 
+    let audioContext = null, gainNodeMicro = null, gainNodePlaylist = null, destinationMixee = null, fluxMixe = null, sourceNodeJingle = null, analyserNode = null;
+    let horlogeInterval = null, dateCibleTimestamp = null;
+    let compteActuel = null;
 
-function creerCompte() {
-    const inputPseudo = document.getElementById('inscription-pseudo');
-    const pseudo = inputPseudo.value.trim();
-    if (!pseudo) return alert("Indique un pseudo !");
-    
-    let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-    if (bddComptes[pseudo.toLowerCase()]) {
-        return alert("Ce pseudo existe déjà ! Clique sur 'Se connecter' si c'est ton compte.");
-    }
-    
-    bddComptes[pseudo.toLowerCase()] = { 
-        pseudo: pseudo, 
-        statut: "Gratuit (1 an)",
-        avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" 
-    };
-    localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-    compteActuel = bddComptes[pseudo.toLowerCase()];
-    connexionInterfaceCompte();
-}
-
-// NOUVELLE FONCTION : SE CONNECTER
-function seConnecterAuditeur() {
-    const inputPseudo = document.getElementById('inscription-pseudo');
-    const pseudo = inputPseudo.value.trim();
-    if (!pseudo) return alert("Rentre ton pseudo pour te connecter !");
-    
-    let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-    if (bddComptes[pseudo.toLowerCase()]) {
+    // SYSTEME DE COMPTE UTILISATEUR (INSCRIPTION, CONNEXION, DECONNEXION)
+    function creerCompte() {
+        const inputPseudo = document.getElementById('inscription-pseudo');
+        const pseudo = inputPseudo.value.trim();
+        if (!pseudo) return alert("Indique un pseudo !");
+        
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if (bddComptes[pseudo.toLowerCase()]) {
+            return alert("Ce pseudo existe déjà ! Clique sur 'Se connecter' si c'est ton compte.");
+        }
+        
+        bddComptes[pseudo.toLowerCase()] = { 
+            pseudo: pseudo, 
+            statut: "Gratuit (1 an)",
+            avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" 
+        };
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
         compteActuel = bddComptes[pseudo.toLowerCase()];
         connexionInterfaceCompte();
-    } else {
-        alert("❌ Ce pseudo n'existe pas. Vérifie l'écriture ou crée un compte !");
     }
-}
 
-function connexionInterfaceCompte() {
-    if (!compteActuel) return;
-    document.getElementById('bloc-inscription').style.display = 'none';
-    document.getElementById('bloc-profil-actif').style.display = 'flex';
-    document.getElementById('profil-pseudo').innerText = compteActuel.pseudo;
-    document.getElementById('profil-statut').innerText = compteActuel.statut;
-    
-    if (compteActuel.avatar) {
-        document.getElementById('profil-photo-img').src = compteActuel.avatar;
+    function seConnecterAuditeur() {
+        const inputPseudo = document.getElementById('inscription-pseudo');
+        const pseudo = inputPseudo.value.trim();
+        if (!pseudo) return alert("Rentre ton pseudo pour te connecter !");
+        
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if (bddComptes[pseudo.toLowerCase()]) {
+            compteActuel = bddComptes[pseudo.toLowerCase()];
+            connexionInterfaceCompte();
+        } else {
+            alert("❌ Ce pseudo n'existe pas. Vérifie l'écriture ou crée un compte !");
+        }
     }
+
+    function connexionInterfaceCompte() {
+        if (!compteActuel) return;
+        document.getElementById('bloc-inscription').style.display = 'none';
+        document.getElementById('bloc-profil-actif').style.display = 'flex';
+        document.getElementById('profil-pseudo').innerText = compteActuel.pseudo;
+        document.getElementById('profil-statut').innerText = compteActuel.statut;
+        
+        if (compteActuel.avatar) {
+            document.getElementById('profil-photo-img').src = compteActuel.avatar;
+        }
+        
+        document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté en tant que ${compteActuel.pseudo}. Bienvenue !</p>`;
+    }
+
+    function deconnexionAuditeur() {
+        compteActuel = null;
+        document.getElementById('bloc-inscription').style.display = 'block';
+        document.getElementById('bloc-profil-actif').style.display = 'none';
+        document.getElementById('inscription-pseudo').value = "";
+        document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>`;
+    }
+
+    function changerMaPhoto(input) {
+        if (input.files && input.files[0] && compteActuel) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profil-photo-img').src = e.target.result;
+                
+                let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+                bddComptes[compteActuel.pseudo.toLowerCase()].avatar = e.target.result;
+                localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+                
+                compteActuel.avatar = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function ouvrirAchatSecurise() {
+        if (!compteActuel) return;
+        let choix = prompt(
+            "💳 PASSERELLE DE PAIEMENT TRANSFR\n\n" +
+            "Choisis ton mode en tapant le numéro (1, 2 ou 3) :\n" +
+            "1) Mode Normal (1€ / mois ou 3€ / an)\n" +
+            "2) Mode Super (2€ / mois ou 4€ / an)\n" +
+            "3) Format PRO (3€ / mois ou 5€ / an)\n\n" +
+            "Note : Le grade 'Super Pro à Vie' s'obtient uniquement via le Directeur."
+        );
+
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        
+        if (choix === "1") {
+            bddComptes[compteActuel.pseudo.toLowerCase()].statut = "Mode Normal";
+            alert("💰 Paiement validé ! Vous êtes maintenant en Mode Normal.");
+        } else if (choix === "2") {
+            bddComptes[compteActuel.pseudo.toLowerCase()].statut = "Mode Super";
+            alert("💰 Paiement validé ! Vous êtes maintenant en Mode Super.");
+        } else if (choix === "3") {
+            bddComptes[compteActuel.pseudo.toLowerCase()].statut = "Format PRO";
+            alert("💰 Paiement validé ! Vous êtes maintenant en Format PRO.");
+        } else if (choix !== null) {
+            alert("❌ Option invalide.");
+            return;
+        } else {
+            return;
+        }
+
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        compteActuel.statut = bddComptes[compteActuel.pseudo.toLowerCase()].statut;
+        document.getElementById('profil-statut').innerText = compteActuel.statut;
+    }
+
+    // INTERFACE GRADE DIRECTEUR
+    function attribuerGradeDirecteur() {
+        const pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
+        const nouveauGrade = document.getElementById('admin-offre-choix').value;
+        if (!pseudoCible) return alert("Saisis un pseudo !");
+        
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if (!bddComptes[pseudoCible.toLowerCase()]) {
+            bddComptes[pseudoCible.toLowerCase()] = { pseudo: pseudoCible, statut: nouveauGrade, avatar: "" };
+        } else {
+            bddComptes[pseudoCible.toLowerCase()].statut = nouveauGrade;
+        }
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        alert(`🎁 Grade activé pour "${pseudoCible}" : ${nouveauGrade}`);
+        
+        if (compteActuel && compteActuel.pseudo.toLowerCase() === pseudoCible.toLowerCase()) {
+            compteActuel.statut = nouveauGrade;
+            document.getElementById('profil-statut').innerText = nouveauGrade;
+        }
+    }
+
+    // ACCES ZONE SECRET DIRECTEUR (CODE: 1944)
+    function ouvrirConnexion() {
+        document.getElementById('zone-connexion').style.display = 'block';
+        document.getElementById('code-secret').value = ""; document.getElementById('code-secret').focus();
+    }
+    function fermerConnexion() { document.getElementById('zone-connexion').style.display = 'none'; }
     
-    document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté en tant que ${compteActuel.pseudo}. Bienvenue !</p>`;
-}
+    function verifierCode() {
+        if (document.getElementById('code-secret').value === '1944') {
+            document.getElementById('zone-connexion').style.display = 'none';
+            activerModeDirecteurImmediat();
+        } else { alert('Code secret incorrect !'); }
+    }
 
-// NOUVELLE FONCTION : SE DÉCONNECTER
-function deconnexionAuditeur() {
-    compteActuel = null;
-    document.getElementById('bloc-inscription').style.display = 'block';
-    document.getElementById('bloc-profil-actif').style.display = 'none';
-    document.getElementById('inscription-pseudo').value = "";
-    document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>`;
-}
+    function activerModeDirecteurImmediat() {
+        document.getElementById('panneau-admin').style.display = 'block';
+        document.getElementById('lecteur-auditeur').style.display = 'none';
+        document.getElementById('zone-tarifs-radio').style.display = 'none';
+        modeAdminActif = true;
+        chargerPodcastsEnregistres();
+        recupererInfosFlash();
+    }
 
-function changerMaPhoto(input) {
-    if (input.files && input.files[0] && compteActuel) {
+    function ouvrirFenetreChoixStudio() { document.getElementById('fenetre-choix-studio').style.display = 'flex'; }
+    function annulerChoixStudio() { document.getElementById('fenetre-choix-studio').style.display = 'none'; }
+
+    // MIXEUR AUDIO HARDWARE
+    async function validerChoixStudio(mode) {
+        annulerChoixStudio();
+        document.getElementById('statut-micro-live').innerText = "⏳ Initialisation du matériel audio...";
+        try {
+            monFluxMicro = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            destinationMixee = audioContext.createMediaStreamDestination();
+            gainNodeMicro = audioContext.createGain();
+            gainNodePlaylist = audioContext.createGain();
+            gainNodePlaylist.gain.value = 0.7;
+
+            sourceNodeMicro = audioContext.createMediaStreamSource(monFluxMicro);
+            sourceNodeMicro.connect(gainNodeMicro); gainNodeMicro.connect(destinationMixee);
+            fluxMixe = destinationMixee.stream;
+            analyserNode = audioContext.createAnalyser(); gainNodeMicro.connect(analyserNode); analyserNode.fftSize = 32;
+            lancerMiseAJourVuMetre();
+
+            if (mode === 'direct') {
+                document.getElementById('statut-micro-live').innerText = "📡 Création du flux de diffusion...";
+                monPeer = new Peer(ID_RADIO_PRINCIPALE);
+                monPeer.on('open', () => {
+                    document.getElementById('statut-micro-live').innerText = "🔴 EN DIRECT SUR L'ANTENNE !";
+                    document.getElementById('badge-studio-actif').innerText = "● STUDIO EN DIRECT PUBLIC";
+                    document.getElementById('btn-lancer-live').style.display = 'none';
+                    document.getElementById('btn-pause-live').style.display = 'block'; document.getElementById('btn-couper-live').style.display = 'block';
+                });
+                monPeer.on('call', (appel) => { appel.answer(fluxMixe); });
+            }
+        } catch (e) { alert("Erreur d'accès au micro."); }
+    }
+
+    function lancerMiseAJourVuMetre() {
+        if (!analyserNode) return;
+        const d = new Uint8Array(analyserNode.frequencyBinCount);
+        function dessiner() {
+            if (!analyserNode) return; analyserNode.getByteFrequencyData(d);
+            let t = 0; for(let i=0; i<d.length; i++) t += d[i];
+            let p = Math.min(100, Math.floor(((t/d.length) / 128) * 100));
+            document.getElementById('barre-vumetre').style.width = microEnPause ? "0%" : p + "%";
+            requestAnimationFrame(dessiner);
+        }
+        dessiner();
+    }
+
+    function basculerPause() {
+        if (!gainNodeMicro) return;
+        microEnPause = !microEnPause;
+        gainNodeMicro.gain.value = microEnPause ? 0 : document.getElementById('slider-vol-micro').value / 100;
+        document.getElementById('statut-micro-live').innerText = microEnPause ? "⏸️ MICRO EN PAUSE" : "🔴 EN DIRECT SUR L'ANTENNE !";
+    }
+
+    function couperLive() {
+        if (monFluxMicro) monFluxMicro.getTracks().forEach(t => t.stop());
+        if (monPeer) monPeer.destroy();
+        document.getElementById('btn-lancer-live').style.display = 'block';
+        document.getElementById('btn-pause-live').style.display = 'none'; document.getElementById('btn-couper-live').style.display = 'none';
+        document.getElementById('statut-micro-live').innerText = "Studio déconnecté";
+    }
+
+    function ajusterVolumeMicro() { if (gainNodeMicro) gainNodeMicro.gain.value = document.getElementById('slider-vol-micro').value / 100; document.getElementById('val-vol-micro').innerText = document.getElementById('slider-vol-micro').value + "%"; }
+    function ajusterVolumePlaylist() { if (gainNodePlaylist) gainNodePlaylist.gain.value = document.getElementById('slider-vol-playlist').value / 100; document.getElementById('val-vol-playlist').innerText = document.getElementById('slider-vol-playlist').value + "%"; }
+
+    // GESTION SOUNDBOARD & PLAYLIST MUSIQUE
+    function lancerBruitageInstantane(url, nom) {
+        const jingleAudio = document.getElementById('lecteur-jingle-instantane');
+        jingleAudio.src = url; jingleAudio.play();
+        document.getElementById('statut-musique').innerText = "🔊 Effet : " + nom;
+        if (audioContext && destinationMixee) {
+            if (!sourceNodeJingle) { sourceNodeJingle = audioContext.createMediaElementSource(jingleAudio); }
+            sourceNodeJingle.connect(audioContext.destination); sourceNodeJingle.connect(destinationMixee);
+        }
+    }
+
+    function jouerMusique(url, nom) {
+        const lecteurMusique = document.getElementById('lecteur-musique-studio');
+        lecteurMusique.src = url; lecteurMusique.play();
+        document.getElementById('statut-musique').innerText = "🎵 Lecture : " + nom;
+        if (audioContext && destinationMixee) {
+            if (!window.sourceNodePlaylist) { window.sourceNodePlaylist = audioContext.createMediaElementSource(lecteurMusique); }
+            window.sourceNodePlaylist.connect(gainNodePlaylist); gainNodePlaylist.connect(audioContext.destination); gainNodePlaylist.connect(destinationMixee);
+        }
+    }
+
+    function arreterMusique() { document.getElementById('lecteur-musique-studio').pause(); document.getElementById('statut-musique').innerText = "📴 Aucune musique en cours"; }
+    function chargerMusiquePerso() { const file = document.getElementById('fichier-musique-perso').files[0]; if (file) jouerMusique(URL.createObjectURL(file), file.name); }
+
+    // CHRONO COMPTE À REBOURS, RECUPERATION NEWS RSS ET PODCASTS 
+    function démarrerCalculCompteARebours(timestamp) {
+        if (horlogeInterval) clearInterval(horlogeInterval);
+        dateCibleTimestamp = parseInt(timestamp);
+        function rafraichirChrono() {
+            const diff = dateCibleTimestamp - new Date().getTime();
+            const elem = document.getElementById('compte-a-rebours-ecran'); if (!elem) return;
+            if (diff <= 0) { elem.innerText = "🔥 L'ÉMISSION COMMENCE !"; clearInterval(horlogeInterval); return; }
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)), s = Math.floor((diff % (1000 * 60)) / 1000);
+            elem.innerText = `⏱️ ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+        }
+        rafraichirChrono(); horlogeInterval = setInterval(rafraichirChrono, 1000);
+    }
+
+    function diffuserPlanning() {
+        const dateInput = document.getElementById('admin-date-heure-precise').value; if (!dateInput) return alert("Mets une date !");
+        const ts = new Date(dateInput).getTime(); localStorage.setItem('timestamp-direct-transfr', ts);
+        démarrerCalculCompteARebours(ts); alert("📢 Enregistré !");
+    }
+
+    function chargerPodcastsEnregistres() {
+        const saved = localStorage.getItem('transfr-podcasts-publics'); if (saved) { listePodcastsData = JSON.parse(saved); afficherPodcastsPublics(); }
+    }
+
+    function publierPodcastLigne() {
+        const t = document.getElementById('admin-titre-podcast').value.trim(), f = document.getElementById('admin-fichier-podcast').files[0];
+        if (!t || !f) return alert("Fichier ou titre manquant !");
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('profil-photo-img').src = e.target.result;
-            
-            let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-            bddComptes[compteActuel.pseudo.toLowerCase()].avatar = e.target.result;
-            localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-            
-            compteActuel.avatar = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function ouvrirAchatSecurise() {
-    if (!compteActuel) return;
-    let choix = prompt(
-        "💳 PASSERELLE DE PAIEMENT TRANSFR\n\n" +
-        "Choisis ton mode en tapant le numéro (1, 2 ou 3) :\n" +
-        "1) Mode Normal (1€ / mois ou 3€ / an)\n" +
-        "2) Mode Super (2€ / mois ou 4€ / an)\n" +
-        "3) Format PRO (3€ / mois ou 5€ / an)\n\n" +
-        "Note : Le grade 'Super Pro à Vie' s'obtient uniquement via le Directeur."
-    );
-
-    let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-    
-    if (choix === "1") {
-        bddComptes[compteActuel.pseudo.toLowerCase()].statut = "Mode Normal";
-        alert("💰 Paiement validé ! Vous êtes maintenant en Mode Normal.");
-    } else if (choix === "2") {
-        bddComptes[compteActuel.pseudo.toLowerCase()].statut = "Mode Super";
-        alert("💰 Paiement validé ! Vous êtes maintenant en Mode Super.");
-    } else if (choix === "3") {
-        bddComptes[compteActuel.pseudo.toLowerCase()].statut = "Format PRO";
-        alert("💰 Paiement validé ! Vous êtes maintenant en Format PRO.");
-    } else if (choix !== null) {
-        alert("❌ Option invalide.");
-        return;
-    } else {
-        return;
+            listePodcastsData.push({ id: Date.now(), titre: t, audioData: e.target.result });
+            localStorage.setItem('transfr-podcasts-publics', JSON.stringify(listePodcastsData));
+            afficherPodcastsPublics(); alert("🚀 Ajouté !");
+        }; reader.readAsDataURL(f);
     }
 
-    localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
-    compteActuel.statut = bddComptes[compteActuel.pseudo.toLowerCase()].statut;
-    document.getElementById('profil-statut').innerText = compteActuel.statut;
-}
-</script>
+    function afficherPodcastsPublics() {
+        const c = document.getElementById('liste-podcasts-publics'); if (!c) return;
+        if (listePodcastsData.length === 0) { c.innerHTML = `<p style="color:#666; font-style:italic; font-size:13px; margin:0;">Aucun podcast publié.</p>`; return; }
+        c.innerHTML = "";
+        listePodcastsData.forEach(p => {
+            c.innerHTML += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:6px; display:flex; justify-content:between; align-items:center; margin-bottom:5px;"><span style="font-size:13px; color:#ffa502;">🔓 ${p.titre}</span><button onclick="lirePodcast(${p.id})" style="background:#ffa502; color:#1e1e2f; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:11px; margin-left:auto;">▶️ Écouter</button></div>`;
+        });
+    }
+
+    function lirePodcast(id) {
+        const p = listePodcastsData.find(x => x.id === id); if (!p) return;
+        document.getElementById('titre-podcast-en-cours').innerText = "Podcast : " + p.titre;
+        document.getElementById('audio-podcast-player').src = p.audioData;
+        document.getElementById('lecteur-podcast-container').style.display = 'block'; document.getElementById('audio-podcast-player').play();
+    }
+
+    function recupererInfosFlash() {
+        fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fnews.google.com%2Frss%3Fhl%3Dfr%26gl%3DFR%26ceid%3DFR%3Afr')
+            .then(r => r.json()).then(d => {
+                let html = ""; for(let i=0; i<3; i++) { if(d.items[i]) html += `<p style="margin:0 0 6px 0;">🔹 ${d.items[i].title.split(" - ")[0]}</p>`; }
+                document.getElementById('info-bloc-actus').innerHTML = html;
+            }).catch(() => { document.getElementById('info-bloc-actus').innerText = "Actualités radio indisponibles."; });
+    }
+
+    // Lancement automatique au chargement
+    window.onload = function() {
+        const savedTime = localStorage.getItem('timestamp-direct-transfr'); if (savedTime) démarrerCalculCompteARebours(savedTime);
+        chargerPodcastsEnregistres();
+    };
+    </script>
+</body>
+</html>
