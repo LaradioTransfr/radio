@@ -48,7 +48,7 @@
         
         <!-- ÉCRAN 2 : PROFIL ACTIF -->
         <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
-            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: space-between;">
                 
                 <!-- BLOC INTERACTIF : CLIQUE ICI POUR VOIR LES MODES -->
                 <div onclick="basculerAffichageTarifs()" class="zone-cliquable-profil" style="display: flex; align-items: center; gap: 15px;">
@@ -70,6 +70,18 @@
                             <span id="profil-statut" style="background: #2ed573; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit (1 an)</span>
                         </div>
                         <button onclick="event.stopPropagation(); deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
+                    </div>
+                </div>
+
+                <!-- BOÎTE MAGIQUE IA PREMIUM (S'affiche uniquement pour les abonnés éligibles) -->
+                <div id="zone-ia-premium" style="display: none; background: #1c1430; border: 2px solid #9b59b6; padding: 15px; border-radius: 10px; max-width: 400px; width: 100%; box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);">
+                    <h4 style="margin: 0 0 10px 0; color: #9b59b6; display: flex; align-items: center; gap: 5px;">🤖 IA TRANSFR PREMIUM</h4>
+                    <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                        <input type="text" id="ia-question" placeholder="Pose-moi une question Directeur..." style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #9b59b6; background: #0c0c14; color: white; font-size: 13px;">
+                        <button onclick="demanderAIA()" style="background: #9b59b6; color: white; border: none; padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px;">Invoquer</button>
+                    </div>
+                    <div id="ia-reponse" style="font-size: 12px; color: #ddd; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; max-height: 80px; overflow-y: auto; font-style: italic;">
+                        Je suis prête à t'aider pour l'émission ! Écris ta demande au-dessus.
                     </div>
                 </div>
 
@@ -117,11 +129,11 @@
                 </ul>
             </div>
 
-            <div style="background: linear-gradient(135deg, #2c1a4d, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center;">
+            <div onclick="choisirOffre('👑 SUPER PRO (À VIE)')" style="background: linear-gradient(135deg, #2c1a4d, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center; cursor: pointer;">
                 <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 SUPER PRO</h4>
                 <div style="font-size: 19px; font-weight: bold; color: #ffa502;">À VIE ✨</div>
-                <div style="font-size: 11px; color: #aaa; margin-bottom: 10px;">(Offert par le Directeur)</div>
-                <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc;">
+                <div style="font-size: 11px; color: #aaa; margin-bottom: 10px;">(Sélectionner ce mode)</div>
+                <ul style="font-size: 12px; text-align: left; padding-left: 20px; color: #ccc; pointer-events: none;">
                     <li>🤖 IA Premium intégrée</li>
                     <li>♾️ Radio À L'INFINI</li>
                     <li>⚡ Accès absolu à tout</li>
@@ -338,15 +350,63 @@
         if (!compteActuel) return;
         alert(`Félicitations ! Ton compte passe maintenant au : ${nomOffre}`);
         
-        compteActuel.statut = nomOffre + " (Abonné)";
+        compteActuel.statut = nomOffre;
         document.getElementById('profil-statut').innerText = compteActuel.statut;
         
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-        bddComptes[compteActuel.pseudo.toLowerCase()].statut = nomOffre + " (Abonné)";
+        bddComptes[compteActuel.pseudo.toLowerCase()].statut = nomOffre;
         localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
         
         // Cache la zone instantanément !
         document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
+        
+        // Vérifie si l'IA doit s'afficher
+        verifierActivationIA();
+    }
+
+    // VÉRIFICATION DU GRADE POUR COUCHER OU MONTRER L'IA
+    function verifierActivationIA() {
+        const zoneIA = document.getElementById('zone-ia-premium');
+        if (compteActuel && (compteActuel.statut.includes("Mode Normal") || compteActuel.statut.includes("Mode Super") || compteActuel.statut.includes("Format PRO") || compteActuel.statut.includes("👑 SUPER PRO"))) {
+            zoneIA.style.display = 'block';
+        } else {
+            zoneIA.style.display = 'none';
+        }
+    }
+
+    // FONCTION SIMULATEUR DE L'IA PREMIUM DE TRANSFR
+    function demanderAIA() {
+        const inputQuestion = document.getElementById('ia-question');
+        const zoneReponse = document.getElementById('ia-reponse');
+        const question = inputQuestion.value.trim().toLowerCase();
+        
+        if (!question) return;
+        
+        zoneReponse.innerText = "🧠 L'IA réfléchit...";
+        
+        setTimeout(() => {
+            let reponse = "Je suis l'IA Premium de Transfr. Je valide ton idée à 100% ! Demande-moi des idées d'animation ou de blagues si tu veux.";
+            
+            if (question.includes("bonjour") || question.includes("salut")) {
+                reponse = `Bonjour Directeur ${compteActuel.pseudo} ! Comment se passe la préparation du direct de Transfr aujourd'hui ?`;
+            } else if (question.includes("idée") || question.includes("animation")) {
+                reponse = "💡 Idée d'animation : Fais un quiz en direct avec les auditeurs sur Fortnite, ou lance un blind-test avec les musiques de ta soundboard !";
+            } else if (question.includes("fortnite")) {
+                reponse = "🎮 En parlant de Fortnite, n'oublie pas de rappeler à tes auditeurs d'activer leur mode d'écoute Super ou PRO pour suivre tes prochains streams radio !";
+            } else if (question.includes("blague")) {
+                const blagues = [
+                    "Pourquoi les plongeurs plongent-ils toujours en arrière et jamais en avant ? Parce que sinon ils tombent dans le bateau !",
+                    "Qu'est-ce qu'un geek fait quand il a froid ? Il ferme les fenêtres !",
+                    "Pourquoi le livre de maths est-il toujours stressé ? Parce qu'il a trop de problèmes !"
+                ];
+                reponse = "😂 " + blagues[Math.floor(Math.random() * blagues.length)];
+            } else if (question.includes("musique") || question.includes("lakey")) {
+                reponse = "🎵 Pour la musique de fond, n'hésite pas à lancer la piste Urban Hip-Hop ou à charger un son de LAKEY INSPIRED ou Tobu, c'est libre de droits !";
+            }
+            
+            zoneReponse.innerText = reponse;
+            inputQuestion.value = "";
+        }, 800);
     }
 
     function creerCompte() {
@@ -395,6 +455,8 @@
             document.getElementById('profil-photo-img').src = compteActuel.avatar;
         }
         document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #2ed573; font-style: italic; margin: 0;">Connecté en tant que ${compteActuel.pseudo}. Clique sur ton profil pour voir/cacher les modes !</p>`;
+        
+        verifierActivationIA();
     }
 
     function deconnexionAuditeur() {
@@ -402,6 +464,7 @@
         document.getElementById('bloc-inscription').style.display = 'block';
         document.getElementById('bloc-profil-actif').style.display = 'none';
         document.getElementById('conteneur-tarifs-global').style.display = 'none'; 
+        document.getElementById('zone-ia-premium').style.display = 'none';
         document.getElementById('boite-tchat-auditeur').innerHTML = `<p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour voir...</p>`;
     }
 
@@ -424,6 +487,11 @@
             bddComptes[pseudo.toLowerCase()].statut = grade;
             localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
             alert(`Grade appliqué !`);
+            if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudo.toLowerCase()) {
+                compteActuel.statut = grade;
+                document.getElementById('profil-statut').innerText = grade;
+                verifierActivationIA();
+            }
         }
     }
     
