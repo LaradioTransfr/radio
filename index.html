@@ -1,73 +1,28 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Expert Pro</title>
-    <style>
-        .zone-cliquable-profil { cursor: pointer; transition: background 0.2s; padding: 10px; border-radius: 8px; user-select: none; }
-        .zone-cliquable-profil:hover { background: rgba(0, 210, 255, 0.08); }
-        .pseudo-super { color: #00d2ff; font-weight: bold; }
-    </style>
-</head>
-<body style="background-color: #0c0014; margin: 0; padding: 20px; font-family: sans-serif; color: white;">
-
-    <!-- Zone Admin (Invisible sauf si code) -->
-    <div style="text-align: right; padding-bottom: 20px;">
-        <span onclick="ouvrirConnexion()" style="color: #4a4a6a; cursor: pointer; font-size: 12px; text-decoration: underline;">[ Zone Admin ]</span>
-    </div>
-
-    <!-- Interface Auditeur -->
-    <div id="zone-compte-utilisateur" style="max-width: 600px; margin: 0 auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
-        <div id="bloc-inscription">
-            <h3>👤 Compte Transfr</h3>
-            <input type="text" id="inscription-pseudo" placeholder="Ton pseudo...">
-            <button onclick="creerCompte()">S'inscrire</button>
-        </div>
-        <div id="bloc-profil-actif" style="display: none;">
-            <p>Pseudo : <span id="profil-pseudo"></span></p>
-            <p>🪙 Points : <span id="valeur-points-haut">0</span></p>
-            <button onclick="deconnexionAuditeur()" style="color: red;">Déconnexion</button>
-        </div>
-    </div>
-
-    <!-- Panneau Admin (Le tiens !) -->
-    <div id="panneau-admin" style="display: none; max-width: 800px; margin: 30px auto; background: #1a1a2e; padding: 20px; border-radius: 12px; border: 2px solid #9b59b6;">
-        <h2 style="color: #9b59b6;">🛠️ CONSOLE DIRECTEUR</h2>
-        <input type="text" id="admin-offre-pseudo" placeholder="Pseudo de l'auditeur..." style="padding: 10px; width: 200px;">
-        <button onclick="donnerPointsDirecteur()" style="background: #ffa502; border: none; padding: 10px; cursor: pointer;">🎁 DONNER POINTS INFINIS</button>
-    </div>
-
-    <!-- Connexion Admin -->
-    <div id="zone-connexion" style="display: none; position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); background: #1e1e2f; padding: 20px; border: 1px solid #00d2ff;">
-        <input type="password" id="code-secret" placeholder="Code secret...">
-        <button onclick="verifierCode()">Valider</button>
-    </div>
+<!-- ... (Tout le début de ton code reste identique jusqu'à la fonction) ... -->
 
     <script>
-    let compteActuel = null;
+    let compteActuel = null; 
+    let bouclePoints = null;
 
-    function creerCompte() {
-        const pseudo = document.getElementById('inscription-pseudo').value.trim();
-        if (!pseudo) return;
-        let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-        bdd[pseudo.toLowerCase()] = { pseudo: pseudo, points: 10 };
-        localStorage.setItem('transfr-comptes', JSON.stringify(bdd));
-        alert("Compte créé !");
-    }
+    // ... (Tes autres fonctions restent inchangées) ...
 
     function donnerPointsDirecteur() {
         let pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
-        let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if(!pseudoCible) return alert("Indique le pseudo de l'auditeur !");
         
-        if(!bdd[pseudoCible.toLowerCase()]) return alert("Utilisateur introuvable !");
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        if(!bddComptes[pseudoCible.toLowerCase()]) return alert("Cet auditeur n'existe pas !");
         
-        // Voici ton nombre spécial
+        // Ton nouveau nombre géant
         let pointsGeants = 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999;
         
-        bdd[pseudoCible.toLowerCase()].points = pointsGeants;
-        localStorage.setItem('transfr-comptes', JSON.stringify(bdd));
-        alert("🎁 Points infinis envoyés à " + pseudoCible + " !");
+        bddComptes[pseudoCible.toLowerCase()].points = pointsGeants;
+        
+        // ANCIEN CODE GARDÉ EN MÉMOIRE :
+        // bddComptes[pseudoCible.toLowerCase()].points = (bddComptes[pseudoCible.toLowerCase()].points || 0) + 50;
+        
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        alert(`🎁 Points infinis offerts à [${pseudoCible}] !`);
         
         if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudoCible.toLowerCase()){
             compteActuel.points = pointsGeants;
@@ -75,20 +30,7 @@
         }
     }
 
-    function ouvrirConnexion() { document.getElementById('zone-connexion').style.display = 'block'; }
-
-    function verifierCode() {
-        if(document.getElementById('code-secret').value === "1944") {
-            document.getElementById('panneau-admin').style.display = 'block';
-            document.getElementById('zone-connexion').style.display = 'none';
-        } else { alert("Code incorrect !"); }
-    }
-
-    function deconnexionAuditeur() {
-        compteActuel = null;
-        document.getElementById('bloc-inscription').style.display = 'block';
-        document.getElementById('bloc-profil-actif').style.display = 'none';
-    }
+    // ... (Le reste de ton code ne change pas) ...
     </script>
 </body>
 </html>
