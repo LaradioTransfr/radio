@@ -195,8 +195,8 @@
     let fluxLocal = null;
     let filtrePodcastActuel = 'public'; 
     let intervalleVerification = null;
+    let bouclePoints = null; // Variable pour la boucle de points réactivée
 
-    // Identifiant public fixe et global pour ton studio Transfr
     const ID_PUBLIC_RADIO = "transfr-live-global-2026";
 
     let mediaRecorder = null;
@@ -297,14 +297,12 @@
         }
     }
 
-    // --- EN DIRECT (AUDITEUR - CHERCHE LE STUDIO AUTOMATIQUEMENT) ---
+    // --- EN DIRECT (AUDITEUR) ---
     function verifierStatutDuLive() {
-        // Crée un Peer temporaire pour vérifier si le studio répond
         let testPeer = new Peer();
         testPeer.on('open', () => {
             let conn = testPeer.connect(ID_PUBLIC_RADIO);
             
-            // Si le studio répond : le live est actif !
             conn.on('open', () => {
                 document.getElementById('statut-diffusion').innerText = "🔴 Radio Transfr est EN DIRECT !";
                 document.getElementById('statut-diffusion').style.color = "#2ed573";
@@ -312,7 +310,6 @@
                 testPeer.destroy();
             });
 
-            // Si ça échoue après 2 secondes, c'est que le studio est éteint
             setTimeout(() => {
                 if (!conn.open) {
                     document.getElementById('statut-diffusion').innerText = "⚪ Le studio radio est actuellement hors ligne.";
@@ -357,10 +354,63 @@
         const dst = ctx.createMediaStreamDestination();
         oscillator.connect(dst); oscillator.start();
         const track = dst.stream.getAudioTracks()[0]; track.enabled = false;
-        return new MediaStream([track]);
+        return new Stream = new MediaStream([track]);
     }
 
-    // --- SYSTEME DE GRADE & GESTION ADMIN ---
+    // --- GESTION DU SCORE & DES COMPTES ---
+    function mettreAJourDonneesAuditeur() {
+        if (!compteActuel) return;
+        let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+        let clé = compteActuel.pseudo.toLowerCase();
+        
+        if (!bddComptes[clé]) {
+            bddComptes[clé] = { pseudo: compteActuel.pseudo, points: 0 };
+        }
+        
+        let points = bddComptes[clé].points || 0;
+        
+        // Calcul et mise à jour du grade
+        let grade = "Gratuit";
+        let classePseudo = "";
+        if (points >= 50) { grade = "👑 Super Pro"; classePseudo = "pseudo-superpro"; }
+        else if (points >= 25) { grade = "🔥 Pro"; classePseudo = "pseudo-pro"; }
+        else if (points >= 10) { grade = "⭐ Super"; classePseudo = "pseudo-super"; }
+        
+        // Rafraîchissement des textes sur la page
+        document.getElementById('valeur-points-haut').innerText = points;
+        let profilTxt = document.getElementById('profil-pseudo');
+        profilTxt.innerText = bddComptes[clé].pseudo;
+        profilTxt.className = classePseudo;
+        
+        let badgeStatut = document.getElementById('profil-statut');
+        badgeStatut.innerText = grade;
+        
+        // Change la couleur du badge de grade
+        if(points >= 50) badgeStatut.style.background = "#9b59b6";
+        else if(points >= 25) badgeStatut.style.background = "#2ed573";
+        else if(points >= 10) badgeStatut.style.background = "#00d2ff";
+        else badgeStatut.style.background = "#555";
+        
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+    }
+
+    function lancerCompteurPoints() {
+        mettreAJourDonneesAuditeur();
+        document.getElementById('affichage-points-haut').style.display = "block";
+        
+        // Ajoute 1 point automatiquement toutes les minutes (60000 ms)
+        if (bouclePoints) clearInterval(bouclePoints);
+        bouclePoints = setInterval(() => {
+            let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
+            let clé = compteActuel.pseudo.toLowerCase();
+            if (bddComptes[clé]) {
+                bddComptes[clé].points = (bddComptes[clé].points || 0) + 1;
+                localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+                mettreAJourDonneesAuditeur();
+            }
+        }, 60000);
+    }
+
     function donnerPointsDirecteur() {
         let pseudoCible = document.getElementById('admin-offre-pseudo').value.trim();
         if(!pseudoCible) return alert("Indique le pseudo de l'auditeur !");
@@ -370,6 +420,7 @@
         bddComptes[pseudoCible.toLowerCase()].points = (bddComptes[pseudoCible.toLowerCase()].points || 0) + 15;
         localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
         alert(`🎁 +15 points offerts avec succès à [${pseudoCible}] !`);
+        mettreAJourDonneesAuditeur();
     }
 
     function ajouterLienMusique() {
@@ -395,23 +446,46 @@
     function fermerConnexion() { document.getElementById('zone-connexion').style.display = 'none'; }
     function verifierCode() { if(document.getElementById('code-secret').value === "1944") { document.getElementById('zone-connexion').style.display = 'none'; document.getElementById('panneau-admin').style.display = 'block'; } }
     
-    function creerCompte() { compteActuel = { pseudo: document.getElementById('inscription-pseudo').value }; connexionInterfaceCompte(); }
-    function seConnecterAuditeur() { compteActuel = { pseudo: document.getElementById('inscription-pseudo').value }; connexionInterfaceCompte(); }
+    function creerCompte() { 
+        let pseudoSaisi = document.getElementById('inscription-pseudo').value.trim();
+        if(!pseudoSaisi) return alert("Choisis un pseudo !");
+        compteActuel = { pseudo: pseudoSaisi }; 
+        connexionInterfaceCompte(); 
+    }
+    function seConnecterAuditeur() { 
+        let pseudoSaisi = document.getElementById('inscription-pseudo').value.trim();
+        if(!pseudoSaisi) return alert("Indique ton pseudo !");
+        compteActuel = { pseudo: pseudoSaisi }; 
+        connexionInterfaceCompte(); 
+    }
     
     function connexionInterfaceCompte() { 
         document.getElementById('bloc-inscription').style.display = 'none'; 
         document.getElementById('bloc-profil-actif').style.display = 'flex'; 
-        document.getElementById('profil-pseudo').innerText = compteActuel.pseudo; 
         
-        // Lance la première vérification tout de suite
+        // Démarre l'affichage et le gain de points
+        lancerCompteurPoints();
+        
+        // Lance la détection automatique du direct
         verifierStatutDuLive();
-        // Vérifie automatiquement toutes les 5 secondes (5000 ms) si le live commence
         if (intervalleVerification) clearInterval(intervalleVerification);
         intervalleVerification = setInterval(verifierStatutDuLive, 5000);
     }
     
-    function deconnexionAuditeur() { if(intervalleVerification) clearInterval(intervalleVerification); location.reload(); }
-    function envoyerCommentaire() { const box = document.getElementById('boite-tchat-auditeur'); box.innerHTML += `<p><strong>${compteActuel.pseudo}</strong>: ${document.getElementById('chat-message').value}</p>`; document.getElementById('chat-message').value=""; }
+    function deconnexionAuditeur() { 
+        if(intervalleVerification) clearInterval(intervalleVerification); 
+        if(bouclePoints) clearInterval(bouclePoints);
+        location.reload(); 
+    }
+    function envoyerCommentaire() { 
+        if(!compteActuel) return alert("Connecte-toi pour t'exprimer sur le tchat !");
+        const box = document.getElementById('boite-tchat-auditeur'); 
+        box.innerHTML += `<p><strong>${compteActuel.pseudo}</strong>: ${document.getElementById('chat-message').value}</p>`; 
+        document.getElementById('chat-message').value=""; 
+    }
+    
+    // Vérification en arrière-plan si le directeur ajoute 15 points
+    setInterval(() => { if(compteActuel) mettreAJourDonneesAuditeur(); }, 3000);
     
     afficherPodcasts();
     </script>
