@@ -26,6 +26,12 @@
         .onglet-podcast.actif {
             background: #00d2ff; color: #1e1e2f; border-color: #00d2ff;
         }
+        .podcast-card {
+            background: #1e1e2f; padding: 12px 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #2d2d44; transition: all 0.2s;
+        }
+        .podcast-ligne-principale {
+            display: flex; justify-content: space-between; align-items: center;
+        }
     </style>
 </head>
 <body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
@@ -103,7 +109,6 @@
     <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto 20px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
         <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
         
-        <!-- LE VRAI COMPTEUR DE PERSONNES EN DIRECT -->
         <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold; color: #ffa502; background: rgba(255, 165, 2, 0.1); display: inline-block; padding: 4px 12px; border-radius: 12px; border: 1px solid #ffa502;">
             👥 Personnes en ligne : <span id="compteur-auditeurs">1</span>
         </div>
@@ -136,7 +141,7 @@
         <!-- Onglets de tri -->
         <div style="display: flex; gap: 5px; margin-bottom: 15px;">
             <div id="onglet-public" onclick="changerOngletPodcast('public')" class="onglet-podcast actif" style="border-radius: 8px 0 0 8px;">🌍 Publics</div>
-            <div id="onglet-prive" onclick="changerOngletPodcast('prive')" class="onglet-podcast" style="border-radius: 0 8px 8px 0;">🔒 Privés (Membres)</div>
+            <div id="onglet-prive" onclick="changerOngletPodcast('prive')" class="onglet-podcast" style="border-radius: 0 8px 8px 0;">🔒 Privés (PIN requis)</div>
         </div>
 
         <!-- Zone d'affichage des podcasts filtrés -->
@@ -161,7 +166,6 @@
     <!-- INTERFACE ADMINISTRATEUR                               -->
     <!-- ====================================================== -->
     <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 30px auto; padding: 10px;">
-        <!-- SECTION DIRECTEUR : COMPTE ET AJOUT DE PODCAST -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 20px;">
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6;">
                 <h3 style="color: #9b59b6; margin-top: 0;">🎁 CONTRÔLE DES AUDITEURS</h3>
@@ -171,19 +175,23 @@
                 </div>
             </div>
 
-            <!-- NOUVEL OUTIL : AJOUTER UN PODCAST DANS LA BDD -->
+            <!-- OUTIL AJOUT DE PODCASTS AVEC LIEN AUDIO & CODE PIN -->
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502;">
                 <h3 style="color: #ffa502; margin-top: 0;">📤 METTRE EN LIGNE UN PODCAST</h3>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="podcast-titre" placeholder="Titre de l'émission (ex: Transfr Actu)..." style="padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
+                    <input type="text" id="podcast-url" placeholder="Lien mp3 de l'enregistrement (ex: https://.../audio.mp3)" style="padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 13px;">
                     <div style="display: flex; gap: 10px;">
                         <input type="text" id="podcast-duree" placeholder="Durée (ex: 15:30)..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
-                        <select id="podcast-type" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-weight: bold;">
+                        <select id="podcast-type" onchange="toggleFormulairePin()" style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-weight: bold;">
                             <option value="public">🌍 Public</option>
-                            <option value="prive">🔒 Privé (Membres)</option>
+                            <option value="prive">🔒 Privé (Code PIN)</option>
                         </select>
                     </div>
-                    <button onclick="ajouterNouveauPodcastBdd()" style="background: #2ed573; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer;">🚀 Publier le Podcast</button>
+                    <div id="zone-input-pin" style="display: none;">
+                        <input type="text" id="podcast-pin" placeholder="Définir le code PIN secret (ex: 1234)..." style="width: 94%; padding: 10px; border-radius: 6px; border: 1px solid #ff4757; background: #12121a; color: white; font-weight: bold;">
+                    </div>
+                    <button onclick="ajouterNouveauPodcastBdd()" style="background: #2ed573; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 14px;">🚀 Publier le Podcast</button>
                 </div>
             </div>
         </div>
@@ -231,12 +239,17 @@
 
     const ID_FIXE_STUDIO = "transfr-studio-2026-superid"; 
 
-    // Base de données de départ chargée depuis le localStorage pour pas tout perdre en actualisant !
-    let bddPodcasts = JSON.parse(localStorage.getItem('transfr-podcasts-save') || JSON.stringify([
-        { titre: "Transfr Émission Spéciale - Épisode 1", type: "public", duree: "12:45" },
-        { titre: "Session Test Live Micro", type: "public", duree: "05:20" },
-        { titre: "Secret de Production Transfr PRO", type: "prive", duree: "22:10" }
+    // Base de données par défaut avec des musiques libres pour tester le lecteur
+    let bddPodcasts = JSON.parse(localStorage.getItem('transfr-podcasts-save-v2') || JSON.stringify([
+        { id: 1, titre: "Transfr Actu - Épisode Spécial 1", type: "public", duree: "02:15", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", pin: "" },
+        { id: 2, titre: "Chronique Gaming Fortnite", type: "public", duree: "01:50", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", pin: "" },
+        { id: 3, titre: "Émission VIP Privée Membres", type: "prive", duree: "03:10", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", pin: "1234" }
     ]));
+
+    function toggleFormulairePin() {
+        const type = document.getElementById('podcast-type').value;
+        document.getElementById('zone-input-pin').style.display = (type === 'prive') ? 'block' : 'none';
+    }
 
     function mettreAJourCompteurVisual(total) {
         document.getElementById('compteur-auditeurs').innerText = total;
@@ -279,7 +292,7 @@
         document.getElementById('profil-statut').innerText = formatNomGrade(nouveauGrade);
 
         if (nouveauGrade !== ancienGrade) {
-            alert(`🎉 Bravo ! Tu as atteint ${points} points. Nouvelles fonctions débloquées ! Grade : ${formatNomGrade(nouveauGrade)}`);
+            alert(`🎉 Bravo ! Tu as atteint ${points} points. Grade : ${formatNomGrade(nouveauGrade)}`);
         }
 
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
@@ -317,14 +330,14 @@
         if (grade === "Super Mois") {
             elPseudo.classList.add('pseudo-super');
             zoneBonus.style.display = 'block';
-            titreBonus.innerText = "⭐ Fonctions débloquées : Super Auditeur";
+            titreBonus.innerText = "⭐ Fonctions : Super Auditeur";
             titreBonus.style.color = "#00d2ff";
         } 
         else if (grade === "Pro Mois") {
             elPseudo.classList.add('pseudo-pro');
             zoneBonus.style.display = 'block';
             bonusSoundboard.style.display = 'block';
-            titreBonus.innerText = "🔥 Fonctions débloquées : Auditeur PRO";
+            titreBonus.innerText = "🔥 Fonctions : Auditeur PRO";
             titreBonus.style.color = "#2ed573";
         } 
         else if (grade === "Super Pro An") {
@@ -332,36 +345,49 @@
             zoneBonus.style.display = 'block';
             bonusSoundboard.style.display = 'block';
             bonusVote.style.display = 'block';
-            titreBonus.innerText = "👑 Fonctions débloquées : Super Pro MAX";
+            titreBonus.innerText = "👑 Fonctions : Super Pro MAX";
             titreBonus.style.color = "#9b59b6";
         }
     }
 
-    // --- ENREGISTRER UN NOUVEAU PODCAST DEPUIS L'ADMIN ---
+    // --- PUBLIER UN NOUVEAU PODCAST ---
     function ajouterNouveauPodcastBdd() {
         const inputTitre = document.getElementById('podcast-titre');
+        const inputUrl = document.getElementById('podcast-url');
         const inputDuree = document.getElementById('podcast-duree');
         const selectType = document.getElementById('podcast-type');
+        const inputPin = document.getElementById('podcast-pin');
 
         const titre = inputTitre.value.trim();
+        const urlAudio = inputUrl.value.trim() || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
         const duree = inputDuree.value.trim() || "10:00";
         const type = selectType.value;
+        const pinCode = (type === 'prive') ? inputPin.value.trim() : "";
 
-        if (!titre) return alert("❌ Tu dois donner un titre à ton podcast !");
+        if (!titre) return alert("❌ Donne un titre à ton podcast !");
+        if (type === 'prive' && !pinCode) return alert("❌ Tu dois mettre un code PIN secret pour un podcast Privé !");
 
-        // Ajout dans le tableau
-        bddPodcasts.push({ titre: titre, type: type, duree: duree });
+        // Enregistrement dans la liste
+        bddPodcasts.push({
+            id: Date.now(),
+            titre: titre,
+            type: type,
+            duree: duree,
+            url: urlAudio,
+            pin: pinCode
+        });
         
-        // Sauvegarde locale
-        localStorage.setItem('transfr-podcasts-save', JSON.stringify(bddPodcasts));
-
-        alert(`🚀 Le podcast "${titre}" est maintenant en ligne !`);
+        localStorage.setItem('transfr-podcasts-save-v2', JSON.stringify(bddPodcasts));
+        alert(`🚀 Le podcast "${titre}" est maintenant publié !`);
         
-        // Reset des cases vides
+        // Vider les cases du formulaire
         inputTitre.value = "";
+        inputUrl.value = "";
         inputDuree.value = "";
+        inputPin.value = "";
+        document.getElementById('zone-input-pin').style.display = 'none';
+        selectType.value = "public";
 
-        // Recharger le visuel
         afficherPodcasts();
     }
 
@@ -380,7 +406,6 @@
         const conteneur = document.getElementById('liste-podcasts-contenu');
         conteneur.innerHTML = "";
         
-        let gradeUtilisateur = compteActuel ? compteActuel.statut : "Gratuit";
         const listeFiltree = bddPodcasts.filter(p => p.type === filtrePodcastActuel);
 
         if (listeFiltree.length === 0) {
@@ -389,27 +414,62 @@
         }
 
         listeFiltree.forEach(p => {
-            const div = document.createElement('div');
-            div.style.background = "#1e1e2f";
-            div.style.padding = "10px 15px";
-            div.style.borderRadius = "8px";
-            div.style.display = "flex";
-            div.style.justifyContent = "space-between";
-            div.style.alignItems = "center";
-            div.style.border = "1px solid #2d2d44";
+            const card = document.createElement('div');
+            card.className = "podcast-card";
 
-            let boutonAction = "";
-            
-            if (p.type === "prive" && gradeUtilisateur === "Gratuit") {
-                boutonAction = `<span style="color:#ff4757; font-size:12px; font-weight:bold;">🔒 Réservé PRO</span>`;
-                div.style.opacity = "0.5";
+            let interfaceBouton = "";
+            if (p.type === "prive") {
+                interfaceBouton = `<button onclick="demanderPinEtLire(${p.id})" style="background:#ffa502; color:#1e1e2f; border:none; padding:6px 12px; font-weight:bold; border-radius:4px; cursor:pointer; font-size:12px;">🔑 Débloquer (${p.duree})</button>`;
             } else {
-                boutonAction = `<button onclick="alert('▶️ Lecture du podcast : ${p.titre}')" style="background:#00d2ff; color:#1e1e2f; border:none; padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer; font-size:12px;">Écouter (${p.duree})</button>`;
+                interfaceBouton = `<button onclick="activerLecteurPodcast(${p.id}, '${p.url}')" style="background:#00d2ff; color:#1e1e2f; border:none; padding:6px 12px; font-weight:bold; border-radius:4px; cursor:pointer; font-size:12px;">▶️ Écouter (${p.duree})</button>`;
             }
 
-            div.innerHTML = `<div><strong style="font-size:14px;color:#fff;">${p.titre}</strong></div><div>${boutonAction}</div>`;
-            conteneur.appendChild(div);
+            card.innerHTML = `
+                <div class="podcast-ligne-principale">
+                    <div><strong style="font-size:14px;color:#fff;">${p.titre}</strong></div>
+                    <div>${interfaceBouton}</div>
+                </div>
+                <div id="lecteur-zone-${p.id}" style="display:none; margin-top:5px; border-top:1px dashed #333; padding-top:8px;">
+                    <audio id="audio-player-${p.id}" controls style="width:100%; height:30px;"></audio>
+                </div>
+            `;
+            conteneur.appendChild(card);
         });
+    }
+
+    // --- DÉBLOQUER UN PODCAST AVEC LE PIN ---
+    function demanderPinEtLire(idPodcast) {
+        const podcast = bddPodcasts.find(p => p.id === idPodcast);
+        if (!podcast) return;
+
+        const pinSaisi = prompt("🔒 Ce podcast est protégé. Entre le code PIN secret pour l'écouter :");
+        
+        if (pinSaisi === null) return; // L'utilisateur a cliqué sur annuler
+
+        if (pinSaisi === podcast.pin) {
+            alert("🔓 Code PIN correct ! Chargement du podcast...");
+            activerLecteurPodcast(idPodcast, podcast.url);
+        } else {
+            alert("❌ Code PIN incorrect ! Accès refusé.");
+        }
+    }
+
+    function activerLecteurPodcast(id, url) {
+        // Cacher tous les autres lecteurs ouverts pour pas que ça s'entremêle
+        bddPodcasts.forEach(p => {
+            let zone = document.getElementById(`lecteur-zone-${p.id}`);
+            if(zone) zone.style.display = "none";
+            let aud = document.getElementById(`audio-player-${p.id}`);
+            if(aud) aud.pause();
+        });
+
+        // Ouvrir et lancer le bon lecteur
+        const zoneLecteur = document.getElementById(`lecteur-zone-${id}`);
+        const baliseAudio = document.getElementById(`audio-player-${id}`);
+        
+        zoneLecteur.style.display = "block";
+        baliseAudio.src = url;
+        baliseAudio.play();
     }
 
     function auditeurBruitage(type) { alert(`🎛️ Bruitage "${type}" envoyé au tchat en direct !`); }
@@ -492,7 +552,7 @@
     function deconnexionAuditeur() {
         compteActuel = null;
         if (bouclePoints) clearInterval(bouclePoints);
-        document.getElementById('bloc-inscription').style.block = 'block';
+        document.getElementById('bloc-inscription').style.display = 'block';
         document.getElementById('bloc-profil-actif').style.display = 'none';
         document.getElementById('affichage-points-haut').style.display = 'none';
         document.getElementById('zone-fonctions-bonus').style.display = 'none';
@@ -606,7 +666,6 @@
     }
     function ajouterLienMusique() { alert("Option de lien activée."); }
     
-    // Charger la liste des podcasts au démarrage
     afficherPodcasts();
     </script>
 </body>
