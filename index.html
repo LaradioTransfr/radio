@@ -20,6 +20,12 @@
             from { text-shadow: 0 0 5px #9b59b6; }
             to { text-shadow: 0 0 15px #d988ff; }
         }
+        .onglet-podcast {
+            flex: 1; padding: 10px; text-align: center; background: #12121a; border: 1px solid #2d2d44; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.2s;
+        }
+        .onglet-podcast.actif {
+            background: #00d2ff; color: #1e1e2f; border-color: #00d2ff;
+        }
     </style>
 </head>
 <body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
@@ -94,7 +100,7 @@
     <!-- ====================================================== -->
     <!-- INTERFACE PRINCIPALE DE LA RADIO                      -->
     <!-- ====================================================== -->
-    <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
+    <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto 20px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
         <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
         
         <!-- LE VRAI COMPTEUR DE PERSONNES EN DIRECT -->
@@ -118,6 +124,24 @@
             </div>
             <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 45px; resize: none;"></textarea>
             <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
+        </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- NOUVELLE PAGE / BLOC DES PODCASTS (PUBLIC / PRIVÉ)     -->
+    <!-- ====================================================== -->
+    <div id="section-podcasts" style="max-width: 500px; margin: 0 auto; background: #14141f; border-radius: 16px; border: 1px solid #2d2d44; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <h3 style="color: #00d2ff; margin-top: 0; text-align: center; margin-bottom: 15px;">🎧 Émissions & Podcasts Transfr</h3>
+        
+        <!-- Onglets de tri -->
+        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+            <div id="onglet-public" onclick="changerOngletPodcast('public')" class="onglet-podcast actif" style="border-radius: 8px 0 0 8px;">🌍 Publics</div>
+            <div id="onglet-prive" onclick="changerOngletPodcast('prive')" class="onglet-podcast" style="border-radius: 0 8px 8px 0;">🔒 Privés (Membres)</div>
+        </div>
+
+        <!-- Zone d'affichage des podcasts filtrés -->
+        <div id="liste-podcasts-contenu" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Rempli en JavaScript à la connexion -->
         </div>
     </div>
 
@@ -149,7 +173,8 @@
             <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff;">
                 <h2 style="color: #00d2ff; text-align: center; margin: 0 0 20px 0;">🎙️ CONSOLE DE MIXAGE TRANSFR</h2>
                 <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44; margin-bottom: 20px; text-align: center;">
-                    <button id="btn-lancer-live" onclick="lancerLiveStudio()" style="background: #2ed573; color: white; border: none; padding: 14px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 15px;">🔴 ALLUMER LE MICRO / LANCER LE DIRECT</button>
+                    <!-- LE BOUTON PASSE PAR LA FONCTION GÉRER MICRO QUI GÈRE MICRO ALLUMÉ / ÉTEINT -->
+                    <button id="btn-lancer-live" onclick="gererMicroStudio()" style="background: #2ed573; color: white; border: none; padding: 14px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 15px;">🔴 ALLUMER LE MICRO / LANCER LE DIRECT</button>
                     <p style="font-size: 11px; color: #888; margin-top: 8px; margin-bottom: 0;">ID Studio PeerJS : <span id="mon-id-peer" style="color: #ffa502; font-weight: bold;">En attente...</span></p>
                 </div>
                 <div style="background: #1e1e2f; padding: 18px; border-radius: 12px; border: 1px solid #2d2d44;">
@@ -184,7 +209,16 @@
     let monPeer = null;
     let fluxLocal = null;
     let listeConnexionsAuditeurs = []; 
+    let filtrePodcastActuel = 'public'; 
     const ID_FIXE_STUDIO = "transfr-studio-2026-superid"; 
+
+    // --- Base de données simulée pour les podcasts ---
+    const bddPodcasts = [
+        { titre: "Transfr Émission Spéciale - Épisode 1", type: "public", duree: "12:45" },
+        { titre: "Session Test Live Micro", type: "public", duree: "05:20" },
+        { titre: "Secret de Production Transfr PRO", type: "prive", duree: "22:10" },
+        { titre: "Coulisses Exclusive Studio", type: "prive", duree: "15:40" }
+    ];
 
     function mettreAJourCompteurVisual(total) {
         document.getElementById('compteur-auditeurs').innerText = total;
@@ -236,6 +270,7 @@
         localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
 
         activerFonctionsBonusGrade();
+        afficherPodcasts(); // Actualise les podcasts si le grade change
     }
 
     function formatNomGrade(gradeId) {
@@ -282,6 +317,58 @@
             titreBonus.innerText = "👑 Fonctions débloquées : Super Pro MAX";
             titreBonus.style.color = "#9b59b6";
         }
+    }
+
+    // --- FONCTION DES PODCASTS (FILTRE PUBLIC / PRIVÉ) ---
+    function changerOngletPodcast(type) {
+        filtrePodcastActuel = type;
+        document.getElementById('onglet-public').classList.remove('actif');
+        document.getElementById('onglet-prive').classList.remove('actif');
+        
+        if (type === 'public') document.getElementById('onglet-public').classList.add('actif');
+        if (type === 'prive') document.getElementById('onglet-prive').classList.add('actif');
+        
+        afficherPodcasts();
+    }
+
+    function afficherPodcasts() {
+        const conteneur = document.getElementById('liste-podcasts-contenu');
+        conteneur.innerHTML = "";
+        
+        let gradeUtilisateur = compteActuel ? compteActuel.statut : "Gratuit";
+
+        // Filtrer les podcasts de la liste
+        const listeFiltree = bddPodcasts.filter(p => p.type === filtrePodcastActuel);
+
+        if (listeFiltree.length === 0) {
+            conteneur.innerHTML = "<p style='color:#666;font-style:italic;text-align:center;margin:10px 0;'>Aucun podcast dans cette catégorie.</p>";
+            return;
+        }
+
+        listeFiltree.forEach(p => {
+            const div = document.createElement('div');
+            div.style.background = "#1e1e2f";
+            div.style.padding = "10px 15px";
+            div.style.borderRadius = "8px";
+            div.style.display = "flex";
+            div.style.justifyContent = "space-between";
+            div.style.alignItems = "center";
+            div.style.border = "1px solid #2d2d44";
+
+            let boutonAction = "";
+            
+            if (p.type === "prive" && gradeUtilisateur === "Gratuit") {
+                // Bloqué pour les gratuits
+                boutonAction = `<span style="color:#ff4757; font-size:12px; font-weight:bold;">🔒 Réservé PRO</span>`;
+                div.style.opacity = "0.5";
+            } else {
+                // Accessible public ou grade suffisant
+                boutonAction = `<button onclick="alert('▶️ Lecture du podcast : ${p.titre}')" style="background:#00d2ff; color:#1e1e2f; border:none; padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer; font-size:12px;">Écouter (${p.duree})</button>`;
+            }
+
+            div.innerHTML = `<div><strong style="font-size:14px;color:#fff;">${p.titre}</strong></div><div>${boutonAction}</div>`;
+            conteneur.appendChild(div);
+        });
     }
 
     function auditeurBruitage(type) { alert(`🎛️ Bruitage "${type}" envoyé au tchat en direct !`); }
@@ -372,6 +459,7 @@
         document.getElementById('statut-diffusion').innerText = "⚪ En attente du lancement du studio...";
         mettreAJourCompteurVisual(1);
         if(monPeer) monPeer.destroy();
+        afficherPodcasts();
     }
 
     function envoyerCommentaire() {
@@ -414,15 +502,32 @@
         monPeer.on('call', (appel) => { if (fluxLocal) { appel.answer(fluxLocal); } });
     }
 
-    function lancerLiveStudio() {
-        if (!monPeer) return alert("Le réseau PeerJS n'est pas prêt.");
-        navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-        .then((stream) => {
-            fluxLocal = stream;
-            document.getElementById('btn-lancer-live').style.background = "#ea2027";
-            document.getElementById('btn-lancer-live').innerText = "📡 EN DIRECT (MICRO ALLUMÉ)";
-            alert("🟢 Ton micro de studio est ouvert !");
-        });
+    // --- LE BOUTON MICRO GÈRE MAINTENANT ALLUMER ET ÉTEINDRE ---
+    function gererMicroStudio() {
+        const btn = document.getElementById('btn-lancer-live');
+        
+        // Si le micro est déjà allumé, on l'éteint
+        if (fluxLocal) {
+            fluxLocal.getTracks().forEach(track => track.stop()); // Coupe physiquement la capture du micro
+            fluxLocal = null;
+            btn.style.background = "#2ed573";
+            btn.innerText = "🔴 ALLUMER LE MICRO / LANCER LE DIRECT";
+            alert("🛑 Micro coupé. Le direct est arrêté !");
+        } 
+        // Sinon, on l'allume
+        else {
+            if (!monPeer) return alert("Le réseau PeerJS n'est pas prêt.");
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+            .then((stream) => {
+                fluxLocal = stream;
+                btn.style.background = "#ea2027";
+                btn.innerText = "📡 EN DIRECT (MICRO ALLUMÉ) - CLIQUER POUR ÉTEINDRE";
+                alert("🟢 Ton micro de studio est ouvert !");
+            })
+            .catch((err) => {
+                alert("Impossible d'accéder au micro : " + err);
+            });
+        }
     }
 
     function initialiserPeerAuditeur() {
@@ -476,6 +581,9 @@
         return new MediaStream([track]);
     }
     function ajouterLienMusique() { alert("Option de lien activée."); }
+    
+    // Charger la liste des podcasts dès l'ouverture de la page
+    afficherPodcasts();
     </script>
 </body>
 </html>
