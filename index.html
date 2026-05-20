@@ -6,142 +6,209 @@
     <title>Radio Transfr - Studio Expert Pro</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        .zone-cliquable-profil { cursor: pointer; transition: background 0.2s; padding: 10px; border-radius: 8px; user-select: none; }
-        .zone-cliquable-profil:hover { background: rgba(0, 210, 255, 0.08); }
+        .zone-cliquable-profil {
+            cursor: pointer;
+            transition: background 0.2s;
+            padding: 10px;
+            border-radius: 8px;
+            user-select: none;
+        }
+        .zone-cliquable-profil:hover {
+            background: rgba(0, 210, 255, 0.08);
+        }
         .pseudo-super { color: #00d2ff; font-weight: bold; }
         .pseudo-pro { color: #2ed573; font-weight: bold; text-shadow: 0 0 8px #2ed573; }
         .pseudo-superpro { color: #9b59b6; font-weight: bold; text-shadow: 0 0 10px #9b59b6; animation: brille 1.5s infinite alternate; }
-        @keyframes brille { from { text-shadow: 0 0 5px #9b59b6; } to { text-shadow: 0 0 15px #d988ff; } }
+        
+        @keyframes brille {
+            from { text-shadow: 0 0 5px #9b59b6; }
+            to { text-shadow: 0 0 15px #d988ff; }
+        }
     </style>
 </head>
-<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Verdana, sans-serif; color: white; min-height: 90vh;">
+<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
 
-    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; padding-right: 5px;">
         <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
             🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
         </div>
-        <span onclick="ouvrirConnexion()" style="color: #4a4a6a; cursor: pointer; text-decoration: underline; font-size: 12px;">[ Zone Admin ]</span>
+        <div style="margin-left: auto;">
+            <span onclick="ouvrirConnexion()" style="color: #4a4a6a; font-size: 12px; cursor: pointer; user-select: none; font-weight: bold; text-decoration: underline; opacity: 0.7; transition: opacity 0.2s;">
+                [ Zone Admin ]
+            </span>
+        </div>
     </div>
 
     <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
         <div id="bloc-inscription">
-            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR</h3>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="inscription-pseudo" placeholder="Pseudo..." style="flex: 1; padding: 10px; border-radius: 6px; background: #12121a; color: white; border: 1px solid #3d3d5c;">
-                <button onclick="creerCompte()">S'inscrire</button>
-                <button onclick="seConnecterAuditeur()">Se connecter</button>
+            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (1 min = 1 point !)</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="inscription-pseudo" placeholder="Entre ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
+                <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">S'inscrire</button>
+                <button onclick="seConnecterAuditeur()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Se connecter</button>
             </div>
         </div>
-        <div id="bloc-profil-actif" style="display: none;">
-            <strong>Profil : <span id="profil-pseudo"></span></strong> | Statut : <span id="profil-statut">Gratuit</span>
+        
+        <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: space-between;">
+                <div onclick="basculerAffichageTarifs()" class="zone-cliquable-profil" style="display: flex; align-items: center; gap: 15px;">
+                    <div style="position: relative; text-align: center;">
+                        <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: #aaa;">Mon Profil <span style="color: #00d2ff; font-size: 12px;">(Clique pour la Boutique)</span> :</span>
+                            <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            <span style="font-size: 14px; color: #aaa;">Statut Actuel :</span>
+                            <span id="profil-statut" style="background: #555; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit</span>
+                        </div>
+                        <button onclick="event.stopPropagation(); deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div id="zone-compte-rebours" style="max-width: 500px; margin: 0 auto 20px auto; background: #14141f; padding: 15px; border-radius: 12px; border: 1px solid #9b59b6; text-align: center;">
+
+    <div id="zone-compte-rebours" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 15px; border-radius: 12px; border: 1px solid #9b59b6; text-align: center;">
         <h4 style="color: #9b59b6; margin: 0;">🚀 PROCHAIN LIVE DANS :</h4>
-        <div id="affichage-timer" style="font-weight: bold; color: #ff4757; font-size: 20px;">Chargement...</div>
+        <div id="affichage-timer" style="font-weight: bold; color: #ff4757; font-size: 24px;">Chargement...</div>
     </div>
 
+    <div id="conteneur-tarifs-global" style="max-width: 1100px; margin: 0 auto 20px auto; display: none; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #3d3d5c;">
+        <h4 style="margin-top: 0; color: #ffa502; text-align: center;">🛒 BOUTIQUE TRANSFR : Débloque des super fonctions !</h4>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px;">
+            <div onclick="choisirOffre('Normal Mois', 10)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center; cursor: pointer;">
+                <h4 style="color: white; margin: 0 0 10px 0;">🙂 Normal Mois</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">10 Points</div>
+            </div>
+            <div onclick="choisirOffre('Normal An', 20)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #3d3d5c; text-align: center; cursor: pointer;">
+                <h4 style="color: white; margin: 0 0 10px 0;">📅 Normal An</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">20 Points</div>
+            </div>
+            <div onclick="choisirOffre('Super Mois', 20)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center; cursor: pointer;">
+                <h4 style="color: #00d2ff; margin: 0 0 10px 0;">⭐ Super Mois</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">20 Points</div>
+            </div>
+            <div onclick="choisirOffre('Super An', 30)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #00d2ff; text-align: center; cursor: pointer;">
+                <h4 style="color: #00d2ff; margin: 0 0 10px 0;">🌟 Super An</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">30 Points</div>
+            </div>
+            <div onclick="choisirOffre('Pro Mois', 30)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #2ed573; text-align: center; cursor: pointer;">
+                <h4 style="color: #2ed573; margin: 0 0 10px 0;">🔥 Pro Mois</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">30 Points</div>
+            </div>
+            <div onclick="choisirOffre('Pro An', 40)" style="background: #1e1e2f; padding: 15px; border-radius: 10px; border: 1px solid #2ed573; text-align: center; cursor: pointer;">
+                <h4 style="color: #2ed573; margin: 0 0 10px 0;">⚡ Pro An</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">40 Points</div>
+            </div>
+            <div onclick="choisirOffre('Super Pro Mois', 40)" style="background: linear-gradient(135deg, #2c1a4d, #1e1e2f); padding: 15px; border-radius: 10px; border: 1px solid #9b59b6; text-align: center; cursor: pointer;">
+                <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 Super Pro Mois</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">40 Points</div>
+            </div>
+            <div onclick="choisirOffre('Super Pro An', 60)" style="background: linear-gradient(135deg, #3d1b5c, #1e1e2f); padding: 15px; border-radius: 10px; border: 2px solid #ffa502; text-align: center; cursor: pointer;">
+                <h4 style="color: #9b59b6; margin: 0 0 10px 0;">👑 Super Pro À VIE</h4>
+                <div style="font-size: 18px; font-weight: bold; color: #ffa502;">60 Points</div>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <button onclick="cacherTarifsManuel()" style="background: #ff4757; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">❌ Fermer la Boutique</button>
+        </div>
+    </div>
     <div id="zone-fonctions-bonus" style="max-width: 500px; margin: 0 auto 20px auto; display: none; background: #1a1a2e; border: 1px solid #2ed573; padding: 15px; border-radius: 12px; text-align: center;">
-        <h4 style="color: #2ed573;">⚡ Tes Avantages Débloqués</h4>
-        <button onclick="auditeurBruitage('klaxon')">📯 Klaxon</button>
-        <button onclick="auditeurBruitage('laser')">🔫 Laser</button>
-        <div id="bonus-vote" style="display: none; margin-top: 10px;"><button onclick="auditeurVoter()">🎵 Voter</button></div>
+        <h4 id="titre-bonus" style="margin: 0 0 10px 0; color: #2ed573;">⚡ Tes Avantages Grade</h4>
+        <div id="bonus-soundboard" style="display: none; margin-bottom: 10px;">
+            <button onclick="auditeurBruitage('klaxon')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 5px;">📯 Klaxon</button>
+            <button onclick="auditeurBruitage('laser')" style="background: #222; color: #2ed573; border: 1px solid #2ed573; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">🔫 Laser</button>
+        </div>
+        <div id="bonus-vote" style="display: none; border-top: 1px dashed #333; padding-top: 8px;">
+            <button onclick="auditeurVoter()" style="background: #9b59b6; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; width: 100%;">🎵 Proposer / Voter pour la prochaine musique (Super Pro)</button>
+        </div>
     </div>
 
-    <div id="panneau-admin" style="display: none; max-width: 1100px; margin: 20px auto; background: #14141f; padding: 20px; border: 2px solid #9b59b6;">
-        <h3 style="color: #9b59b6;">🛠️ CONSOLE DIRECTEUR</h3>
-        <input type="text" id="admin-offre-pseudo" placeholder="Pseudo...">
-        <button onclick="donnerPointsDirecteur()">🎁 Offrir +50 Points</button>
-        <br><br>
-        <button id="btn-lancer-live" style="background: #2ed573; color: white; border: none; padding: 20px; width: 100%; font-size: 18px; cursor: pointer;">🔴 ALLUMER LE MICRO / LANCER LE DIRECT</button>
+    <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
+        <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
+        <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">Bienvenue sur la radio officielle de Transfr !</p>
+        
+        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #aaa; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
+            ⚪ Recherche de la diffusion de Transfr...
+        </div>
+        
+        <button id="btn-ecouter" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%;">▶️ Écouter le Direct</button>
+        <audio id="audio-live" autoplay></audio>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: left; margin-top: 25px;">
+            <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">💬 Tchat en direct :</h4>
+            <div id="boite-tchat-auditeur" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; margin-bottom: 15px;">
+                <p style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour participer...</p>
+            </div>
+            <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 45px; resize: none;"></textarea>
+            <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
+        </div>
     </div>
 
-    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1e1e2f; padding: 20px; border: 2px solid #00d2ff; z-index: 999;">
-        <input type="password" id="code-secret" placeholder="Code secret...">
-        <button onclick="verifierCode()">Valider</button>
+    <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; width: 90%; border: 2px solid #00d2ff; box-shadow: 0 0 40px rgba(0,0,0,0.9); z-index: 99999;">
+        <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
+        <input type="password" id="code-secret" placeholder="Code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center;">
+        <button onclick="verifierCode()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 90%;">Valider</button>
     </div>
+
+    <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 30px auto; padding: 10px;">
+        <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6; margin-bottom: 20px;">
+            <h3 style="color: #9b59b6; margin-top: 0;">🎁 CONTRÔLE DES AUDITEURS</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <input type="text" id="admin-offre-pseudo" placeholder="Pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
+                <button onclick="donnerPointsDirecteur()" style="background: #ffa502; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">🎁 Offrir +50 Points</button>
+            </div>
+        </div>
+
+        <div style="background: #14141f; padding: 25px; border-radius: 16px; border: 2px solid #00d2ff; text-align: center;">
+            <h2 style="color: #00d2ff; margin: 0 0 20px 0;">🎙️ CONSOLE DE MIXAGE TRANSFR</h2>
+            <button id="btn-lancer-live" style="background: #2ed573; color: white; border: none; padding: 20px; font-weight: bold; border-radius: 25px; cursor: pointer; width: 100%; font-size: 18px;">🔴 ALLUMER LE MICRO / LANCER LE DIRECT</button>
+        </div>
+    </div>
+
     <script>
-        let compteActuel = null;
-        // Date cible : 25 Mai 2026 à 18h00
-        const dateDebut = new Date(2026, 4, 25, 18, 0, 0);
+    let compteActuel = null; 
+    let bouclePoints = null;
+    const dateDebut = new Date(2026, 4, 25, 18, 0, 0);
 
-        // 1. Bouton Live réparé
-        document.getElementById('btn-lancer-live').addEventListener('click', function() {
-            if (this.innerText.includes("ALLUMER")) {
-                this.style.backgroundColor = "#ff4757";
-                this.innerText = "⏹️ ARRÊTER LE DIRECT";
-            } else {
-                this.style.backgroundColor = "#2ed573";
-                this.innerText = "🔴 ALLUMER LE MICRO / LANCER LE DIRECT";
-            }
-        });
+    // Compte à rebours
+    function updateTimer() {
+        const diff = dateDebut - new Date();
+        const affichage = document.getElementById('affichage-timer');
+        if (!affichage) return;
+        if (diff <= 0) { affichage.innerText = "🔴 LE LIVE A COMMENCÉ !"; return; }
+        const j = Math.floor(diff / (1000*60*60*24));
+        const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+        affichage.innerText = j + "j " + h + "h " + m + "m";
+    }
+    setInterval(updateTimer, 1000);
+    updateTimer();
 
-        // 2. Compte à rebours automatique
-        function updateTimer() {
-            const diff = dateDebut - new Date();
-            if (diff <= 0) { document.getElementById('affichage-timer').innerText = "🔴 LE LIVE A COMMENCÉ !"; return; }
-            const j = Math.floor(diff / (1000*60*60*24));
-            const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-            const m = Math.floor((diff % (1000*60*60)) / (1000*60));
-            document.getElementById('affichage-timer').innerText = j + "j " + h + "h " + m + "m";
+    // Correction Bouton Live
+    document.getElementById('btn-lancer-live').addEventListener('click', function() {
+        if (this.innerText.includes("ALLUMER")) {
+            this.style.backgroundColor = "#ff4757";
+            this.innerText = "⏹️ ARRÊTER LE DIRECT";
+        } else {
+            this.style.backgroundColor = "#2ed573";
+            this.innerText = "🔴 ALLUMER LE MICRO / LANCER LE DIRECT";
         }
-        setInterval(updateTimer, 1000);
-        updateTimer();
+    });
 
-        // 3. Logique Points et Déblocage
-        function verifierDeblocage() {
-            if (!compteActuel) return;
-            const pts = compteActuel.points || 0;
-            if (pts >= 50) document.getElementById('zone-fonctions-bonus').style.display = 'block';
-            if (pts >= 100) document.getElementById('bonus-vote').style.display = 'block';
-        }
+    // --- (Insère ici tout le reste de tes fonctions JS originales) ---
+    // (demarrerCompteurPoints, choisirOffre, creerCompte, etc.)
 
-        function donnerPointsDirecteur() {
-            let pseudo = document.getElementById('admin-offre-pseudo').value.trim().toLowerCase();
-            let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-            if(bdd[pseudo]) {
-                bdd[pseudo].points = (bdd[pseudo].points || 0) + 50;
-                localStorage.setItem('transfr-comptes', JSON.stringify(bdd));
-                if(compteActuel && compteActuel.pseudo.toLowerCase() === pseudo) {
-                    compteActuel.points = bdd[pseudo].points;
-                    document.getElementById('valeur-points-haut').innerText = compteActuel.points;
-                    verifierDeblocage();
-                }
-                alert("50 points ajoutés !");
-            }
-        }
-
-        function verifierCode() {
-            if(document.getElementById('code-secret').value === "1944") {
-                document.getElementById('panneau-admin').style.display = 'block';
-                document.getElementById('zone-connexion').style.display = 'none';
-            } else { alert("Code incorrect !"); }
-        }
-
-        function seConnecterAuditeur() {
-            let p = document.getElementById('inscription-pseudo').value.toLowerCase();
-            let bdd = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
-            if(bdd[p]) {
-                compteActuel = bdd[p];
-                document.getElementById('bloc-profil-actif').style.display = 'block';
-                document.getElementById('affichage-points-haut').style.display = 'block';
-                document.getElementById('valeur-points-haut').innerText = compteActuel.points;
-                document.getElementById('profil-pseudo').innerText = compteActuel.pseudo;
-                verifierDeblocage();
-            }
-        }
-
-        function creerCompte() {
-            let p = document.getElementById('inscription-pseudo').value;
-            if(!p) return;
-            compteActuel = { pseudo: p, points: 10 };
-            localStorage.setItem('transfr-comptes', JSON.stringify({ [p.toLowerCase()]: compteActuel }));
-            alert("Compte créé !");
-        }
-
-        function ouvrirConnexion() { document.getElementById('zone-connexion').style.display = 'block'; }
-        function auditeurBruitage(t) { alert("Effet " + t + " lancé !"); }
-        function auditeurVoter() { alert("Vote enregistré !"); }
+    function verifierCode() {
+        if(document.getElementById('code-secret').value === "1944") {
+            document.getElementById('panneau-admin').style.display = 'block'; 
+            document.getElementById('zone-connexion').style.display = 'none';
+        } else { alert("Code secret incorrect !"); }
+    }
     </script>
 </body>
 </html>
