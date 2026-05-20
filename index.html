@@ -6,17 +6,15 @@
     <title>Radio Transfr - Studio Expert Pro</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        body { background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Verdana, sans-serif; color: white; min-height: 90vh; }
         .zone-cliquable-profil { cursor: pointer; transition: background 0.2s; padding: 10px; border-radius: 8px; user-select: none; }
         .zone-cliquable-profil:hover { background: rgba(0, 210, 255, 0.08); }
         .pseudo-super { color: #00d2ff; font-weight: bold; }
         .pseudo-pro { color: #2ed573; font-weight: bold; text-shadow: 0 0 8px #2ed573; }
         .pseudo-superpro { color: #9b59b6; font-weight: bold; text-shadow: 0 0 10px #9b59b6; animation: brille 1.5s infinite alternate; }
         @keyframes brille { from { text-shadow: 0 0 5px #9b59b6; } to { text-shadow: 0 0 15px #d988ff; } }
-        button { padding: 15px; cursor: pointer; }
     </style>
 </head>
-<body>
+<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Verdana, sans-serif; color: white; min-height: 90vh;">
 
     <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
         <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
@@ -38,7 +36,6 @@
             <strong>Profil : <span id="profil-pseudo"></span></strong> | Statut : <span id="profil-statut">Gratuit</span>
         </div>
     </div>
-
     <div id="zone-compte-rebours" style="max-width: 500px; margin: 0 auto 20px auto; background: #14141f; padding: 15px; border-radius: 12px; border: 1px solid #9b59b6; text-align: center;">
         <h4 style="color: #9b59b6; margin: 0;">🚀 PROCHAIN LIVE DANS :</h4>
         <div id="affichage-timer" style="font-weight: bold; color: #ff4757; font-size: 20px;">Chargement...</div>
@@ -63,11 +60,12 @@
         <input type="password" id="code-secret" placeholder="Code secret...">
         <button onclick="verifierCode()">Valider</button>
     </div>
-
     <script>
         let compteActuel = null;
+        // Date cible : 25 Mai 2026 à 18h00
         const dateDebut = new Date(2026, 4, 25, 18, 0, 0);
 
+        // 1. Bouton Live réparé
         document.getElementById('btn-lancer-live').addEventListener('click', function() {
             if (this.innerText.includes("ALLUMER")) {
                 this.style.backgroundColor = "#ff4757";
@@ -78,6 +76,7 @@
             }
         });
 
+        // 2. Compte à rebours automatique
         function updateTimer() {
             const diff = dateDebut - new Date();
             if (diff <= 0) { document.getElementById('affichage-timer').innerText = "🔴 LE LIVE A COMMENCÉ !"; return; }
@@ -87,7 +86,9 @@
             document.getElementById('affichage-timer').innerText = j + "j " + h + "h " + m + "m";
         }
         setInterval(updateTimer, 1000);
+        updateTimer();
 
+        // 3. Logique Points et Déblocage
         function verifierDeblocage() {
             if (!compteActuel) return;
             const pts = compteActuel.points || 0;
@@ -106,6 +107,7 @@
                     document.getElementById('valeur-points-haut').innerText = compteActuel.points;
                     verifierDeblocage();
                 }
+                alert("50 points ajoutés !");
             }
         }
 
@@ -113,7 +115,7 @@
             if(document.getElementById('code-secret').value === "1944") {
                 document.getElementById('panneau-admin').style.display = 'block';
                 document.getElementById('zone-connexion').style.display = 'none';
-            }
+            } else { alert("Code incorrect !"); }
         }
 
         function seConnecterAuditeur() {
@@ -131,6 +133,7 @@
 
         function creerCompte() {
             let p = document.getElementById('inscription-pseudo').value;
+            if(!p) return;
             compteActuel = { pseudo: p, points: 10 };
             localStorage.setItem('transfr-comptes', JSON.stringify({ [p.toLowerCase()]: compteActuel }));
             alert("Compte créé !");
