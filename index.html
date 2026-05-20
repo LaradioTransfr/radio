@@ -89,7 +89,7 @@
             👥 Personnes en ligne : <span id="compteur-auditeurs">1</span>
         </div>
 
-        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #aaa; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
+        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #ff4757; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
             ⚪ Le studio radio est actuellement hors ligne.
         </div>
         
@@ -191,12 +191,12 @@
 
     <script>
     let compteActuel = null; 
-    let bouclePoints = null;
     let monPeer = null;
     let fluxLocal = null;
     let filtrePodcastActuel = 'public'; 
+    let intervalleVerification = null;
 
-    // Identifiant global et public fixe pour la radio Transfr
+    // Identifiant public fixe et global pour ton studio Transfr
     const ID_PUBLIC_RADIO = "transfr-live-global-2026";
 
     let mediaRecorder = null;
@@ -270,7 +270,6 @@
             statusTxt.style.color = "#ff4757";
             if (monPeer) { monPeer.destroy(); monPeer = null; }
         } else {
-            // Initialisation sur le canal fixe public
             monPeer = new Peer(ID_PUBLIC_RADIO);
             
             monPeer.on('open', () => {
@@ -292,42 +291,56 @@
             
             monPeer.on('error', (err) => {
                 if (err.type === 'unavailable-id') {
-                    alert("Le live est déjà actif sur un autre onglet ou le serveur est occupé.");
+                    alert("Attention : Le studio tourne déjà sur un autre de tes appareils.");
                 }
             });
         }
     }
 
-    // --- EN DIRECT (AUDITEUR AUTOMATIQUE) ---
-    function connecterAutomatiquementAuLive() {
-        if (monPeer) monPeer.destroy();
-        monPeer = new Peer();
-
-        monPeer.on('open', () => {
-            // L'auditeur tente de se connecter directement au canal fixe du studio
-            const connectStudio = monPeer.connect(ID_PUBLIC_RADIO);
+    // --- EN DIRECT (AUDITEUR - CHERCHE LE STUDIO AUTOMATIQUEMENT) ---
+    function verifierStatutDuLive() {
+        // Crée un Peer temporaire pour vérifier si le studio répond
+        let testPeer = new Peer();
+        testPeer.on('open', () => {
+            let conn = testPeer.connect(ID_PUBLIC_RADIO);
             
-            connectStudio.on('open', () => {
-                document.getElementById('statut-diffusion').innerText = "🟢 Radio Transfr est EN DIRECT !";
+            // Si le studio répond : le live est actif !
+            conn.on('open', () => {
+                document.getElementById('statut-diffusion').innerText = "🔴 Radio Transfr est EN DIRECT !";
                 document.getElementById('statut-diffusion').style.color = "#2ed573";
                 document.getElementById('btn-ecouter').style.display = "block";
+                testPeer.destroy();
             });
+
+            // Si ça échoue après 2 secondes, c'est que le studio est éteint
+            setTimeout(() => {
+                if (!conn.open) {
+                    document.getElementById('statut-diffusion').innerText = "⚪ Le studio radio est actuellement hors ligne.";
+                    document.getElementById('statut-diffusion').style.color = "#ff4757";
+                    document.getElementById('btn-ecouter').style.display = "none";
+                    testPeer.destroy();
+                }
+            }, 2000);
         });
     }
 
     function demarrerEcouteDirect() {
-        if (!monPeer) return;
-        const audioVide = createEmptyAudioStream();
-        const appel = monPeer.call(ID_PUBLIC_RADIO, audioVide);
-        
-        appel.on('stream', (fluxStudio) => {
-            const baliseAudio = document.getElementById('audio-live');
-            baliseAudio.srcObject = fluxStudio;
-            baliseAudio.play().catch(e => alert("Clique à nouveau pour forcer le son."));
+        if (monPeer) monPeer.destroy();
+        monPeer = new Peer();
+
+        monPeer.on('open', () => {
+            const audioVide = createEmptyAudioStream();
+            const appel = monPeer.call(ID_PUBLIC_RADIO, audioVide);
             
-            document.getElementById('btn-ecouter').style.background = "#ff4757";
-            document.getElementById('btn-ecouter').innerText = "🛑 Couper le son du Live";
-            document.getElementById('btn-ecouter').onclick = couperSonDirect;
+            appel.on('stream', (fluxStudio) => {
+                const baliseAudio = document.getElementById('audio-live');
+                baliseAudio.srcObject = fluxStudio;
+                baliseAudio.play().catch(e => alert("Clique à nouveau sur le bouton pour activer le haut-parleur."));
+                
+                document.getElementById('btn-ecouter').style.background = "#ff4757";
+                document.getElementById('btn-ecouter').innerText = "🛑 Couper le son du Live";
+                document.getElementById('btn-ecouter').onclick = couperSonDirect;
+            });
         });
     }
 
@@ -390,11 +403,14 @@
         document.getElementById('bloc-profil-actif').style.display = 'flex'; 
         document.getElementById('profil-pseudo').innerText = compteActuel.pseudo; 
         
-        // Lancement immédiat de la détection du live dès que l'utilisateur est connecté
-        connecterAutomatiquementAuLive(); 
+        // Lance la première vérification tout de suite
+        verifierStatutDuLive();
+        // Vérifie automatiquement toutes les 5 secondes (5000 ms) si le live commence
+        if (intervalleVerification) clearInterval(intervalleVerification);
+        intervalleVerification = setInterval(verifierStatutDuLive, 5000);
     }
     
-    function deconnexionAuditeur() { location.reload(); }
+    function deconnexionAuditeur() { if(intervalleVerification) clearInterval(intervalleVerification); location.reload(); }
     function envoyerCommentaire() { const box = document.getElementById('boite-tchat-auditeur'); box.innerHTML += `<p><strong>${compteActuel.pseudo}</strong>: ${document.getElementById('chat-message').value}</p>`; document.getElementById('chat-message').value=""; }
     
     afficherPodcasts();
