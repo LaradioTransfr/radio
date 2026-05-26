@@ -6,6 +6,7 @@
     <title>Radio Transfr - Studio Expert Pro v5.1</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     
+    <!-- Configuration pour l'installation de l'application (PWA) -->
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Radio%20Transfr%22,%22short_name%22:%22Transfr%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%230c0c14%22,%22theme_color%22:%22%2300d2ff%22,%22icons%22:[{%22src%22:%22https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=192%22,%22sizes%22:%22192x192%22,%22type%22:%22image/jpeg%22}]}">
     
     <style>
@@ -30,6 +31,7 @@
 </head>
 <body style="background-color: #0c0c14; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
 
+    <!-- BANDEAU D'INSTALLATION DE L'APPLICATION -->
     <div id="pwa-install-banner">
         <span>📱 Installer l'application Transfr sur ton écran ?</span>
         <div style="display: flex; gap: 10px;">
@@ -39,6 +41,7 @@
     </div>
 
     <div style="padding: 20px;">
+        <!-- COMPTE DE POINTS & ZONE ADMIN -->
         <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; padding-right: 5px;">
             <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
                 🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
@@ -50,6 +53,7 @@
             </div>
         </div>
 
+        <!-- COMPTE & PROFIL AUDITEUR -->
         <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
             <div id="bloc-inscription">
                 <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (1 min = 1 point !)</h3>
@@ -86,6 +90,7 @@
             </div>
         </div>
 
+        <!-- INTERFACE PRINCIPALE DE LA RADIO -->
         <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto 20px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
             <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
             
@@ -110,6 +115,7 @@
             </div>
         </div>
 
+        <!-- SECTION DES PODCASTS -->
         <div id="section-podcasts" style="max-width: 500px; margin: 0 auto; background: #14141f; border-radius: 16px; border: 1px solid #2d2d44; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
             <h3 style="color: #00d2ff; margin-top: 0; text-align: center; margin-bottom: 15px;">🎧 Émissions & Podcasts Transfr</h3>
             <div style="display: flex; gap: 5px; margin-bottom: 15px;">
@@ -120,6 +126,7 @@
         </div>
     </div>
 
+    <!-- FENÊTRE CONNEXION DIRECTEUR (CODE : 1944) -->
     <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; width: 90%; border: 2px solid #00d2ff; box-shadow: 0 0 40px rgba(0,0,0,0.9); z-index: 99999;">
         <h3 style="color: #00d2ff; margin-top: 0;">🔑 Connexion Directeur</h3>
         <input type="password" id="code-secret" placeholder="Code secret..." style="padding: 10px; width: 85%; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 15px; text-align: center;">
@@ -129,6 +136,7 @@
         </div>
     </div>
 
+    <!-- INTERFACE ADMINISTRATEUR COMPLETE -->
     <div id="panneau-admin" style="display: none; max-width: 1200px; margin: 30px auto; padding: 10px;">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 20px;">
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #9b59b6;">
@@ -181,6 +189,7 @@
         </div>
     </div>
 
+    <!-- LOGIQUE JAVASCRIPT -->
     <script>
     let compteActuel = null; 
     let monPeer = null;
