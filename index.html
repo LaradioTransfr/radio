@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Expert Pro v5</title>
+    <title>Radio Transfr - Studio Expert Pro v5.1</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Radio%20Transfr%22,%22short_name%22:%22Transfr%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230c0c14%22,%22theme_color%22:%22%2300d2ff%22,%22icons%22:[{%22src%22:%22https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=192%22,%22sizes%22:%22192x192%22,%22type%22:%22image/jpeg%22}]}">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Radio%20Transfr%22,%22short_name%22:%22Transfr%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%230c0c14%22,%22theme_color%22:%22%2300d2ff%22,%22icons%22:[{%22src%22:%22https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=192%22,%22sizes%22:%22192x192%22,%22type%22:%22image/jpeg%22}]}">
     
     <style>
         .zone-cliquable-profil { padding: 10px; border-radius: 8px; user-select: none; }
@@ -196,7 +196,16 @@
     let morceauxAudioRecus = [];
     let tempsDebutEnregistrement = 0;
 
-    // --- DETECTION SYSTEME D'INSTALLATION DE L'APPLICATION ---
+    // --- ENREGISTREMENT DU SERVICE WORKER (OBLIGATOIRE POUR L'INSTALLATION) ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker Enregistré !'))
+            .catch(err => console.log('Erreur SW:', err));
+        });
+    }
+
+    // --- DETECTION SYSTEME D'INSTALLATION ---
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         pwaPrompt = e;
@@ -207,9 +216,6 @@
         if (pwaPrompt) {
             pwaPrompt.prompt();
             pwaPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('Utilisateur a installé l app');
-                }
                 fermerBannierePWA();
             });
         }
@@ -237,7 +243,7 @@
         document.getElementById('zone-input-pin').style.display = (type === 'prive') ? 'block' : 'none';
     }
 
-    // --- PODCASTS SANS LIMITATION DE TAILLE ---
+    // --- PODCASTS ---
     function commencerEnregistrementPodcast() {
         const titreInput = document.getElementById('podcast-titre');
         if (!titreInput.value.trim()) return alert("❌ Donne un titre à ton émission !");
@@ -298,7 +304,7 @@
         }
     }
 
-    // --- EN DIRECT ULTRA-STABLE & DÉTECTION AMÉLIORÉE EN CONTINU ---
+    // --- EN DIRECT ---
     function gererMicroStudio() {
         const btn = document.getElementById('btn-lancer-live');
         const statusTxt = document.getElementById('studio-status-txt');
@@ -484,7 +490,6 @@
         document.getElementById('bloc-profil-actif').style.display = 'flex'; 
         lancerCompteurPoints();
         
-        // Lance la vérification immédiate et en continu toutes les 3 secondes
         verifierStatutDuLive();
         if (intervalleVerification) clearInterval(intervalleVerification);
         intervalleVerification = setInterval(verifierStatutDuLive, 3000); 
@@ -494,8 +499,6 @@
     function envoyerCommentaire() { if(!compteActuel) return; const box = document.getElementById('boite-tchat-auditeur'); box.innerHTML += `<p><strong>${compteActuel.pseudo}</strong>: ${document.getElementById('chat-message').value}</p>`; document.getElementById('chat-message').value=""; }
     
     setInterval(() => { if(compteActuel) mettreAJourDonneesAuditeur(); }, 3000);
-    
-    // Détection automatique même si l'auditeur n'est pas encore connecté
     setInterval(verifierStatutDuLive, 3000);
     </script>
 </body>
