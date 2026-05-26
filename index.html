@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Expert Pro v4.1</title>
+    <title>Radio Transfr - Studio Expert Pro v5</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Radio%20Transfr%22,%22short_name%22:%22Transfr%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230c0c14%22,%22theme_color%22:%22%2300d2ff%22,%22icons%22:[{%22src%22:%22https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=192%22,%22sizes%22:%22192x192%22,%22type%22:%22image/jpeg%22}]}">
+    
     <style>
         .zone-cliquable-profil { padding: 10px; border-radius: 8px; user-select: none; }
         .pseudo-super { color: #00d2ff; font-weight: bold; }
@@ -15,88 +18,106 @@
         .onglet-podcast.actif { background: #00d2ff; color: #1e1e2f; border-color: #00d2ff; }
         .podcast-card { background: #1e1e2f; padding: 12px 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #2d2d44; transition: all 0.2s; }
         .podcast-ligne-principale { display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Style du bandeau d'installation */
+        #pwa-install-banner {
+            display: none; justify-content: space-between; align-items: center;
+            background: linear-gradient(90deg, #00d2ff, #0066ff); color: white;
+            padding: 12px 20px; font-family: sans-serif; font-weight: bold;
+            position: sticky; top: 0; z-index: 99999; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
-<body style="background-color: #0c0c14; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
+<body style="background-color: #0c0c14; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; min-height: 90vh;">
 
-    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; padding-right: 5px;">
-        <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
-            🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
-        </div>
-        <div style="margin-left: auto;">
-            <span onclick="ouvrirConnexion()" style="color: #4a4a6a; font-size: 12px; cursor: pointer; user-select: none; font-weight: bold; text-decoration: underline; opacity: 0.7; transition: opacity 0.2s;">
-                [ Zone Admin ]
-            </span>
+    <div id="pwa-install-banner">
+        <span>📱 Installer l'application Transfr sur ton écran ?</span>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="installerApplication()" style="background: white; color: #0066ff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">Installer</button>
+            <button onclick="fermerBannierePWA()" style="background: transparent; color: white; border: 1px solid white; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">Plus tard</button>
         </div>
     </div>
 
-    <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
-        <div id="bloc-inscription">
-            <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (1 min = 1 point !)</h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="inscription-pseudo" placeholder="Entre ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
-                <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">S'inscrire</button>
-                <button onclick="seConnecterAuditeur()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Se connecter</button>
+    <div style="padding: 20px;">
+        <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; padding-right: 5px;">
+            <div id="affichage-points-haut" style="font-weight: bold; font-size: 14px; background: rgba(0, 210, 255, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid #00d2ff; color: #00d2ff; display: none;">
+                🪙 Mes Points : <span id="valeur-points-haut">0</span> pt(s)
+            </div>
+            <div style="margin-left: auto;">
+                <span onclick="ouvrirConnexion()" style="color: #4a4a6a; font-size: 12px; cursor: pointer; user-select: none; font-weight: bold; text-decoration: underline; opacity: 0.7; transition: opacity 0.2s;">
+                    [ Zone Admin ]
+                </span>
             </div>
         </div>
-        
-        <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
-            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: space-between;">
-                <div class="zone-cliquable-profil" style="display: flex; align-items: center; gap: 15px;">
-                    <div style="position: relative; text-align: center;">
-                        <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
-                    </div>
-                    <div>
-                        <div style="margin-bottom: 5px;">
-                            <span style="font-size: 14px; color: #aaa;">Mon Profil :</span>
-                            <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
-                        </div>
-                        <div style="margin-bottom: 5px;">
-                            <span style="font-size: 14px; color: #aaa;">Statut / Grade :</span>
-                            <span id="profil-statut" style="background: #555; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit</span>
-                        </div>
-                        <button onclick="deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
-                    </div>
-                </div>
-                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 11px; color: #ccc; border: 1px dashed #3d3d5c;">
-                    📈 <strong>Évolution automatique :</strong><br>
-                    ⭐ 10 pts = Super | 🔥 25 pts = Pro | 👑 50 pts = Super Pro
+
+        <div id="zone-compte-utilisateur" style="max-width: 1100px; margin: 0 auto 20px auto; background: #14141f; padding: 20px; border-radius: 12px; border: 1px solid #2d2d44;">
+            <div id="bloc-inscription">
+                <h3 style="color: #00d2ff; margin-top: 0;">👤 COMPTE AUDITEUR TRANSFR (1 min = 1 point !)</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="inscription-pseudo" placeholder="Entre ton pseudo..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; font-size: 14px;">
+                    <button onclick="creerCompte()" style="background: #2ed573; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">S'inscrire</button>
+                    <button onclick="seConnecterAuditeur()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">Se connecter</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto 20px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
-        <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
-        
-        <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold; color: #ffa502; background: rgba(255, 165, 2, 0.1); display: inline-block; padding: 4px 12px; border-radius: 12px; border: 1px solid #ffa502;">
-            👥 Personnes en ligne : <span id="compteur-auditeurs">1</span>
-        </div>
-
-        <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #ff4757; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
-            ⚪ Le studio radio est actuellement hors ligne.
-        </div>
-        
-        <button id="btn-ecouter" onclick="demarrerEcouteDirect()" style="background: #2ed573; color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%;">▶️ Écouter le Direct Public</button>
-        <audio id="audio-live" autoplay style="display:none;"></audio>
-
-        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: left; margin-top: 25px;">
-            <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">💬 Tchat en direct :</h4>
-            <div id="boite-tchat-auditeur" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; margin-bottom: 15px;">
-                <p id="tchat-placeholder" style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour participer...</p>
+            
+            <div id="bloc-profil-actif" style="display: none; flex-direction: column; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: space-between;">
+                    <div class="zone-cliquable-profil" style="display: flex; align-items: center; gap: 15px;">
+                        <div style="position: relative; text-align: center;">
+                            <img id="profil-photo-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #00d2ff; object-fit: cover;">
+                        </div>
+                        <div>
+                            <div style="margin-bottom: 5px;">
+                                <span style="font-size: 14px; color: #aaa;">Mon Profil :</span>
+                                <strong id="profil-pseudo" style="font-size: 20px; color: #00d2ff; margin-left: 5px;">Pseudo</strong>
+                            </div>
+                            <div style="margin-bottom: 5px;">
+                                <span style="font-size: 14px; color: #aaa;">Statut / Grade :</span>
+                                <span id="profil-statut" style="background: #555; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 5px;">Gratuit</span>
+                            </div>
+                            <button onclick="deconnexionAuditeur()" style="background: transparent; color: #ff4757; border: none; padding: 0; font-size: 12px; cursor: pointer; text-decoration: underline;">Se déconnecter</button>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 11px; color: #ccc; border: 1px dashed #3d3d5c;">
+                        📈 <strong>Évolution automatique :</strong><br>
+                        ⭐ 10 pts = Super | 🔥 25 pts = Pro | 👑 50 pts = Super Pro
+                    </div>
+                </div>
             </div>
-            <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 45px; resize: none;"></textarea>
-            <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
         </div>
-    </div>
 
-    <div id="section-podcasts" style="max-width: 500px; margin: 0 auto; background: #14141f; border-radius: 16px; border: 1px solid #2d2d44; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-        <h3 style="color: #00d2ff; margin-top: 0; text-align: center; margin-bottom: 15px;">🎧 Émissions & Podcasts Transfr</h3>
-        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
-            <div id="onglet-public" onclick="changerOngletPodcast('public')" class="onglet-podcast actif" style="border-radius: 8px 0 0 8px;">🌍 Publics</div>
-            <div id="onglet-prive" onclick="changerOngletPodcast('prive')" class="onglet-podcast" style="border-radius: 0 8px 8px 0;">🔒 Privés (PIN requis)</div>
+        <div id="lecteur-auditeur" style="text-align: center; padding: 30px; background: linear-gradient(135deg, #1e1e2f, #252538); border-radius: 16px; max-width: 500px; margin: 0 auto 20px auto; box-shadow: 0 8px 25px rgba(0,0,0,0.4); border: 1px solid rgba(0,210,255,0.1);">
+            <h1 style="color: #00d2ff; margin-top: 0; letter-spacing: 2px; font-size: 28px;">📻 RADIO TRANSFR</h1>
+            
+            <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold; color: #ffa502; background: rgba(255, 165, 2, 0.1); display: inline-block; padding: 4px 12px; border-radius: 12px; border: 1px solid #ffa502;">
+                👥 Personnes en ligne : <span id="compteur-auditeurs">1</span>
+            </div>
+
+            <div id="statut-diffusion" style="background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 8px; font-weight: bold; color: #ff4757; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                ⚪ Le studio radio est actuellement hors ligne.
+            </div>
+            
+            <button id="btn-ecouter" onclick="demarrerEcouteDirect()" style="background: #2ed573; color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 30px; cursor: pointer; display: none; width: 100%;">▶️ Écouter le Direct Public</button>
+            <audio id="audio-live" autoplay style="display:none;"></audio>
+
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: left; margin-top: 25px;">
+                <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 10px;">💬 Tchat en direct :</h4>
+                <div id="boite-tchat-auditeur" style="background: #12121a; height: 120px; border-radius: 8px; padding: 10px; overflow-y: auto; border: 1px solid #2d2d44; font-size: 14px; color: #ddd; margin-bottom: 15px;">
+                    <p id="tchat-placeholder" style="color: #555; margin: 0; font-style: italic;">Inscris-toi ou connecte ton compte pour participer...</p>
+                </div>
+                <textarea id="chat-message" placeholder="Écris ton message ici..." style="width: 93%; padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white; margin-bottom: 10px; font-size: 14px; height: 45px; resize: none;"></textarea>
+                <button onclick="envoyerCommentaire()" style="background: #00d2ff; color: #1e1e2f; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; font-size: 14px;">✉️ Envoyer au Studio</button>
+            </div>
         </div>
-        <div id="liste-podcasts-contenu" style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+        <div id="section-podcasts" style="max-width: 500px; margin: 0 auto; background: #14141f; border-radius: 16px; border: 1px solid #2d2d44; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <h3 style="color: #00d2ff; margin-top: 0; text-align: center; margin-bottom: 15px;">🎧 Émissions & Podcasts Transfr</h3>
+            <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+                <div id="onglet-public" onclick="changerOngletPodcast('public')" class="onglet-podcast actif" style="border-radius: 8px 0 0 8px;">🌍 Publics</div>
+                <div id="onglet-prive" onclick="changerOngletPodcast('prive')" class="onglet-podcast" style="border-radius: 0 8px 8px 0;">🔒 Privés (PIN requis)</div>
+            </div>
+            <div id="liste-podcasts-contenu" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
     </div>
 
     <div id="zone-connexion" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 25px; background: #1e1e2f; border-radius: 12px; max-width: 350px; width: 90%; border: 2px solid #00d2ff; box-shadow: 0 0 40px rgba(0,0,0,0.9); z-index: 99999;">
@@ -168,11 +189,35 @@
     let intervalleVerification = null;
     let bouclePoints = null;
     let dbIndex = null;
+    let pwaPrompt = null;
 
     const ID_PUBLIC_RADIO = "transfr-live-global-2026";
     let mediaRecorder = null;
     let morceauxAudioRecus = [];
     let tempsDebutEnregistrement = 0;
+
+    // --- DETECTION SYSTEME D'INSTALLATION DE L'APPLICATION ---
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        pwaPrompt = e;
+        document.getElementById('pwa-install-banner').style.display = 'flex';
+    });
+
+    function installerApplication() {
+        if (pwaPrompt) {
+            pwaPrompt.prompt();
+            pwaPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Utilisateur a installé l app');
+                }
+                fermerBannierePWA();
+            });
+        }
+    }
+
+    function fermerBannierePWA() {
+        document.getElementById('pwa-install-banner').style.display = 'none';
+    }
 
     // --- INITIALISATION DE LA BASE DE DONNÉES GEANTE (IndexedDB) ---
     const requeteDB = indexedDB.open("RadioTransfrDB", 1);
@@ -230,7 +275,7 @@
                     magasin.add(nouveauPodcast);
 
                     transaction.oncomplete = function() {
-                        alert("🚀 Podcast sauvegardé avec succès (même les plus longs) !");
+                        alert("🚀 Podcast sauvegardé avec succès !");
                         titreInput.value = ""; document.getElementById('podcast-pin').value = ""; 
                         afficherPodcasts();
                     };
@@ -253,7 +298,7 @@
         }
     }
 
-    // --- EN DIRECT ---
+    // --- EN DIRECT ULTRA-STABLE & DÉTECTION AMÉLIORÉE EN CONTINU ---
     function gererMicroStudio() {
         const btn = document.getElementById('btn-lancer-live');
         const statusTxt = document.getElementById('studio-status-txt');
@@ -281,7 +326,6 @@
     }
 
     function verifierStatutDuLive() {
-        // Correction ici : la vérification du live ne bloque plus le reste de la page si DB pas encore chargée
         let testPeer = new Peer();
         testPeer.on('open', () => {
             let conn = testPeer.connect(ID_PUBLIC_RADIO);
@@ -298,7 +342,7 @@
                     document.getElementById('btn-ecouter').style.display = "none";
                     testPeer.destroy();
                 }
-            }, 1800);
+            }, 1500);
         });
         testPeer.on('error', () => { testPeer.destroy(); });
     }
@@ -439,15 +483,20 @@
         document.getElementById('bloc-inscription').style.display = 'none'; 
         document.getElementById('bloc-profil-actif').style.display = 'flex'; 
         lancerCompteurPoints();
+        
+        // Lance la vérification immédiate et en continu toutes les 3 secondes
         verifierStatutDuLive();
         if (intervalleVerification) clearInterval(intervalleVerification);
-        intervalleVerification = setInterval(verifierStatutDuLive, 4000);
+        intervalleVerification = setInterval(verifierStatutDuLive, 3000); 
     }
     
     function deconnexionAuditeur() { if(intervalleVerification) clearInterval(intervalleVerification); if(bouclePoints) clearInterval(bouclePoints); location.reload(); }
     function envoyerCommentaire() { if(!compteActuel) return; const box = document.getElementById('boite-tchat-auditeur'); box.innerHTML += `<p><strong>${compteActuel.pseudo}</strong>: ${document.getElementById('chat-message').value}</p>`; document.getElementById('chat-message').value=""; }
     
     setInterval(() => { if(compteActuel) mettreAJourDonneesAuditeur(); }, 3000);
+    
+    // Détection automatique même si l'auditeur n'est pas encore connecté
+    setInterval(verifierStatutDuLive, 3000);
     </script>
 </body>
 </html>
