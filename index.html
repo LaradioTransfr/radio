@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Expert Pro v5.2</title>
+    <title>Radio Transfr - Studio Expert Pro v5.3</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     
     <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Radio%20Transfr%22,%22short_name%22:%22Transfr%22,%22start_url%22:%22index.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%230c0c14%22,%22theme_color%22:%22%2300d2ff%22,%22icons%22:[{%22src%22:%22https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=192%22,%22sizes%22:%22192x192%22,%22type%22:%22image/jpeg%22}]}">
@@ -133,7 +133,7 @@
         
         <div style="background: #14141f; padding: 15px; border-radius: 12px; border: 2px dashed #00d2ff; margin-bottom: 20px; text-align: center;">
             <h4 style="color: #00d2ff; margin-top: 0; margin-bottom: 8px;">🔄 TRANSMETTRE LES ENREGISTREMENTS VERS UN AUTRE APPAREIL</h4>
-            <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 12px;">Idéal pour copier tes émissions de 30 min sur ton autre téléphone/ordinateur sans rien perdre.</p>
+            <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 12px;">Idéal pour copier tes émissions de 30 min ou plus sur un autre téléphone/ordinateur sans rien perdre.</p>
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button onclick="exporterPodcasts()" style="background: #0066ff; color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px;">💾 1. Télécharger la Sauvegarde (.json)</button>
                 <label style="background: #2ed573; color: white; padding: 10px 15px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px;">
@@ -152,7 +152,7 @@
             </div>
 
             <div style="background: #14141f; padding: 20px; border-radius: 16px; border: 2px solid #ffa502;">
-                <h3 style="color: #ffa502; margin-top: 0;">🎙️ STUDIO ENREGISTREUR DE PODCAST</h3>
+                <h3 style="color: #ffa502; margin-top: 0;">🎙️ STUDIO ENREGISTREUR ULTRA-LONGUE DURÉE</h3>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="podcast-titre" placeholder="Nom de l'émission (ex: Transfr Foot)..." style="padding: 10px; border-radius: 6px; border: 1px solid #3d3d5c; background: #12121a; color: white;">
                     <div style="display: flex; gap: 10px; align-items: center;">
@@ -168,7 +168,7 @@
                         <button id="btn-record-start" onclick="commencerEnregistrementPodcast()" style="flex: 1; background: #2ed573; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer;">🔴 Commencer l'enregistrement</button>
                         <button id="btn-record-stop" onclick="arreterEnregistrementPodcast()" disabled style="flex: 1; background: #555; color: #aaa; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: not-allowed;">⏹️ Arrêter et Sauvegarder</button>
                     </div>
-                    <div id="status-enregistrement" style="font-size: 12px; color: #aaa; text-align: center; font-style: italic;">Prêt à enregistrer.</div>
+                    <div id="status-enregistrement" style="font-size: 12px; color: #aaa; text-align: center; font-style: italic;">Prêt à enregistrer (Format compressé éco pour la durée).</div>
                 </div>
             </div>
         </div>
@@ -250,7 +250,7 @@
         afficherPodcasts();
     };
 
-    // --- MAGIE 1 : EXPORTER TOUTES LES EMISSIONS (MÊME LES ANCIENNES DE 30 MIN) ---
+    // --- EXPORTER TOUTES LES EMISSIONS ---
     function exporterPodcasts() {
         if (!dbIndex) return;
         let transaction = dbIndex.transaction(["podcasts"], "readonly");
@@ -273,7 +273,7 @@
         };
     }
 
-    // --- MAGIE 2 : IMPORTER SUR L'AUTRE APPAREIL SANS RIEN SUPPRIMER ---
+    // --- IMPORTER SANS RIEN SUPPRIMER ---
     function importerPodcasts(event) {
         let file = event.target.files[0];
         if (!file) return;
@@ -288,11 +288,11 @@
                 let magasin = transaction.objectStore("podcasts");
 
                 podcastsImportes.forEach(p => {
-                    magasin.put(p); // ".put" ajoute le nouveau podcast ou met à jour sans détruire le reste !
+                    magasin.put(p);
                 });
 
                 transaction.oncomplete = function() {
-                    alert("🚀 Réussite ! Toutes tes émissions de 30 min ont été ajoutées sur cet appareil !");
+                    alert("🚀 Réussite ! Toutes les émissions ont été ajoutées sur cet appareil !");
                     afficherPodcasts();
                 };
             } catch(err) {
@@ -307,7 +307,7 @@
         document.getElementById('zone-input-pin').style.display = (type === 'prive') ? 'block' : 'none';
     }
 
-    // --- PODCASTS ---
+    // --- PODCASTS AVEC REGLAGE MAX DURÉE (AUDIO LÉGER EN MONO) ---
     function commencerEnregistrementPodcast() {
         const titreInput = document.getElementById('podcast-titre');
         if (!titreInput.value.trim()) return alert("❌ Donne un titre à ton émission !");
@@ -315,11 +315,24 @@
         const pinCode = document.getElementById('podcast-pin').value.trim();
         if (type === 'prive' && !pinCode) return alert("❌ Mets un code PIN secret !");
 
-        navigator.mediaDevices.getUserMedia({ audio: true })
+        // Optimisation extrême pour la plus longue durée possible : canal mono, pas d'écho inutile
+        navigator.mediaDevices.getUserMedia({ 
+            audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } 
+        })
         .then(stream => {
-            mediaRecorder = new MediaRecorder(stream);
+            // Options pour réduire le poids du fichier et tenir très longtemps
+            let options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 32000 };
+            
+            try {
+                mediaRecorder = new MediaRecorder(stream, options);
+            } catch(e) {
+                // Si le navigateur ne gère pas l'option, on utilise le réglage de base
+                mediaRecorder = new MediaRecorder(stream);
+            }
+
             morceauxAudioRecus = [];
             tempsDebutEnregistrement = Date.now();
+            
             mediaRecorder.ondataavailable = e => { if (e.data.size > 0) morceauxAudioRecus.push(e.data); };
             mediaRecorder.onstop = () => {
                 const blobAudio = new Blob(morceauxAudioRecus, { type: 'audio/mp3' });
@@ -351,10 +364,13 @@
                     };
                 };
             };
-            mediaRecorder.start();
+
+            // Enregistre par petits morceaux de 5 secondes pour économiser la RAM de l'appareil
+            mediaRecorder.start(5000); 
+            
             document.getElementById('btn-record-start').disabled = true; document.getElementById('btn-record-stop').disabled = false;
             document.getElementById('btn-record-stop').style.background = "#ea2027"; document.getElementById('btn-record-stop').style.cursor = "pointer";
-            document.getElementById('status-enregistrement').innerText = "🔴 Enregistrement en cours...";
+            document.getElementById('status-enregistrement').innerText = "🔴 Enregistrement MAX DURÉE en cours...";
         });
     }
 
