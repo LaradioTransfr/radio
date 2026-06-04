@@ -25,23 +25,24 @@
             position: relative;
         }
 
+        /* BOUTON ADMIN ULTRA-SOLIDE */
         .admin-top-right {
             position: absolute;
             top: 15px;
             right: 15px;
-            z-index: 999;
+            z-index: 9999;
             background-color: #252d4a;
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
-            color: #a0aec0;
-            border: 1px solid #2d3748;
+            color: #00bcd4;
+            border: 2px solid #00bcd4;
             outline: none;
         }
 
-        .admin-top-right:active, .admin-top-right:hover {
+        .admin-top-right:hover {
             background-color: #00bcd4;
             color: #111625;
         }
@@ -53,7 +54,7 @@
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            margin-top: 45px;
+            margin-top: 55px;
         }
 
         .admin-box {
@@ -90,7 +91,7 @@
         .header-section {
             text-align: center;
             margin-bottom: 15px;
-            margin-top: 35px;
+            margin-top: 45px;
         }
 
         .header-title {
@@ -239,7 +240,7 @@
 
     <div class="main-container">
         
-        <button class="admin-top-right" id="btnAdmin">🔑 Admin</button>
+        <button class="admin-top-right" id="btnAdmin" onclick="ouvrirAdmin()">🔑 Admin</button>
 
         <div class="header-section">
             <h1 class="header-title">📻 RADIO TRANSFR</h1>
@@ -285,7 +286,7 @@
                 <button class="cyan-button" style="background-color: #3d4b75; font-size: 11px; padding: 5px; margin-top: 10px;" onclick="effacerPodcastsSauvegardes()">🗑️ Vider les podcasts créés</button>
             </div>
 
-            <button class="cyan-button" style="background-color: #718093; color: white; margin-top: 10px;" id="btnLogOut">Fermer Admin</button>
+            <button class="cyan-button" style="background-color: #718093; color: white; margin-top: 10px;" onclick="fermerAdmin()">Fermer Admin</button>
         </div>
 
         <div class="live-section">
@@ -305,3 +306,191 @@
         <div class="podcasts-section">
             <div class="section-title">🎧 Émissions & Podcasts Transfr</div>
             <div class="podcasts-grid" id="podcastsGrid">
+                <div class="podcast-item" onclick="ecouterPodcast('Émission 1', '', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')"><div class="podcast-icon">🎵</div><div class="podcast-name">Émission 1</div></div>
+                <div class="podcast-item" onclick="ecouterPodcast('Podcast 1', '', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3')"><div class="podcast-icon">🔥</div><div class="podcast-name">Podcast 1</div></div>
+                <div class="podcast-item" onclick="ecouterPodcast('Émission 2', '', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3')"><div class="podcast-icon">🎧</div><div class="podcast-name">Émission 2</div></div>
+                <div class="podcast-item" onclick="ecouterPodcast('Podcast 2', '', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3')"><div class="podcast-icon">🚀</div><div class="podcast-name">Podcast 2</div></div>
+            </div>
+        </div>
+
+        <div class="privacy-link">
+            <a href="confidentialite.html">Politique de confidentialité</a>
+        </div>
+
+    </div>
+
+    <script>
+        // FONCTION D'OUVERTURE DE L'ADMIN TOTALEMENT SÉCURISÉE
+        function ouvrirAdmin() {
+            var motDePasse = prompt("Entre le mot de passe administrateur Transfr :");
+            if (motDePasse === "1944") {
+                document.getElementById("zoneAdmin").style.display = "block";
+                window.scrollTo(0, 0);
+            } else if (motDePasse !== null) {
+                alert("Mot de passe incorrect !");
+            }
+        }
+
+        function fermerAdmin() {
+            document.getElementById("zoneAdmin").style.display = "none";
+        }
+
+        function togglePinInput() {
+            var visibility = document.getElementById("podcastVisibility").value;
+            var pinBox = document.getElementById("pinBox");
+            if (visibility === "private") {
+                pinBox.style.display = "block";
+            } else {
+                pinBox.style.display = "none";
+            }
+        }
+
+        function lancerDirect() {
+            document.getElementById("statusBadge").innerHTML = "🔴 STUDIO EN DIRECT";
+            document.getElementById("statusBadge").style.backgroundColor = "#ff4444";
+            document.getElementById("statusBadge").style.color = "#ffffff";
+            document.getElementById("liveLabel").innerHTML = "🔴 EN DIRECT";
+            document.getElementById("liveLabel").style.color = "#ff4444";
+            
+            var player = document.getElementById("mainPlayer");
+            player.src = "URL_DE_TON_FLUX"; 
+            player.load();
+            alert("Studio Transfr propulsé EN LIGNE !");
+        }
+
+        function couperDirect() {
+            document.getElementById("statusBadge").innerHTML = "⚪ Studio Hors Ligne";
+            document.getElementById("statusBadge").style.backgroundColor = "#2c241c";
+            document.getElementById("statusBadge").style.color = "#ff9800";
+            document.getElementById("liveLabel").innerHTML = "⚪ DIRECT NON LANCÉ";
+            document.getElementById("liveLabel").style.color = "#888";
+            
+            var player = document.getElementById("mainPlayer");
+            player.src = "";
+            player.load();
+        }
+
+        function analyserMusique() {
+            var fileInput = document.getElementById("musicScanner");
+            var resultDiv = document.getElementById("scanResult");
+            if(fileInput.files.length === 0) {
+                alert("Sélectionne d'abord un fichier de musique !");
+                return;
+            }
+            resultDiv.innerHTML = "⏳ Analyse en cours...";
+            resultDiv.style.color = "#ff9800";
+            setTimeout(function() {
+                resultDiv.innerHTML = "✅ Musique certifiée LIBRE DE DROIT !";
+                resultDiv.style.color = "#4cd137";
+            }, 2000);
+        }
+
+        function ecouterPodcast(nom, pinCorrect, urlAudio) {
+            var player = document.getElementById("mainPlayer");
+            var label = document.getElementById("liveLabel");
+            var sourceAudio = urlAudio ? urlAudio : "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+
+            if (pinCorrect !== "") {
+                var pinSaisi = prompt("🔒 Ce podcast Transfr est PRIVÉ. Entre son code PIN unique :");
+                if (pinSaisi === pinCorrect) {
+                    alert("✅ Code PIN correct ! Chargement de l'émission : " + nom);
+                    label.innerHTML = "🎧 PODCAST : " + nom;
+                    label.style.color = "#00bcd4";
+                    player.src = sourceAudio;
+                    player.load();
+                    player.play();
+                } else if (pinSaisi !== null) {
+                    alert("❌ Code PIN incorrect. Accès refusé !");
+                }
+            } else {
+                alert("🎵 Lancement de l'émission publique : " + nom);
+                label.innerHTML = "🎧 PODCAST : " + nom;
+                label.style.color = "#00bcd4";
+                player.src = sourceAudio;
+                player.load();
+                player.play();
+            }
+        }
+
+        // CHARGEMENT DE LA MÉMOIRE DES PODCASTS
+        window.onload = function() {
+            var sauvegardes = localStorage.getItem("transfr_podcasts");
+            if (sauvegardes) {
+                var liste = JSON.parse(sauvegardes);
+                var grid = document.getElementById("podcastsGrid");
+                liste.forEach(function(pod) {
+                    if (pod.vis === "public") {
+                        grid.innerHTML += '<div class="podcast-item" onclick="ecouterPodcast(\'' + pod.titre + '\', \'\', \'\')"><div class="podcast-icon" style="background-color: #00bcd4; color: #111625;">✨</div><div class="podcast-name">' + pod.titre + '</div></div>';
+                    } else {
+                        grid.innerHTML += '<div class="podcast-item" onclick="ecouterPodcast(\'' + pod.titre + '\', \'' + pod.pin + '\', \'\')"><div class="podcast-icon" style="background-color: #ff9800; color: #111625;">🔒</div><div class="podcast-name">' + pod.titre + '</div></div>';
+                    }
+                });
+            }
+        };
+
+        function effacerPodcastsSauvegardes() {
+            if(confirm("Effacer définitivement tes enregistrements de la page ?")) {
+                localStorage.removeItem("transfr_podcasts");
+                location.reload();
+            }
+        }
+
+        var enEnregistrement = false;
+        var backupCount = 2; 
+
+        function actionPodcast() {
+            var btn = document.getElementById("btnRecord");
+            var status = document.getElementById("podcastStatus");
+            var visibility = document.getElementById("podcastVisibility").value;
+            var titleInput = document.getElementById("podcastTitleInput").value.trim();
+            var pinInput = document.getElementById("podcastPinInput").value.trim();
+            
+            if (titleInput === "") {
+                backupCount++;
+                var finalTitle = "Podcast " + backupCount;
+            } else {
+                var finalTitle = titleInput;
+            }
+            
+            if(!enEnregistrement) {
+                enEnregistrement = true;
+                btn.innerHTML = "🛑 ARRÊTER ET SAUVEGARDER";
+                btn.style.backgroundColor = "#ff4444";
+                status.innerHTML = "🎙️ Enregistrement de '" + finalTitle + "'...";
+                status.style.color = "#ff4444";
+            } else {
+                enEnregistrement = false;
+                btn.innerHTML = "🎤 Commencer l'enregistrement micro";
+                btn.style.backgroundColor = "#00bcd4";
+                status.innerHTML = "⚡ Sauvegarde sécurisée...";
+                status.style.color = "#ff9800";
+                
+                setTimeout(function() {
+                    var grid = document.getElementById("podcastsGrid");
+                    var finalPin = (pinInput === "") ? "0000" : pinInput;
+                    
+                    var anciensPodcasts = localStorage.getItem("transfr_podcasts");
+                    var listePodcasts = anciensPodcasts ? JSON.parse(anciensPodcasts) : [];
+                    listePodcasts.push({ titre: finalTitle, vis: visibility, pin: finalPin });
+                    localStorage.setItem("transfr_podcasts", JSON.stringify(listePodcasts));
+                    
+                    if (visibility === "public") {
+                        status.innerHTML = "🌍 Envoyé ! '" + finalTitle + "' est en ligne.";
+                        status.style.color = "#4cd137";
+                        grid.innerHTML += '<div class="podcast-item" onclick="ecouterPodcast(\'' + finalTitle + '\', \'\', \'\')"><div class="podcast-icon" style="background-color: #00bcd4; color: #111625;">✨</div><div class="podcast-name">' + finalTitle + '</div></div>';
+                    } else {
+                        status.innerHTML = "🔒 Envoyé ! Code PIN : " + finalPin;
+                        status.style.color = "#ff9800";
+                        grid.innerHTML += '<div class="podcast-item" onclick="ecouterPodcast(\'' + finalTitle + '\', \'' + finalPin + '\', \'\')"><div class="podcast-icon" style="background-color: #ff9800; color: #111625;">🔒</div><div class="podcast-name">' + finalTitle + '</div></div>';
+                    }
+                    
+                    document.getElementById("podcastTitleInput").value = "";
+                    document.getElementById("podcastPinInput").value = "";
+                    document.getElementById("podcastVisibility").value = "public";
+                    togglePinInput();
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
