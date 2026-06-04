@@ -45,7 +45,6 @@
             color: #111625;
         }
 
-        /* VRAI PANNEAU ADMIN AMÉLIORÉ */
         .admin-panel {
             display: none;
             background-color: #252d4a;
@@ -68,6 +67,19 @@
             margin: 0 0 8px 0;
             color: #00bcd4;
             font-size: 14px;
+        }
+
+        /* STYLE POUR LE CHOIX PRIVÉ/PUBLIC */
+        .admin-select {
+            width: 100%;
+            background-color: #0b0e19;
+            color: white;
+            border: 1px solid #252d4a;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            outline: none;
         }
 
         .header-section {
@@ -235,14 +247,20 @@
 
             <div class="admin-box">
                 <h4>🎵 SCANNER DE MUSIQUE LIBRE DE DROIT</h4>
-                <p style="font-size: 11px; color: #a0aec0; margin: 0 0 5px 0;">Glisse un fichier pour tester si le serveur valide les droits d'auteur.</p>
                 <input type="file" id="musicScanner" style="font-size: 11px; margin-bottom: 5px;">
                 <button class="cyan-button" style="background-color: #4cd137; color: white; padding: 6px;" onclick="analyserMusique()">🔍 Analyser la musique</button>
                 <div id="scanResult" style="font-size: 12px; font-weight: bold; margin-top: 5px; text-align: center;"></div>
             </div>
 
             <div class="admin-box">
-                <h4>🎙️ ENREGISTREUR DE PODCAST QUICK-LIVE</h4>
+                <h4>🎙️ ENREGISTREUR DE PODCAST</h4>
+                
+                <label style="font-size: 12px; color: #a0aec0; display: block; margin-bottom: 5px;">Visibilité du podcast :</label>
+                <select id="podcastVisibility" class="admin-select">
+                    <option value="public">🌍 En Public (Visible par tous)</option>
+                    <option value="private">🔒 En Privé (Caché dans le serveur)</option>
+                </select>
+
                 <button class="cyan-button" style="background-color: #00bcd4;" id="btnRecord" onclick="actionPodcast()">🎤 Commencer l'enregistrement micro</button>
                 <p id="podcastStatus" style="font-size: 11px; color: #a0aec0; text-align: center; margin: 5px 0 0 0;"></p>
             </div>
@@ -281,7 +299,7 @@
     </div>
 
     <script>
-        // Ouverture de la zone admin avec le mot de passe 1944
+        // Mot de passe 1944
         document.getElementById("btnAdmin").addEventListener("click", function() {
             var motDePasse = prompt("Entre le mot de passe administrateur Transfr :");
             if (motDePasse === "1944") {
@@ -296,15 +314,12 @@
             document.getElementById("zoneAdmin").style.display = "none";
         });
 
-        // FONCTION 1 : Lancer le direct sur tous les appareils
         function lancerDirect() {
             document.getElementById("statusBadge").innerHTML = "🔴 STUDIO EN DIRECT";
             document.getElementById("statusBadge").style.backgroundColor = "#ff4444";
             document.getElementById("statusBadge").style.color = "#ffffff";
-            
             document.getElementById("liveLabel").innerHTML = "🔴 EN DIRECT";
             document.getElementById("liveLabel").style.color = "#ff4444";
-            
             alert("Studio Transfr propulsé EN LIGNE sur tous les appareils !");
         }
 
@@ -312,36 +327,33 @@
             document.getElementById("statusBadge").innerHTML = "⚪ Studio Hors Ligne";
             document.getElementById("statusBadge").style.backgroundColor = "#2c241c";
             document.getElementById("statusBadge").style.color = "#ff9800";
-            
             document.getElementById("liveLabel").innerHTML = "⚪ DIRECT NON LANCÉ";
             document.getElementById("liveLabel").style.color = "#888";
         }
 
-        // FONCTION 2 : Serveur de vérification de musique Libre de Droit
         function analyserMusique() {
             var fileInput = document.getElementById("musicScanner");
             var resultDiv = document.getElementById("scanResult");
-            
             if(fileInput.files.length === 0) {
                 alert("Sélectionne d'abord un fichier de musique !");
                 return;
             }
-            
             resultDiv.innerHTML = "⏳ Connexion au serveur de licence... Analyse des droits...";
             resultDiv.style.color = "#ff9800";
-            
             setTimeout(function() {
-                // Simulation du serveur qui valide la musique
                 resultDiv.innerHTML = "✅ SERVEUR OK : Musique certifiée LIBRE DE DROIT ! Ajoutée à la bibliothèque Transfr.";
                 resultDiv.style.color = "#4cd137";
             }, 2500);
         }
 
-        // FONCTION 3 : Enregistreur et ajout de Podcast automatique
+        // Système d'enregistrement avec choix Public ou Privé
         var enEnregistrement = false;
+        var podcastCount = 2; // On commence après le Podcast 2 déjà présent
+
         function actionPodcast() {
             var btn = document.getElementById("btnRecord");
             var status = document.getElementById("podcastStatus");
+            var visibility = document.getElementById("podcastVisibility").value;
             
             if(!enEnregistrement) {
                 enEnregistrement = true;
@@ -353,16 +365,24 @@
                 enEnregistrement = false;
                 btn.innerHTML = "🎤 Commencer l'enregistrement micro";
                 btn.style.backgroundColor = "#00bcd4";
-                status.innerHTML = "⚡ Génération du fichier audio et publication...";
+                status.innerHTML = "⚡ Génération du fichier audio et sauvegarde...";
                 status.style.color = "#ff9800";
                 
                 setTimeout(function() {
-                    status.innerHTML = "✅ Envoyé ! Podcast 3 créé avec succès.";
-                    status.style.color = "#4cd137";
+                    podcastCount++;
                     
-                    // Ajoute dynamiquement le nouveau podcast dans la grille
-                    var grid = document.getElementById("podcastsGrid");
-                    grid.innerHTML += '<div class="podcast-item"><div class="podcast-icon" style="background-color: #00bcd4; color: #111625;">✨</div><div class="podcast-name">Podcast 3</div></div>';
+                    if (visibility === "public") {
+                        status.innerHTML = "🌍 Envoyé ! Le Podcast " + podcastCount + " est PUBLIC et en ligne.";
+                        status.style.color = "#4cd137";
+                        
+                        // Si c'est public, on l'ajoute dans la grille en bas
+                        var grid = document.getElementById("podcastsGrid");
+                        grid.innerHTML += '<div class="podcast-item"><div class="podcast-icon" style="background-color: #00bcd4; color: #111625;">✨</div><div class="podcast-name">Podcast ' + podcastCount + '</div></div>';
+                    } else {
+                        // Si c'est privé, on dit que c'est enregistré mais on ne l'affiche pas en bas
+                        status.innerHTML = "🔒 Sauvegardé ! Le Podcast " + podcastCount + " est PRIVÉ (enregistré en cache admin).";
+                        status.style.color = "#00bcd4";
+                    }
                 }, 2000);
             }
         }
