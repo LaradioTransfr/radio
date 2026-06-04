@@ -25,11 +25,13 @@
             position: relative;
         }
 
+        /* BOUTON ADMIN RÉPARÉ (Toujours au-dessus de tout) */
         .admin-top-right {
             position: absolute;
             top: 15px;
             right: 15px;
-            background-color: #252d4a;
+            z-index: 10; /* Force le bouton à être cliquable */
+            background-color: #252d4a; /* Un peu moins foncé que le fond */
             padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
@@ -40,7 +42,7 @@
             outline: none;
         }
 
-        .admin-top-right:active {
+        .admin-top-right:active, .admin-top-right:hover {
             background-color: #00bcd4;
             color: #111625;
         }
@@ -310,8 +312,8 @@
     </div>
 
     <script>
-        // Mot de passe 1944
-        document.getElementById("btnAdmin").addEventListener("click", function() {
+        // Clic sur l'admin branché directement sur l'ID
+        document.getElementById("btnAdmin").onclick = function() {
             var motDePasse = prompt("Entre le mot de passe administrateur Transfr :");
             if (motDePasse === "1944") {
                 document.getElementById("zoneAdmin").style.display = "block";
@@ -319,11 +321,11 @@
             } else if (motDePasse !== null) {
                 alert("Mot de passe incorrect !");
             }
-        });
+        };
 
-        document.getElementById("btnLogOut").addEventListener("click", function() {
+        document.getElementById("btnLogOut").onclick = function() {
             document.getElementById("zoneAdmin").style.display = "none";
-        });
+        };
 
         function lancerDirect() {
             document.getElementById("statusBadge").innerHTML = "🔴 STUDIO EN DIRECT";
@@ -357,7 +359,6 @@
             }, 2500);
         }
 
-        // Système d'enregistrement avec Nom Personnalisé
         var enEnregistrement = false;
         var backupCount = 2; 
 
@@ -367,7 +368,6 @@
             var visibility = document.getElementById("podcastVisibility").value;
             var titleInput = document.getElementById("podcastTitleInput").value.trim();
             
-            // Si l'utilisateur n'a rien écrit, on donne un nom par défaut
             if (titleInput === "") {
                 backupCount++;
                 var finalTitle = "Podcast " + backupCount;
@@ -392,9 +392,17 @@
                     if (visibility === "public") {
                         status.innerHTML = "🌍 Envoyé ! '" + finalTitle + "' est PUBLIC et en ligne.";
                         status.style.color = "#4cd137";
-                        
-                        // Ajout dans la grille avec le VRAI nom choisi !
                         var grid = document.getElementById("podcastsGrid");
                         grid.innerHTML += '<div class="podcast-item"><div class="podcast-icon" style="background-color: #00bcd4; color: #111625;">✨</div><div class="podcast-name">' + finalTitle + '</div></div>';
                     } else {
-                        status.innerHTML = "🔒 Sauvegardé ! '" + finalTitle + "' est PRIVÉ (enregistré dans
+                        status.innerHTML = "🔒 Sauvegardé ! '" + finalTitle + "' est PRIVÉ (enregistré dans le serveur admin).";
+                        status.style.color = "#00bcd4";
+                    }
+                    document.getElementById("podcastTitleInput").value = "";
+                }, 2000);
+            }
+        }
+    </script>
+
+</body>
+</html>
