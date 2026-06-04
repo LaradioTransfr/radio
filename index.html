@@ -22,7 +22,7 @@
             width: 100%;
             max-width: 450px;
             box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
-            position: relative; /* Permet de caler l'admin par rapport à ce bloc */
+            position: relative;
         }
 
         /* ZONE ADMIN EN HAUT À DROITE */
@@ -30,7 +30,7 @@
             position: absolute;
             top: 15px;
             right: 15px;
-            background-color: #252d4a; /* Un tout petit peu moins foncé que l'arrière-plan */
+            background-color: #252d4a; /* Un peu moins foncé que l'arrière-plan */
             padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
@@ -51,19 +51,19 @@
 
         /* PANNEAU ADMIN CACHÉ AU DÉBUT */
         .admin-panel {
-            display: none; /* Caché par défaut */
+            display: none;
             background-color: #252d4a;
             border: 1px solid #00bcd4;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            margin-top: 40px; /* Pour ne pas chevaucher le titre */
+            margin-top: 40px;
         }
 
         .header-section {
             text-align: center;
             margin-bottom: 15px;
-            margin-top: 25px; /* Laisse la place pour le bouton admin */
+            margin-top: 25px;
         }
 
         .header-title {
@@ -220,7 +220,7 @@
 
         <div id="zoneAdmin" class="admin-panel">
             <h3 style="color: #00bcd4; margin-top: 0;">🛠️ Panneau d'Administration</h3>
-            <p style="font-size: 13px; color: #a0aec0;">Tu es connecté ! Ici tu pourras gérer ton studio et tes lancements.</p>
+            <p style="font-size: 13px; color: #a0aec0;">Bienvenue sur ton panneau secret Transfr. Prêt à lancer les émissions ?</p>
             <button class="cyan-button" style="background-color: #ff4444; color: white;" onclick="fermerAdmin()">Se déconnecter</button>
         </div>
 
@@ -253,24 +253,3 @@
         </div>
 
     </div>
-
-    <script>
-        function ouvrirAdmin() {
-            // Tu peux changer "1234" par le mot de passe de ton choix
-            var motDePasse = prompt("Entre le mot de passe administrateur :");
-            
-            if (motDePasse === "1234") {
-                document.getElementById("zoneAdmin").style.display = "block";
-                alert("Accès accordé ! Le panneau admin est ouvert.");
-            } else {
-                alert("Mot de passe incorrect ! Access refusé.");
-            }
-        }
-
-        function fermerAdmin() {
-            document.getElementById("zoneAdmin").style.display = "none";
-        }
-    </script>
-
-</body>
-</html>
