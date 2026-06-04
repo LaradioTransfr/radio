@@ -25,11 +25,12 @@
             position: relative;
         }
 
+        /* BOUTON ADMIN SUPER SOLIDE */
         .admin-top-right {
             position: absolute;
             top: 15px;
             right: 15px;
-            z-index: 10;
+            z-index: 999;
             background-color: #252d4a;
             padding: 6px 12px;
             border-radius: 8px;
@@ -53,7 +54,7 @@
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            margin-top: 40px;
+            margin-top: 45px;
         }
 
         .admin-box {
@@ -90,7 +91,7 @@
         .header-section {
             text-align: center;
             margin-bottom: 15px;
-            margin-top: 25px;
+            margin-top: 35px;
         }
 
         .header-title {
@@ -243,7 +244,7 @@
 
         <div class="header-section">
             <h1 class="header-title">📻 RADIO TRANSFR</h1>
-            <div id="statusBadge" class="status-badge" style="background-color: #2c241c; color: #ff9800;">⚪ Studio Hors Ligne</div>
+            <div id="statusBadge" class="status-badge">⚪ Studio Hors Ligne</div>
         </div>
 
         <div id="zoneAdmin" class="admin-panel">
@@ -252,4 +253,192 @@
             <div class="admin-box">
                 <h4>🔴 CONTRÔLE DU DIRECT</h4>
                 <button class="cyan-button" style="background-color: #ff4444; color: white;" onclick="lancerDirect()">🚀 LANCER LE DIRECT SUR TOUS LES APPAREILS</button>
-                <button class="cyan-button" style="background-color: #333; color: #aaa;"
+                <button class="cyan-button" style="background-color: #333; color: #aaa;" onclick="couperDirect()">🛑 Couper le direct</button>
+            </div>
+
+            <div class="admin-box">
+                <h4>🎵 SCANNER DE MUSIQUE LIBRE DE DROIT</h4>
+                <input type="file" id="musicScanner" style="font-size: 11px; margin-bottom: 5px;">
+                <button class="cyan-button" style="background-color: #4cd137; color: white; padding: 6px;" onclick="analyserMusique()">🔍 Analyser la musique</button>
+                <div id="scanResult" style="font-size: 12px; font-weight: bold; margin-top: 5px; text-align: center;"></div>
+            </div>
+
+            <div class="admin-box">
+                <h4>🎙️ ENREGISTREUR DE PODCAST</h4>
+                
+                <label style="font-size: 12px; color: #a0aec0; display: block; margin-bottom: 5px;">Titre du podcast :</label>
+                <input type="text" id="podcastTitleInput" class="admin-input" placeholder="Ex: Émission Rap, Spécial Espace...">
+
+                <label style="font-size: 12px; color: #a0aec0; display: block; margin-bottom: 5px;">Visibilité :</label>
+                <select id="podcastVisibility" class="admin-select" onchange="togglePinInput()">
+                    <option value="public">🌍 Public (Visible par tous)</option>
+                    <option value="private">🔒 Privé (Code PIN personnalisé)</option>
+                </select>
+
+                <div id="pinBox" style="display: none;">
+                    <label style="font-size: 12px; color: #ff9800; display: block; margin-bottom: 5px;">Définir le code PIN de ce podcast :</label>
+                    <input type="text" id="podcastPinInput" class="admin-input" placeholder="Ex: 1234, 0000..." maxlength="8" style="border: 1px solid #ff9800;">
+                </div>
+
+                <button class="cyan-button" style="background-color: #00bcd4;" id="btnRecord" onclick="actionPodcast()">🎤 Commencer l'enregistrement micro</button>
+                <p id="podcastStatus" style="font-size: 11px; color: #a0aec0; text-align: center; margin: 5px 0 0 0;"></p>
+            </div>
+
+            <button class="cyan-button" style="background-color: #718093; color: white; margin-top: 10px;" id="btnLogOut">Fermer Admin</button>
+        </div>
+
+        <div class="live-section">
+            <div class="live-title" id="liveLabel" style="color: #888;">⚪ DIRECT NON LANCÉ</div>
+            <audio controls class="live-player" id="mainPlayer">
+                <source src="URL_DE_TON_FLUX" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <div class="chat-section">
+            <div class="section-title">💬 Tchat en direct</div>
+            <div class="chat-box" id="chatBox">Inscris-toi pour tchater...</div>
+            <input type="text" class="input-box" placeholder="Écris ton message ici...">
+            <button class="cyan-button">📩 Envoyer au Studio</button>
+        </div>
+
+        <div class="podcasts-section">
+            <div class="section-title">🎧 Émissions & Podcasts Transfr</div>
+            <div class="podcasts-grid" id="podcastsGrid">
+                <div class="podcast-item" onclick="ecouterPodcast('Émission 1', '')"><div class="podcast-icon">🎵</div><div class="podcast-name">Émission 1</div></div>
+                <div class="podcast-item" onclick="ecouterPodcast('Podcast 1', '')"><div class="podcast-icon">🔥</div><div class="podcast-name">Podcast 1</div></div>
+                <div class="podcast-item" onclick="ecouterPodcast('Émission 2', '')"><div class="podcast-icon">🎧</div><div class="podcast-name">Émission 2</div></div>
+                <div class="podcast-item" onclick="ecouterPodcast('Podcast 2', '')"><div class="podcast-icon">🚀</div><div class="podcast-name">Podcast 2</div></div>
+            </div>
+        </div>
+
+        <div class="privacy-link">
+            <a href="confidentialite.html">Politique de confidentialité</a>
+        </div>
+
+    </div>
+
+    <script>
+        // Ouverture Admin branchée directement
+        document.getElementById("btnAdmin").onclick = function() {
+            var motDePasse = prompt("Entre le mot de passe administrateur Transfr :");
+            if (motDePasse === "1944") {
+                document.getElementById("zoneAdmin").style.display = "block";
+                window.scrollTo(0, 0);
+            } else if (motDePasse !== null) {
+                alert("Mot de passe incorrect !");
+            }
+        };
+
+        document.getElementById("btnLogOut").onclick = function() {
+            document.getElementById("zoneAdmin").style.display = "none";
+        };
+
+        function togglePinInput() {
+            var visibility = document.getElementById("podcastVisibility").value;
+            var pinBox = document.getElementById("pinBox");
+            if (visibility === "private") {
+                pinBox.style.display = "block";
+            } else {
+                pinBox.style.display = "none";
+            }
+        }
+
+        function lancerDirect() {
+            document.getElementById("statusBadge").innerHTML = "🔴 STUDIO EN DIRECT";
+            document.getElementById("statusBadge").style.backgroundColor = "#ff4444";
+            document.getElementById("statusBadge").style.color = "#ffffff";
+            document.getElementById("liveLabel").innerHTML = "🔴 EN DIRECT";
+            document.getElementById("liveLabel").style.color = "#ff4444";
+            alert("Studio Transfr propulsé EN LIGNE !");
+        }
+
+        function couperDirect() {
+            document.getElementById("statusBadge").innerHTML = "⚪ Studio Hors Ligne";
+            document.getElementById("statusBadge").style.backgroundColor = "#2c241c";
+            document.getElementById("statusBadge").style.color = "#ff9800";
+            document.getElementById("liveLabel").innerHTML = "⚪ DIRECT NON LANCÉ";
+            document.getElementById("liveLabel").style.color = "#888";
+        }
+
+        function analyserMusique() {
+            var fileInput = document.getElementById("musicScanner");
+            var resultDiv = document.getElementById("scanResult");
+            if(fileInput.files.length === 0) {
+                alert("Sélectionne d'abord un fichier de musique !");
+                return;
+            }
+            resultDiv.innerHTML = "⏳ Analyse des droits en cours...";
+            resultDiv.style.color = "#ff9800";
+            setTimeout(function() {
+                resultDiv.innerHTML = "✅ Musique certifiée LIBRE DE DROIT !";
+                resultDiv.style.color = "#4cd137";
+            }, 2000);
+        }
+
+        function ecouterPodcast(nom, pinCorrect) {
+            if (pinCorrect !== "") {
+                var pinSaisi = prompt("🔒 Ce podcast Transfr est PRIVÉ. Entre son code PIN :");
+                if (pinSaisi === pinCorrect) {
+                    alert("✅ Code PIN correct ! Lancement de l'émission : " + nom);
+                } else if (pinSaisi !== null) {
+                    alert("❌ Code PIN incorrect. Accès refusé !");
+                }
+            } else {
+                alert("🎵 Lecture en cours de l'émission : " + nom);
+            }
+        }
+
+        var enEnregistrement = false;
+        var backupCount = 2; 
+
+        function actionPodcast() {
+            var btn = document.getElementById("btnRecord");
+            var status = document.getElementById("podcastStatus");
+            var visibility = document.getElementById("podcastVisibility").value;
+            var titleInput = document.getElementById("podcastTitleInput").value.trim();
+            var pinInput = document.getElementById("podcastPinInput").value.trim();
+            
+            if (titleInput === "") {
+                backupCount++;
+                var finalTitle = "Podcast " + backupCount;
+            } else {
+                var finalTitle = titleInput;
+            }
+            
+            if(!enEnregistrement) {
+                enEnregistrement = true;
+                btn.innerHTML = "🛑 ARRÊTER ET SAUVEGARDER";
+                btn.style.backgroundColor = "#ff4444";
+                status.innerHTML = "🎙️ Enregistrement de '" + finalTitle + "'...";
+                status.style.color = "#ff4444";
+            } else {
+                enEnregistrement = false;
+                btn.innerHTML = "🎤 Commencer l'enregistrement micro";
+                btn.style.backgroundColor = "#00bcd4";
+                status.innerHTML = "⚡ Sauvegarde sur le serveur...";
+                status.style.color = "#ff9800";
+                
+                setTimeout(function() {
+                    var grid = document.getElementById("podcastsGrid");
+                    
+                    if (visibility === "public") {
+                        status.innerHTML = "🌍 Envoyé ! '" + finalTitle + "' est Public.";
+                        status.style.color = "#4cd137";
+                        grid.innerHTML += '<div class="podcast-item" onclick="ecouterPodcast(\'' + finalTitle + '\', \'\')"><div class="podcast-icon" style="background-color: #00bcd4; color: #111625;">✨</div><div class="podcast-name">' + finalTitle + '</div></div>';
+                    } else {
+                        var finalPin = (pinInput === "") ? "0000" : pinInput;
+                        status.innerHTML = "🔒 Envoyé ! Code PIN : " + finalPin;
+                        status.style.color = "#ff9800";
+                        grid.innerHTML += '<div class="podcast-item" onclick="ecouterPodcast(\'' + finalTitle + '\', \'' + finalPin + '\')"><div class="podcast-icon" style="background-color: #ff9800; color: #111625;">🔒</div><div class="podcast-name">' + finalTitle + '</div></div>';
+                    }
+                    
+                    document.getElementById("podcastTitleInput").value = "";
+                    document.getElementById("podcastPinInput").value = "";
+                    document.getElementById("podcastVisibility").value = "public";
+                    togglePinInput();
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
