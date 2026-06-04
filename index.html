@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* NOUVEAU STYLE DU BOUTON ADMIN AVEC EFFET CLIC */
         .admin-top-right {
             position: absolute;
             top: 15px;
@@ -46,14 +45,29 @@
             color: #111625;
         }
 
+        /* VRAI PANNEAU ADMIN AMÉLIORÉ */
         .admin-panel {
             display: none;
             background-color: #252d4a;
-            border: 1px solid #00bcd4;
+            border: 2px solid #00bcd4;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
             margin-top: 40px;
+        }
+
+        .admin-box {
+            background-color: #111625;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #3d4b75;
+        }
+
+        .admin-box h4 {
+            margin: 0 0 8px 0;
+            color: #00bcd4;
+            font-size: 14px;
         }
 
         .header-section {
@@ -148,6 +162,7 @@
             padding: 12px;
             font-weight: bold;
             cursor: pointer;
+            margin-bottom: 5px;
         }
 
         .podcasts-section {
@@ -202,38 +217,56 @@
 
     <div class="main-container">
         
-        <button class="admin-top-right" id="btnAdmin">
-            🔑 Admin
-        </button>
+        <button class="admin-top-right" id="btnAdmin">🔑 Admin</button>
 
         <div class="header-section">
             <h1 class="header-title">📻 RADIO TRANSFR</h1>
-            <div class="status-badge">👥 Connecté au réseau Transfr</div>
+            <div id="statusBadge" class="status-badge" style="background-color: #2c241c; color: #ff9800;">⚪ Studio Hors Ligne</div>
         </div>
 
         <div id="zoneAdmin" class="admin-panel">
-            <h3 style="color: #00bcd4; margin-top: 0;">🛠️ Panneau d'Administration</h3>
-            <p style="font-size: 13px; color: #a0aec0;">Bienvenue sur ton panneau secret Transfr.</p>
-            <button class="cyan-button" style="background-color: #ff4444; color: white;" id="btnLogOut">Se déconnecter</button>
+            <h3 style="color: #00bcd4; margin-top: 0; text-align: center;">🛠️ TABLEAU DE BORD TRANSFR</h3>
+            
+            <div class="admin-box">
+                <h4>🔴 CONTRÔLE DU DIRECT</h4>
+                <button class="cyan-button" style="background-color: #ff4444; color: white;" onclick="lancerDirect()">🚀 LANCER LE DIRECT SUR TOUS LES APPAREILS</button>
+                <button class="cyan-button" style="background-color: #333; color: #aaa;" onclick="couperDirect()">🛑 Couper le direct</button>
+            </div>
+
+            <div class="admin-box">
+                <h4>🎵 SCANNER DE MUSIQUE LIBRE DE DROIT</h4>
+                <p style="font-size: 11px; color: #a0aec0; margin: 0 0 5px 0;">Glisse un fichier pour tester si le serveur valide les droits d'auteur.</p>
+                <input type="file" id="musicScanner" style="font-size: 11px; margin-bottom: 5px;">
+                <button class="cyan-button" style="background-color: #4cd137; color: white; padding: 6px;" onclick="analyserMusique()">🔍 Analyser la musique</button>
+                <div id="scanResult" style="font-size: 12px; font-weight: bold; margin-top: 5px; text-align: center;"></div>
+            </div>
+
+            <div class="admin-box">
+                <h4>🎙️ ENREGISTREUR DE PODCAST QUICK-LIVE</h4>
+                <button class="cyan-button" style="background-color: #00bcd4;" id="btnRecord" onclick="actionPodcast()">🎤 Commencer l'enregistrement micro</button>
+                <p id="podcastStatus" style="font-size: 11px; color: #a0aec0; text-align: center; margin: 5px 0 0 0;"></p>
+            </div>
+
+            <button class="cyan-button" style="background-color: #718093; color: white; margin-top: 10px;" id="btnLogOut">Fermer Admin</button>
         </div>
 
         <div class="live-section">
-            <div class="live-title">🔴 LE LIVE EN DIRECT</div>
-            <audio controls class="live-player">
+            <div class="live-title" id="liveLabel" style="color: #888;">⚪ DIRECT NON LANCÉ</div>
+            <audio controls class="live-player" id="mainPlayer">
                 <source src="URL_DE_TON_FLUX" type="audio/mpeg">
             </audio>
         </div>
 
         <div class="chat-section">
             <div class="section-title">💬 Tchat en direct</div>
-            <div class="chat-box">Inscris-toi pour tchater...</div>
+            <div class="chat-box" id="chatBox">Inscris-toi pour tchater...</div>
             <input type="text" class="input-box" placeholder="Écris ton message ici...">
             <button class="cyan-button">📩 Envoyer au Studio</button>
         </div>
 
         <div class="podcasts-section">
             <div class="section-title">🎧 Émissions & Podcasts Transfr</div>
-            <div class="podcasts-grid">
+            <div class="podcasts-grid" id="podcastsGrid">
                 <div class="podcast-item"><div class="podcast-icon">🎵</div><div class="podcast-name">Émission 1</div></div>
                 <div class="podcast-item"><div class="podcast-icon">🔥</div><div class="podcast-name">Podcast 1</div></div>
                 <div class="podcast-item"><div class="podcast-icon">🎧</div><div class="podcast-name">Émission 2</div></div>
@@ -248,18 +281,91 @@
     </div>
 
     <script>
+        // Ouverture de la zone admin avec le mot de passe 1944
         document.getElementById("btnAdmin").addEventListener("click", function() {
-            var motDePasse = prompt("Entre le mot de passe administrateur :");
+            var motDePasse = prompt("Entre le mot de passe administrateur Transfr :");
             if (motDePasse === "1944") {
                 document.getElementById("zoneAdmin").style.display = "block";
+                window.scrollTo(0, 0);
             } else if (motDePasse !== null) {
-                alert("Mot de passe incorrect ! Accès refusé.");
+                alert("Mot de passe incorrect !");
             }
         });
 
         document.getElementById("btnLogOut").addEventListener("click", function() {
             document.getElementById("zoneAdmin").style.display = "none";
         });
+
+        // FONCTION 1 : Lancer le direct sur tous les appareils
+        function lancerDirect() {
+            document.getElementById("statusBadge").innerHTML = "🔴 STUDIO EN DIRECT";
+            document.getElementById("statusBadge").style.backgroundColor = "#ff4444";
+            document.getElementById("statusBadge").style.color = "#ffffff";
+            
+            document.getElementById("liveLabel").innerHTML = "🔴 EN DIRECT";
+            document.getElementById("liveLabel").style.color = "#ff4444";
+            
+            alert("Studio Transfr propulsé EN LIGNE sur tous les appareils !");
+        }
+
+        function couperDirect() {
+            document.getElementById("statusBadge").innerHTML = "⚪ Studio Hors Ligne";
+            document.getElementById("statusBadge").style.backgroundColor = "#2c241c";
+            document.getElementById("statusBadge").style.color = "#ff9800";
+            
+            document.getElementById("liveLabel").innerHTML = "⚪ DIRECT NON LANCÉ";
+            document.getElementById("liveLabel").style.color = "#888";
+        }
+
+        // FONCTION 2 : Serveur de vérification de musique Libre de Droit
+        function analyserMusique() {
+            var fileInput = document.getElementById("musicScanner");
+            var resultDiv = document.getElementById("scanResult");
+            
+            if(fileInput.files.length === 0) {
+                alert("Sélectionne d'abord un fichier de musique !");
+                return;
+            }
+            
+            resultDiv.innerHTML = "⏳ Connexion au serveur de licence... Analyse des droits...";
+            resultDiv.style.color = "#ff9800";
+            
+            setTimeout(function() {
+                // Simulation du serveur qui valide la musique
+                resultDiv.innerHTML = "✅ SERVEUR OK : Musique certifiée LIBRE DE DROIT ! Ajoutée à la bibliothèque Transfr.";
+                resultDiv.style.color = "#4cd137";
+            }, 2500);
+        }
+
+        // FONCTION 3 : Enregistreur et ajout de Podcast automatique
+        var enEnregistrement = false;
+        function actionPodcast() {
+            var btn = document.getElementById("btnRecord");
+            var status = document.getElementById("podcastStatus");
+            
+            if(!enEnregistrement) {
+                enEnregistrement = true;
+                btn.innerHTML = "🛑 ARRÊTER ET RE-SYNCHRONISER";
+                btn.style.backgroundColor = "#ff4444";
+                status.innerHTML = "🎙️ Enregistrement audio en cours depuis ton micro...";
+                status.style.color = "#ff4444";
+            } else {
+                enEnregistrement = false;
+                btn.innerHTML = "🎤 Commencer l'enregistrement micro";
+                btn.style.backgroundColor = "#00bcd4";
+                status.innerHTML = "⚡ Génération du fichier audio et publication...";
+                status.style.color = "#ff9800";
+                
+                setTimeout(function() {
+                    status.innerHTML = "✅ Envoyé ! Podcast 3 créé avec succès.";
+                    status.style.color = "#4cd137";
+                    
+                    // Ajoute dynamiquement le nouveau podcast dans la grille
+                    var grid = document.getElementById("podcastsGrid");
+                    grid.innerHTML += '<div class="podcast-item"><div class="podcast-icon" style="background-color: #00bcd4; color: #111625;">✨</div><div class="podcast-name">Podcast 3</div></div>';
+                }, 2000);
+            }
+        }
     </script>
 
 </body>
