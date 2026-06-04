@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* BOUTON ADMIN REPARÉ ET BIEN PLACÉ */
         .admin-top-right {
             position: absolute;
             top: 15px;
@@ -292,7 +291,7 @@
         <div class="live-section">
             <div class="live-title" id="liveLabel" style="color: #888;">⚪ DIRECT NON LANCÉ</div>
             <audio controls class="live-player" id="mainPlayer">
-                <source src="URL_DE_TON_FLUX" type="audio/mpeg">
+                <source id="audioSource" src="" type="audio/mpeg">
             </audio>
         </div>
 
@@ -300,3 +299,9 @@
             <div class="section-title">💬 Tchat en direct</div>
             <div class="chat-box" id="chatBox">Inscris-toi pour tchater...</div>
             <input type="text" class="input-box" placeholder="Écris ton message ici...">
+            <button class="cyan-button">📩 Envoyer au Studio</button>
+        </div>
+
+        <div class="podcasts-section">
+            <div class="section-title">🎧 Émissions & Podcasts Transfr</div>
+            <div class="podcasts-grid" id="podcastsGrid">
