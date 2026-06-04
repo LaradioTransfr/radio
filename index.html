@@ -6,7 +6,7 @@
     <title>Radio Transfr</title>
     <style>
         body {
-            background-color: #111625; /* Le beau bleu très foncé de ton fond */
+            background-color: #111625; /* Fond très foncé */
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
@@ -16,29 +16,62 @@
         }
 
         .main-container {
-            background-color: #1a2035; /* La couleur des blocs de ta photo */
+            background-color: #1a2035; /* Blocs principaux */
             border-radius: 16px;
             padding: 20px;
             width: 100%;
-            max-width: 450px; /* Pile la bonne taille pour les téléphones */
+            max-width: 450px;
             box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
+            position: relative; /* Permet de caler l'admin par rapport à ce bloc */
+        }
+
+        /* ZONE ADMIN EN HAUT À DROITE */
+        .admin-top-right {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #252d4a; /* Un tout petit peu moins foncé que l'arrière-plan */
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            color: #a0aec0;
+            border: 1px solid #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .admin-top-right:hover {
+            background-color: #00bcd4;
+            color: #111625;
+        }
+
+        /* PANNEAU ADMIN CACHÉ AU DÉBUT */
+        .admin-panel {
+            display: none; /* Caché par défaut */
+            background-color: #252d4a;
+            border: 1px solid #00bcd4;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            margin-top: 40px; /* Pour ne pas chevaucher le titre */
         }
 
         .header-section {
             text-align: center;
             margin-bottom: 15px;
+            margin-top: 25px; /* Laisse la place pour le bouton admin */
         }
 
         .header-title {
-            color: #00bcd4; /* Le beau cyan de Transfr */
+            color: #00bcd4;
             font-size: 26px;
             font-weight: bold;
             letter-spacing: 1px;
             margin: 5px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
         .status-badge {
@@ -52,7 +85,7 @@
             margin: 10px 0;
         }
 
-        /* SECTION LIVE EN DIRECT */
+        /* LIVE */
         .live-section {
             background-color: #111625;
             border-radius: 12px;
@@ -67,18 +100,13 @@
             font-weight: bold;
             font-size: 14px;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
         }
 
         .live-player {
             width: 100%;
-            margin-top: 5px;
         }
 
-        /* SECTION TCHAT */
+        /* TCHAT */
         .chat-section {
             background-color: #111625;
             border-radius: 12px;
@@ -92,9 +120,6 @@
             font-weight: bold;
             margin-bottom: 12px;
             font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .chat-box {
@@ -107,7 +132,6 @@
             font-style: italic;
             font-size: 14px;
             margin-bottom: 10px;
-            overflow-y: auto;
         }
 
         .input-box {
@@ -119,7 +143,6 @@
             color: #ffffff;
             box-sizing: border-box;
             margin-bottom: 10px;
-            font-size: 14px;
         }
 
         .cyan-button {
@@ -130,15 +153,10 @@
             width: 100%;
             padding: 12px;
             font-weight: bold;
-            font-size: 15px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
-        /* SECTION PODCASTS (Infinités de podcasts !) */
+        /* PODCASTS */
         .podcasts-section {
             background-color: #111625;
             border-radius: 12px;
@@ -149,14 +167,13 @@
 
         .podcasts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Aligne auto même s'il y en a plein */
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             gap: 15px;
             margin-top: 10px;
         }
 
         .podcast-item {
             text-align: center;
-            cursor: pointer;
         }
 
         .podcast-icon {
@@ -169,29 +186,11 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            transition: transform 0.2s;
-        }
-
-        .podcast-icon:hover {
-            transform: scale(1.1);
-            background-color: #00bcd4;
         }
 
         .podcast-name {
             font-size: 11px;
             color: #a0aec0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* ZONE ADMIN */
-        .admin-section {
-            border: 2px dashed #00bcd4;
-            border-radius: 12px;
-            padding: 15px;
-            background-color: #111625;
-            margin-bottom: 15px;
         }
 
         .privacy-link {
@@ -204,26 +203,31 @@
             color: #707a9e;
             text-decoration: none;
         }
-
-        .privacy-link a:hover {
-            color: #00bcd4;
-        }
     </style>
 </head>
 <body>
 
     <div class="main-container">
         
+        <div class="admin-top-right" onclick="ouvrirAdmin()">
+            🔑 <span>Admin</span>
+        </div>
+
         <div class="header-section">
             <h1 class="header-title">📻 RADIO TRANSFR</h1>
             <div class="status-badge">👥 Connecté au réseau Transfr</div>
         </div>
 
+        <div id="zoneAdmin" class="admin-panel">
+            <h3 style="color: #00bcd4; margin-top: 0;">🛠️ Panneau d'Administration</h3>
+            <p style="font-size: 13px; color: #a0aec0;">Tu es connecté ! Ici tu pourras gérer ton studio et tes lancements.</p>
+            <button class="cyan-button" style="background-color: #ff4444; color: white;" onclick="fermerAdmin()">Se déconnecter</button>
+        </div>
+
         <div class="live-section">
             <div class="live-title">🔴 LE LIVE EN DIRECT</div>
             <audio controls class="live-player">
-                <source src="URL_DE_TON_FLUX_DE_STREAMING" type="audio/mpeg">
-                Ton navigateur ne supporte pas le lecteur audio.
+                <source src="URL_DE_TON_FLUX" type="audio/mpeg">
             </audio>
         </div>
 
@@ -237,40 +241,11 @@
         <div class="podcasts-section">
             <div class="section-title">🎧 Émissions & Podcasts Transfr</div>
             <div class="podcasts-grid">
-                
-                <div class="podcast-item">
-                    <div class="podcast-icon">🎵</div>
-                    <div class="podcast-name">Émission 1</div>
-                </div>
-
-                <div class="podcast-item">
-                    <div class="podcast-icon">🔥</div>
-                    <div class="podcast-name">Podcast 1</div>
-                </div>
-
-                <div class="podcast-item">
-                    <div class="podcast-icon">🎧</div>
-                    <div class="podcast-name">Émission 2</div>
-                </div>
-
-                <div class="podcast-item">
-                    <div class="podcast-icon">🚀</div>
-                    <div class="podcast-name">Podcast 2</div>
-                </div>
-
-                <div class="podcast-item">
-                    <div class="podcast-icon">📻</div>
-                    <div class="podcast-name">Émission 3</div>
-                </div>
-
+                <div class="podcast-item"><div class="podcast-icon">🎵</div><div class="podcast-name">Émission 1</div></div>
+                <div class="podcast-item"><div class="podcast-icon">🔥</div><div class="podcast-name">Podcast 1</div></div>
+                <div class="podcast-item"><div class="podcast-icon">🎧</div><div class="podcast-name">Émission 2</div></div>
+                <div class="podcast-item"><div class="podcast-icon">🚀</div><div class="podcast-name">Podcast 2</div></div>
             </div>
-        </div>
-
-        <div class="admin-section">
-            <div class="section-title">🔑 Zone Admin</div>
-            <button class="cyan-button" style="background-color: #252d4a; color: #00bcd4; border: 1px solid #00bcd4;">
-                🔒 Connexion Administration
-            </button>
         </div>
 
         <div class="privacy-link">
@@ -278,6 +253,24 @@
         </div>
 
     </div>
+
+    <script>
+        function ouvrirAdmin() {
+            // Tu peux changer "1234" par le mot de passe de ton choix
+            var motDePasse = prompt("Entre le mot de passe administrateur :");
+            
+            if (motDePasse === "1234") {
+                document.getElementById("zoneAdmin").style.display = "block";
+                alert("Accès accordé ! Le panneau admin est ouvert.");
+            } else {
+                alert("Mot de passe incorrect ! Access refusé.");
+            }
+        }
+
+        function fermerAdmin() {
+            document.getElementById("zoneAdmin").style.display = "none";
+        }
+    </script>
 
 </body>
 </html>
