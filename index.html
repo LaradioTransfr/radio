@@ -210,17 +210,36 @@
         initialiserReseauSync(); // Active le réseau automatique
     };
 
+    // --- FONCTIONS CORRIGÉES POUR LA ZONE ADMIN ---
+    function ouvrirConnexion() {
+        document.getElementById('zone-connexion').style.display = 'block';
+        document.getElementById('code-secret').value = '';
+        document.getElementById('code-secret').focus();
+    }
+
+    function fermerConnexion() {
+        document.getElementById('zone-connexion').style.display = 'none';
+    }
+
+    function verifierCode() {
+        const code = document.getElementById('code-secret').value;
+        if (code === '1944') {
+            document.getElementById('panneau-admin').style.display = 'block';
+            fermerConnexion();
+            alert("🔓 Accès accordé, bienvenue Directeur !");
+        } else {
+            alert("❌ Code secret incorrect !");
+        }
+    }
+
     // --- SYSTÈME DE SYNCHRONISATION EN ARRIÈRE-PLAN ---
     function initialiserReseauSync() {
-        // Toutes les 2 secondes, on vérifie et on se connecte si besoin
         setInterval(() => {
-            // Si on est le Studio principal et qu'on est connecté au Peer
             if (fluxLocal && monPeer && !connexionDataAdmin) {
-                // On prépare le canal d'envoi automatique
+                // Canal envoi auto
             }
         }, 2000);
 
-        // Les autres appareils écoutent le réseau toutes les 2 secondes
         let recepteurPeer = new Peer();
         recepteurPeer.on('open', () => {
             setInterval(() => {
@@ -229,17 +248,16 @@
                     if (data && data.type === "NouveauPodcast" && dbIndex) {
                         let transaction = dbIndex.transaction(["podcasts"], "readwrite");
                         let magasin = transaction.objectStore("podcasts");
-                        magasin.put(data.podcast); // Ajoute directement sans rien demander !
+                        magasin.put(data.podcast);
                         transaction.oncomplete = function() {
                             afficherPodcasts();
                         };
                     }
                 });
-            }, 2000); // 🟢 Vérification toutes les 2 secondes chrono !
+            }, 2000);
         });
     }
 
-    // Fonction pour envoyer automatiquement le nouveau podcast dès qu'il est fini
     function envoyerPodcastAuxAutresAppareils(podcastObjet) {
         let emetteurPeer = new Peer(ID_DATA_SYNC);
         emetteurPeer.on('open', () => {
@@ -249,7 +267,6 @@
                 });
             });
         });
-        // On ferme proprement après quelques secondes pour laisser le temps de transmettre
         setTimeout(() => { emetteurPeer.destroy(); }, 8000);
     }
 
@@ -301,8 +318,6 @@
                     transaction.oncomplete = function() {
                         titreInput.value = ""; document.getElementById('podcast-pin').value = ""; 
                         afficherPodcasts();
-                        
-                        // 🔥 ENVOI AUTOMATIQUE ET DIRECT SANS DEMANDER !
                         envoyerPodcastAuxAutresAppareils(nouveauPodcast);
                         document.getElementById('status-enregistrement').innerText = "🚀 Enregistrement envoyé automatiquement aux autres appareils !";
                     };
@@ -403,7 +418,7 @@
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = ctx.createOscillator();
         const dst = ctx.createMediaStreamDestination();
-         oscillator.connect(dst); oscillator.start();
+        oscillator.connect(dst); oscillator.start();
         const track = dst.stream.getAudioTracks()[0]; track.enabled = false;
         return new MediaStream([track]);
     }
@@ -453,4 +468,14 @@
         if(!pseudoCible) return alert("Indique le pseudo !");
         let bddComptes = JSON.parse(localStorage.getItem('transfr-comptes') || '{}');
         if(!bddComptes[pseudoCible.toLowerCase()]) return alert("Cet auditeur n'existe pas !");
-        bddComptes[pseudoCible.toLowerCase()].points = (bddComptes
+        bddComptes[pseudoCible.toLowerCase()].points = (bddComptes[pseudoCible.toLowerCase()].points || 0) + 15;
+        localStorage.setItem('transfr-comptes', JSON.stringify(bddComptes));
+        alert(`🎁 +15 points offerts à [${pseudoCible}] !`);
+        mettreAJourDonneesAuditeur();
+    }
+
+    // --- REFRESH DES PODCASTS ---
+    function changerOngletPodcast(type) { filtrePodcastActuel = type; afficherPodcasts(); }
+    
+    function afficherPodcasts() {
+        if (!dbIndex) return;
