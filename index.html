@@ -25,6 +25,7 @@
             position: relative;
         }
 
+        /* BOUTON ADMIN REPARÉ ET BIEN PLACÉ */
         .admin-top-right {
             position: absolute;
             top: 15px;
@@ -270,8 +271,8 @@
 
                 <label style="font-size: 12px; color: #a0aec0; display: block; margin-bottom: 5px;">Visibilité :</label>
                 <select id="podcastVisibility" class="admin-select" onchange="togglePinInput()">
-                    <option value="public">🌍 Public (Visible par tous)</option>
-                    <option value="private">🔒 Privé (Code PIN personnalisé)</option>
+                    <option value="public">🌍 Public (Tout le monde peut l'écouter)</option>
+                    <option value="private">🔒 Privé (Code PIN unique)</option>
                 </select>
 
                 <div id="pinBox" style="display: none;">
@@ -282,4 +283,20 @@
                 <button class="cyan-button" style="background-color: #00bcd4;" id="btnRecord" onclick="actionPodcast()">🎤 Commencer l'enregistrement micro</button>
                 <p id="podcastStatus" style="font-size: 11px; color: #a0aec0; text-align: center; margin: 5px 0 0 0;"></p>
                 
-                <button class="cyan-button" style="background-color: #3d4b75; font-size: 11px; padding: 5px; margin-top: 10px;" onclick="effacerPodcastsSau
+                <button class="cyan-button" style="background-color: #3d4b75; font-size: 11px; padding: 5px; margin-top: 10px;" onclick="effacerPodcastsSauvegardes()">🗑️ Vider les podcasts créés</button>
+            </div>
+
+            <button class="cyan-button" style="background-color: #718093; color: white; margin-top: 10px;" id="btnLogOut">Fermer Admin</button>
+        </div>
+
+        <div class="live-section">
+            <div class="live-title" id="liveLabel" style="color: #888;">⚪ DIRECT NON LANCÉ</div>
+            <audio controls class="live-player" id="mainPlayer">
+                <source src="URL_DE_TON_FLUX" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <div class="chat-section">
+            <div class="section-title">💬 Tchat en direct</div>
+            <div class="chat-box" id="chatBox">Inscris-toi pour tchater...</div>
+            <input type="text" class="input-box" placeholder="Écris ton message ici...">
