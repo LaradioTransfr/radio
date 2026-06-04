@@ -3,82 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Correction Forcee</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <title>Radio Transfr</title>
     <style>
-        body { background-color: #0c0c14; color: white; font-family: sans-serif; }
-        /* Fenêtre de connexion forcée au premier plan */
-        #zone-connexion { 
-            display: none; 
-            position: fixed; 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            background: #1e1e2f; 
-            padding: 30px; 
-            border: 3px solid #00d2ff; 
-            z-index: 10000; 
-            border-radius: 15px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
         }
-        .btn-admin-test {
-            background: #4a4a6a;
-            color: white;
+
+        .main-container {
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .status-badge {
+            background-color: #161b22;
+            color: #8b949e;
             padding: 5px 10px;
-            cursor: pointer;
+            border-radius: 20px;
             font-size: 12px;
-            border-radius: 5px;
-            border: 1px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
         }
+
+        .network-icon {
+            margin-right: 5px;
+        }
+
+        .chat-section, .podcasts-section {
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            color: #58a6ff;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .section-icon {
+            margin-right: 10px;
+        }
+
+        .chat-box {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            height: 150px;
+            padding: 8px;
+            color: #8b949e;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .input-box {
+            width: 100%;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 8px;
+            color: #c9d1d9;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .cyan-button {
+            background-color: #00bcd4;
+            color: #0d1117;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .cyan-button:hover {
+            opacity: 0.9;
+        }
+
+        .podcasts-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .podcast-item {
+            text-align: center;
+            color: #8b949e;
+            font-size: 12px;
+        }
+
+        .podcast-icon-placeholder {
+            background-color: #30363d;
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            margin: 0 auto 5px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Style pour la Zone Admin demandée */
+        .admin-section {
+            border: 2px solid #58a6ff; /* Bordure bleue distinctive */
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 20px;
+            background-color: #161b22;
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            color: #58a6ff;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .key-icon {
+            margin-right: 10px;
+        }
+
+        .privacy-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .privacy-link a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .privacy-link a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
 
-    <div style="padding: 10px; background: #14141f; border-bottom: 1px solid #333; display: flex; justify-content: space-between;">
-        <span>Radio Transfr v6.1</span>
-        <button class="btn-admin-test" onclick="ouvrirConnexion()">[ ZONE ADMIN ]</button>
-    </div>
-
-    <div style="text-align: center; padding: 50px;">
-        <h1>📻 Bienvenue sur Transfr</h1>
-        <p>Clique sur le bouton gris en haut à droite pour te connecter.</p>
-        
-        <p><a href="confidentialite.html" style="color: #00d2ff;">🔒 Politique de Confidentialité</a></p>
-    </div>
-
-    <div id="zone-connexion">
-        <h2 style="margin-top:0;">🔑 Connexion Admin</h2>
-        <input type="password" id="code-secret" placeholder="Code secret..." style="padding: 10px; width: 200px;">
-        <br><br>
-        <button onclick="verifierCode()" style="padding: 10px; background: #2ed573; border: none; cursor: pointer; font-weight: bold;">VALIDER</button>
-        <button onclick="fermerConnexion()" style="padding: 10px; background: #ff4757; border: none; cursor: pointer; color: white;">FERMER</button>
-    </div>
-
-    <div id="panneau-admin" style="display:none; padding: 20px; background: #14141f; border: 2px dashed #9b59b6; margin: 20px;">
-        <h3>🛠️ Console d'Administration Active</h3>
-        <p>Bravo Macéo, tu es connecté !</p>
+    <div class="main-container">
+        <div class="header-section">
+            <span class="header-icon">📻</span>
+            <h1 class="header-title">RADIO TRANSFR</h1>
         </div>
 
-    <script>
-        // FONCTIONS SIMPLIFIÉES AU MAXIMUM
-        function ouvrirConnexion() {
-            console.log("Tentative d'ouverture...");
-            document.getElementById('zone-connexion').style.display = 'block';
-        }
+        <div class="status-badge">
+            <span class="network-icon">👥</span> Connecté au réseau Transfr
+        </div>
 
-        function fermerConnexion() {
-            document.getElementById('zone-connexion').style.display = 'none';
-        }
+        <div class="chat-section">
+            <div class="section-header">
+                <span class="section-icon">💬</span> Tchat en direct
+            </div>
+            <div class="chat-box">Inscris-toi pour tchater...</div>
+            <input type="text" class="input-box" placeholder="Écris ton message ici...">
+            <button class="cyan-button">📩 Envoyer au Studio</button>
+        </div>
 
-        function verifierCode() {
-            const code = document.getElementById('code-secret').value;
-            if (code === '1944') {
-                document.getElementById('panneau-admin').style.display = 'block';
-                document.getElementById('zone-connexion').style.display = 'none';
-                alert("Accès réussi !");
-            } else {
-                alert("Mauvais code !");
-            }
-        }
-    </script>
+        <div class="podcasts-section">
+            <div class="section-header">
+                <span class="section-icon">🎧</span> Émissions & Podcasts Transfr
+            </div>
+            <div class="podcasts-container">
+                <div class="podcast-item">
+                    <div class="podcast-icon-placeholder"></div>
+                    Emission 1
+                </div>
+                <div class="podcast-item">
+                    <div class="podcast-icon-placeholder"></div>
+                    Podcast 1
+                </div>
+                <div class="podcast-item">
+                    <div class="podcast-icon-placeholder"></div>
+                    Emission 2
+                </div>
+                <div class="podcast-item">
+                    <div class="podcast-icon-placeholder"></div>
+                    Podcast 2
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <div class="admin-header">
+                <span class="key-icon">🔑</span> Zone Admin
+            </div>
+            <button class="cyan-button">Connexion Admin</button>
+        </div>
+
+        <div class="privacy-link">
+            <a href="confidentialite.html">Voir la politique de confidentialité</a>
+        </div>
+    </div>
+
 </body>
 </html>
