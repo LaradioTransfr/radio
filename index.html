@@ -6,7 +6,7 @@
     <title>Radio Transfr</title>
     <style>
         body {
-            background-color: #111625; /* Fond très foncé */
+            background-color: #111625;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
@@ -16,7 +16,7 @@
         }
 
         .main-container {
-            background-color: #1a2035; /* Blocs principaux */
+            background-color: #1a2035;
             border-radius: 16px;
             padding: 20px;
             width: 100%;
@@ -25,12 +25,12 @@
             position: relative;
         }
 
-        /* ZONE ADMIN EN HAUT À DROITE */
+        /* NOUVEAU STYLE DU BOUTON ADMIN AVEC EFFET CLIC */
         .admin-top-right {
             position: absolute;
             top: 15px;
             right: 15px;
-            background-color: #252d4a; /* Un peu moins foncé que l'arrière-plan */
+            background-color: #252d4a;
             padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
@@ -38,18 +38,14 @@
             font-weight: bold;
             color: #a0aec0;
             border: 1px solid #2d3748;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: 0.2s;
+            outline: none;
         }
 
-        .admin-top-right:hover {
+        .admin-top-right:active {
             background-color: #00bcd4;
             color: #111625;
         }
 
-        /* PANNEAU ADMIN CACHÉ AU DÉBUT */
         .admin-panel {
             display: none;
             background-color: #252d4a;
@@ -85,7 +81,6 @@
             margin: 10px 0;
         }
 
-        /* LIVE */
         .live-section {
             background-color: #111625;
             border-radius: 12px;
@@ -106,7 +101,6 @@
             width: 100%;
         }
 
-        /* TCHAT */
         .chat-section {
             background-color: #111625;
             border-radius: 12px;
@@ -156,7 +150,6 @@
             cursor: pointer;
         }
 
-        /* PODCASTS */
         .podcasts-section {
             background-color: #111625;
             border-radius: 12px;
@@ -209,9 +202,9 @@
 
     <div class="main-container">
         
-        <div class="admin-top-right" onclick="ouvrirAdmin()">
-            🔑 <span>Admin</span>
-        </div>
+        <button class="admin-top-right" id="btnAdmin">
+            🔑 Admin
+        </button>
 
         <div class="header-section">
             <h1 class="header-title">📻 RADIO TRANSFR</h1>
@@ -220,8 +213,8 @@
 
         <div id="zoneAdmin" class="admin-panel">
             <h3 style="color: #00bcd4; margin-top: 0;">🛠️ Panneau d'Administration</h3>
-            <p style="font-size: 13px; color: #a0aec0;">Bienvenue sur ton panneau secret Transfr. Prêt à lancer les émissions ?</p>
-            <button class="cyan-button" style="background-color: #ff4444; color: white;" onclick="fermerAdmin()">Se déconnecter</button>
+            <p style="font-size: 13px; color: #a0aec0;">Bienvenue sur ton panneau secret Transfr.</p>
+            <button class="cyan-button" style="background-color: #ff4444; color: white;" id="btnLogOut">Se déconnecter</button>
         </div>
 
         <div class="live-section">
@@ -253,3 +246,21 @@
         </div>
 
     </div>
+
+    <script>
+        document.getElementById("btnAdmin").addEventListener("click", function() {
+            var motDePasse = prompt("Entre le mot de passe administrateur :");
+            if (motDePasse === "1944") {
+                document.getElementById("zoneAdmin").style.display = "block";
+            } else if (motDePasse !== null) {
+                alert("Mot de passe incorrect ! Accès refusé.");
+            }
+        });
+
+        document.getElementById("btnLogOut").addEventListener("click", function() {
+            document.getElementById("zoneAdmin").style.display = "none";
+        });
+    </script>
+
+</body>
+</html>
