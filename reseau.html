@@ -6,7 +6,7 @@
     <title>Transfr Social</title>
     <style>
         body {
-            background-color: #0f0f0f; /* Noir YouTube */
+            background-color: #0f0f0f;
             color: #ffffff;
             font-family: "Roboto", Arial, sans-serif;
             margin: 0; padding: 0;
@@ -69,13 +69,13 @@
             padding: 8px 12px; font-size: 12px; cursor: pointer; margin-bottom: 15px; font-weight: bold;
         }
 
-        /* BOUTONS CHOIX INSCRIPTION / CONNEXION */
+        /* BOUTONS DE CHOIX INTERNATIONAUX S'INSCRIRE / SE CONNECTER */
         .auth-toggle-container {
             display: flex; gap: 10px; margin-bottom: 15px; width: 100%;
         }
         .auth-toggle-btn {
-            flex: 1; padding: 10px; background-color: #272727; color: white; border: 1px solid #3f3f3f;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px;
+            flex: 1; padding: 12px; background-color: #272727; color: white; border: 1px solid #3f3f3f;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; outline: none;
         }
         .auth-toggle-btn.active {
             background-color: #00bcd4; color: #0f0f0f; border: none;
@@ -89,14 +89,13 @@
         .filter-retro { filter: grayscale(1) contrast(1.2); }
         .filter-none { filter: none; }
 
-        /* INTERFACE STRÉAMING LIVE MODERNE */
+        /* INTERFACE LIVE STREAM */
         #liveStreamContainer { display: none; background-color: black; border-radius: 12px; overflow: hidden; position: relative; border: 2px solid #ff0000; margin-top: 10px; }
         #liveWebcam { width: 100%; height: auto; display: block; }
         .live-overlay-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
         .live-badge { background-color: #ff0000; color: white; font-weight: bold; padding: 4px 10px; border-radius: 4px; font-size: 11px; text-transform: uppercase; animation: blinker 1.5s linear infinite; }
         .live-viewers { background-color: rgba(0,0,0,0.75); color: #ff3333; font-weight: bold; padding: 4px 10px; border-radius: 4px; font-size: 11px; border: 1px solid #ff0000; }
         
-        /* TCHAT DU LIVE */
         .live-chat-box { background-color: rgba(15,15,15,0.85); height: 110px; position: absolute; bottom: 0; left: 0; width: 100%; overflow-y: auto; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; font-size: 12px; text-align: left; }
         .chat-msg { margin: 0; line-height: 1.3; }
         .chat-user { color: #00bcd4; font-weight: bold; }
@@ -144,4 +143,194 @@
                 
                 <textarea id="postText" placeholder="Écris une description ou un message pour ton post..." rows="2"></textarea>
                 
-                <div style="
+                <div style="border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
+                    <label style="font-size: 12px; color: #aaa; font-weight: bold;">Option A : Importer depuis YouTube</label>
+                    <div id="youtubeLinksContainer">
+                        <input type="text" class="video-input-link" placeholder="Colle le lien de ta vidéo ou Short YouTube...">
+                    </div>
+                    <button class="secondary-btn" onclick="ajouterNouvelInputVideo()">➕ Ajouter une autre vidéo</button>
+                </div>
+
+                <div style="border-top: 1px solid #333; padding-top: 10px;">
+                    <label style="font-size: 12px; color: #aaa; font-weight: bold;">Option B : Enregistrer avec ta Caméra</label>
+                    <button id="btnCamToggle" class="secondary-btn" style="display:block; width:100%; background-color:#2a2a2a; margin-top:5px;" onclick="demarrerCamera()">🎥 Allumer la caméra vidéo</button>
+                    <div id="cameraContainer">
+                        <video id="webcam" autoplay playsinline></video>
+                        <select id="effectsSelect" onchange="appliquerEffetCamera()" style="margin-top:10px;">
+                            <option value="filter-none">❌ Aucun effet</option>
+                            <option value="filter-cyberpunk">⚡ Filtre Néon Cyberpunk</option>
+                            <option value="filter-astronaut">🚀 Ambiance Astronaute Space</option>
+                            <option value="filter-retro">🎬 Mode Film Rétro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
+                    <label style="font-size: 12px; color: #aaa; font-weight: bold;">Option C : Lancer un Streaming en Direct</label>
+                    <button id="btnLiveToggle" class="secondary-btn" style="display:block; width:100%; background-color:#ff0000; color:white; margin-top:5px;" onclick="toggleLiveStream()">🔴 PASSER EN DIRECT (LIVE)</button>
+                    
+                    <div id="liveStreamContainer">
+                        <video id="liveWebcam" autoplay playsinline></video>
+                        <div class="live-overlay-top">
+                            <span class="live-badge">🔴 En Direct</span>
+                            <span id="liveViewerCount" class="live-viewers">👥 1 spectateur</span>
+                        </div>
+                        <div id="liveChat" class="live-chat-box">
+                            <p class="chat-msg" style="color:#aaa; font-style:italic;">Le direct a commencé...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="yt-btn" style="margin-top:20px; background-color:#00bcd4; color:#0f0f0f;" onclick="publierStudio()">🚀 Mettre en ligne le post</button>
+            </div>
+        </div>
+
+        <div id="pageVous" class="page-section">
+            
+            <div id="authBoxContainer">
+                <div class="auth-toggle-container">
+                    <button id="toggleRegBtn" class="auth-toggle-btn active" onclick="afficherFormulaireInscription()">Créer un compte</button>
+                    <button id="toggleLogBtn" class="auth-toggle-btn" onclick="afficherFormulaireConnexion()">Se connecter</button>
+                </div>
+
+                <div id="boxRegister" class="card">
+                    <h3 style="margin-top:0; color:#00bcd4; text-align:center;">👤 Inscription</h3>
+                    <input type="text" id="regUser" placeholder="Choisis ton pseudo...">
+                    <input type="password" id="regPass" placeholder="Crée ton mot de passe...">
+                    <select id="regAvatar">
+                        <option value="🦊">🦊 Renard Cool</option>
+                        <option value="🥷">🥷 Ninja Gamer</option>
+                        <option value="🚀">🚀 Astronaut Pro</option>
+                        <option value="👑">👑 Créateur Chef</option>
+                    </select>
+                    <button class="yt-btn" onclick="ouvrirPrivacy()">Valider et Créer</button>
+                </div>
+
+                <div id="boxLogin" class="card" style="display: none;">
+                    <h3 style="margin-top:0; color:#00bcd4; text-align:center;">🔐 Connexion</h3>
+                    <input type="text" id="loginUser" placeholder="Tape ton pseudo...">
+                    <input type="password" id="loginPass" placeholder="Tape ton mot de passe...">
+                    <button class="yt-btn" style="background-color: #ff0000; color: white;" onclick="connecterCompteExistant()">🚀 Se connecter maintenant</button>
+                </div>
+            </div>
+
+            <div id="boxConnected" class="card" style="display: none; text-align: center;">
+                <div id="myAvatar" style="font-size: 45px; margin-bottom: 10px;"></div>
+                <h2 id="myUsername" style="margin: 0 0 5px 0;"></h2>
+                <span style="color:#00bcd4; font-size: 13px;">Membre Officiel ✔️</span>
+                <button class="secondary-btn" style="margin-top: 20px; width:100%;" onclick="deconnexion()">Se déconnecter</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="privacyModal" class="privacy-overlay">
+        <div class="privacy-box">
+            <h3 style="color:#ff0000; margin-top:0;">📋 Politique de Confidentialité</h3>
+            <div style="text-align: left; font-size: 12px; color:#ccc; max-height: 120px; overflow-y: auto; background:#0f0f0f; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                En rejoignant Transfr Social, vous acceptez que vos posts soient visibles par la communauté. Le respect est obligatoire.
+            </div>
+            <button class="yt-btn" onclick="accepterPrivacy()">J'accepte et je valide</button>
+        </div>
+    </div>
+
+    <div class="yt-bottom-nav">
+        <button class="nav-item active" id="btnNavAccueil" onclick="switchTab('Accueil')"><i>🏠</i><span>Accueil</span></button>
+        <button class="nav-item" id="btnNavShorts" onclick="switchTab('Shorts')"><i>🩳</i><span>Shorts</span></button>
+        <button class="nav-item" id="btnNavCreer" onclick="switchTab('Creer')"><i>➕</i><span>Créer</span></button>
+        <button class="nav-item" id="btnNavVous" onclick="switchTab('Vous')"><i>👤</i><span>Vous</span></button>
+    </div>
+
+    <script>
+        let compteActif = null;
+        let streamCamera = null;
+        let streamLive = null;
+        let liveApiTimer = null;
+        let chatTimer = null;
+
+        const pseudosChat = ["Maxime_99", "GamerPro", "Sarah_Radio", "Lucas_Transfr", "Néo_07", "Dorian"];
+        const messagesChat = ["Waaaw stylé le live !", "Le son de Transfr est incroyable !", "Salut le boss !", "Tu passes quand ma musique ?", "Incroyable l'application !", "Gros big up !! 🔥"];
+
+        // CHANGER D'ONGLET (CORRIGÉ ET SÉCURISÉ)
+        function switchTab(tabName) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            
+            let targetPage = document.getElementById('page' + tabName);
+            let targetBtn = document.getElementById('btnNav' + tabName);
+            
+            if (targetPage && targetBtn) {
+                targetPage.classList.add('active');
+                targetBtn.classList.add('active');
+            }
+            
+            if (tabName !== 'Creer') {
+                if (streamCamera) coupeCamera();
+                if (streamLive) couperLiveStream();
+            }
+        }
+
+        // BASCULER ENTRE LES FORMULAIRES (CORRIGÉ SANS CRASH)
+        function afficherFormulaireConnexion() {
+            document.getElementById("boxRegister").style.display = "none";
+            document.getElementById("boxLogin").style.display = "block";
+            document.getElementById("toggleRegBtn").classList.remove("active");
+            document.getElementById("toggleLogBtn").classList.add("active");
+        }
+
+        function afficherFormulaireInscription() {
+            document.getElementById("boxLogin").style.display = "none";
+            document.getElementById("boxRegister").style.display = "block";
+            document.getElementById("toggleLogBtn").classList.remove("active");
+            document.getElementById("toggleRegBtn").classList.add("active");
+        }
+
+        function ajouterNouvelInputVideo() {
+            let container = document.getElementById("youtubeLinksContainer");
+            let newInput = document.createElement("input");
+            newInput.type = "text"; newInput.className = "video-input-link";
+            newInput.placeholder = "Colle un autre lien vidéo YouTube...";
+            container.appendChild(newInput);
+        }
+
+        function demarrerCamera() {
+            let container = document.getElementById("cameraContainer");
+            let video = document.getElementById("webcam");
+            let btn = document.getElementById("btnCamToggle");
+            if (!streamCamera) {
+                if(streamLive) couperLiveStream();
+                navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+                    streamCamera = stream; video.srcObject = stream;
+                    container.style.display = "block"; btn.innerText = "🛑 Couper la caméra";
+                }).catch(() => alert("Caméra indisponible ou bloquée."));
+            } else { coupeCamera(); }
+        }
+
+        function coupeCamera() {
+            if(streamCamera) { streamCamera.getTracks().forEach(t => t.stop()); streamCamera = null; }
+            document.getElementById("cameraContainer").style.display = "none";
+            document.getElementById("btnCamToggle").innerText = "🎥 Allumer la caméra vidéo";
+        }
+
+        function appliquerEffetCamera() {
+            document.getElementById("webcam").className = document.getElementById("effectsSelect").value;
+        }
+
+        function toggleLiveStream() {
+            let container = document.getElementById("liveStreamContainer");
+            let video = document.getElementById("liveWebcam");
+            let btn = document.getElementById("btnLiveToggle");
+
+            if (!streamLive) {
+                if(streamCamera) coupeCamera();
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+                    streamLive = stream; video.srcObject = stream;
+                    container.style.display = "block";
+                    btn.innerText = "🛑 ARRÊTER LE LIVE STREAM";
+                    btn.style.backgroundColor = "#333333";
+                    document.getElementById("liveChat").innerHTML = '<p class="chat-msg" style="color:#aaa; font-style:italic;">Le direct a commencé...</p>';
+                    
+                    document.getElementById("liveViewerCount").innerText = "👥 " + (Math.floor(Math.random() * 4) + 1) + " en direct";
+
+                    chatTimer = setInterval(() => {
+                        let randomUser = pseudosChat[Math.floor(Math.random() * pseudosChat.length)];
