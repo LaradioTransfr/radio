@@ -44,7 +44,6 @@
         }
         .nav-item i { font-size: 20px; margin-bottom: 2px; font-style: normal; }
         .nav-item.active { color: #00bcd4; font-weight: bold; }
-        .nav-item.active span { color: #00bcd4; }
 
         .page-section { width: 100%; display: none; }
         .page-section.active { display: block; }
@@ -70,8 +69,16 @@
             padding: 8px 12px; font-size: 12px; cursor: pointer; margin-bottom: 15px; font-weight: bold;
         }
 
-        .link-btn {
-            background: none; border: none; color: #00bcd4; text-decoration: underline; cursor: pointer; font-size: 13px; margin-top: 10px;
+        /* BOUTONS CHOIX INSCRIPTION / CONNEXION */
+        .auth-toggle-container {
+            display: flex; gap: 10px; margin-bottom: 15px; width: 100%;
+        }
+        .auth-toggle-btn {
+            flex: 1; padding: 10px; background-color: #272727; color: white; border: 1px solid #3f3f3f;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px;
+        }
+        .auth-toggle-btn.active {
+            background-color: #00bcd4; color: #0f0f0f; border: none;
         }
 
         /* ENREGISTREUR WEB CAM */
@@ -129,7 +136,7 @@
 
         <div id="pageCreer" class="page-section">
             <div id="createLocked" class="card" style="text-align: center;">
-                <p>🔒 Tu doit posséder un compte pour publier ! Va sur l'onglet <strong>"Vous"</strong> en bas.</p>
+                <p>🔒 Tu dois posséder un compte pour publier ! Va sur l'onglet <strong>"Vous"</strong> en bas.</p>
             </div>
             
             <div id="createUnlocked" class="card" style="display: none;">
@@ -181,27 +188,31 @@
 
         <div id="pageVous" class="page-section">
             
-            <div id="boxRegister" class="card">
-                <h3 style="margin-top:0; color:#00bcd4; text-align:center;">👤 Créer un compte</h3>
-                <input type="text" id="regUser" placeholder="Choisis ton pseudo...">
-                <input type="password" id="regPass" placeholder="Crée un mot de passe de sécurité...">
-                <select id="regAvatar">
-                    <option value="🦊">🦊 Renard Cool</option>
-                    <option value="🥷">🥷 Ninja Gamer</option>
-                    <option value="🚀">🚀 Astronaut Pro</option>
-                    <option value="👑">👑 Créateur Chef</option>
-                </select>
-                <button class="yt-btn" onclick="ouvrirPrivacy()">Créer mon compte</button>
-                <center><button class="link-btn" onclick="afficherFormulaireConnexion()">Déjà un compte ? Se connecter</button></center>
-            </div>
+            <div id="authBoxContainer">
+                <div class="auth-toggle-container">
+                    <button id="toggleRegBtn" class="auth-toggle-btn active" onclick="afficherFormulaireInscription()">Créer un compte</button>
+                    <button id="toggleLogBtn" class="auth-toggle-btn" onclick="afficherFormulaireConnexion()">Se connecter</button>
+                </div>
 
-            <div id="boxLogin" class="card" style="display: none;">
-                <h3 style="margin-top:0; color:#00bcd4; text-align:center;">🔐 Connexion</h3>
-                <p style="font-size:12px; color:#aaa; text-align:center;">Connecte-toi avec tes identifiants existants.</p>
-                <input type="text" id="loginUser" placeholder="Ton pseudo...">
-                <input type="password" id="loginPass" placeholder="Ton mot de passe...">
-                <button class="yt-btn" onclick="connecterCompteExistant()">Se connecter</button>
-                <center><button class="link-btn" onclick="afficherFormulaireInscription()">Pas encore de compte ? S'inscrire</button></center>
+                <div id="boxRegister" class="card">
+                    <h3 style="margin-top:0; color:#00bcd4; text-align:center;">👤 Inscription</h3>
+                    <input type="text" id="regUser" placeholder="Choisis ton pseudo...">
+                    <input type="password" id="regPass" placeholder="Crée ton mot de passe...">
+                    <select id="regAvatar">
+                        <option value="🦊">🦊 Renard Cool</option>
+                        <option value="🥷">🥷 Ninja Gamer</option>
+                        <option value="🚀">🚀 Astronaut Pro</option>
+                        <option value="👑">👑 Créateur Chef</option>
+                    </select>
+                    <button class="yt-btn" onclick="ouvrirPrivacy()">Valider et Créer</button>
+                </div>
+
+                <div id="boxLogin" class="card" style="display: none;">
+                    <h3 style="margin-top:0; color:#00bcd4; text-align:center;">🔐 Connexion</h3>
+                    <input type="text" id="loginUser" placeholder="Tape ton pseudo...">
+                    <input type="password" id="loginPass" placeholder="Tape ton mot de passe...">
+                    <button class="yt-btn" style="background-color: #ff0000; color: white;" onclick="connecterCompteExistant()">🚀 Se connecter maintenant</button>
+                </div>
             </div>
 
             <div id="boxConnected" class="card" style="display: none; text-align: center;">
@@ -241,4 +252,12 @@
         const pseudosChat = ["Maxime_99", "GamerPro", "Sarah_Radio", "Lucas_Transfr", "Néo_07", "Dorian"];
         const messagesChat = ["Waaaw stylé le live !", "Le son de Transfr est incroyable !", "Salut le boss !", "Tu passes quand ma musique ?", "Incroyable l'application !", "Gros big up !! 🔥"];
 
-        // ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById('page' + tabName).classList.add('active');
+            document.getElementById('btnNav' + tabName).classList.add('active');
+            if (tabName !== 'Creer') {
+                if (streamCamera) coupeCamera();
+                if (streamLive) couperLiveStream();
+            }
