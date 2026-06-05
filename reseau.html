@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfr Social & Shorts</title>
+    <title>Transfr Social</title>
     <style>
         body {
             background-color: #0f0f0f; /* Noir YouTube */
@@ -16,9 +16,9 @@
             align-items: center;
         }
 
-        /* BARRE DU HAUT YOUTUBE STYLE */
+        /* BARRE DU HAUT FIXE */
         .yt-header {
-            background-color: #212121;
+            background-color: #0f0f0f;
             padding: 12px 20px;
             display: flex;
             align-items: center;
@@ -27,128 +27,90 @@
             top: 0; width: 100%; 
             box-sizing: border-box; 
             z-index: 1000;
-            border-bottom: 1px solid #333;
         }
 
         .yt-logo {
-            font-weight: bold; 
-            font-size: 22px; 
-            color: #ffffff; 
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            font-weight: bold; font-size: 20px; color: #ffffff; display: flex; align-items: center; gap: 5px;
         }
 
-        .yt-logo span { 
-            background-color: #00bcd4; 
-            color: #0f0f0f; 
-            padding: 2px 8px; 
-            border-radius: 4px; 
-            font-size: 14px; 
-        }
+        .yt-logo span { background-color: #00bcd4; color: #0f0f0f; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
 
+        /* CONTENU PRINCIPAL AVEC ESPACE EN HAUT ET EN BAS */
         .main-content { 
-            margin-top: 90px; 
+            margin-top: 60px; 
+            margin-bottom: 70px;
             padding: 15px; 
             display: flex; 
             flex-direction: column; 
             align-items: center;
-            width: 90%;
+            width: 100%;
             max-width: 450px;
             box-sizing: border-box;
         }
 
+        /* BARRE DE NAVIGATION EN BAS (STYLE APP YOUTUBE) */
+        .yt-bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background-color: #0f0f0f;
+            border-top: 1px solid #272727;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .nav-item {
+            background: none; border: none; color: #aaa;
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 10px; cursor: pointer; width: 20%;
+        }
+
+        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active span { color: #00bcd4; font-weight: bold; }
+
+        /* LES DIFFERENTES PAGES OUVÈRTES PAR LES ONGLETS */
+        .page-section { width: 100%; display: none; }
+        .page-section.active { display: block; }
+
+        /* CARTES ET STYLES COMPOSANTS */
         .card {
-            background-color: #212121; 
-            border-radius: 14px; 
-            padding: 20px; 
-            width: 100%; 
-            box-sizing: border-box; 
-            margin-bottom: 20px;
+            background-color: #212121; border-radius: 14px; padding: 20px; 
+            width: 100%; box-sizing: border-box; margin-bottom: 15px;
             border: 1px solid #2f2f2f;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         input, textarea, select {
-            width: 100%; 
-            background-color: #0f0f0f; 
-            border: 1px solid #3f3f3f; 
-            border-radius: 8px; 
-            padding: 12px; 
-            color: white; 
-            box-sizing: border-box; 
-            margin-bottom: 12px; 
-            outline: none;
-            font-size: 14px;
-        }
-
-        input:focus, textarea:focus {
-            border-color: #00bcd4;
+            width: 100%; background-color: #0f0f0f; border: 1px solid #3f3f3f; 
+            border-radius: 8px; padding: 12px; color: white; box-sizing: border-box; 
+            margin-bottom: 12px; outline: none; font-size: 14px;
         }
 
         .yt-btn {
-            background-color: #00bcd4; 
-            color: #0f0f0f; 
-            border: none; 
-            border-radius: 20px; 
-            padding: 12px 20px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            width: 100%;
-            font-size: 14px;
-            transition: background 0.2s;
+            background-color: #00bcd4; color: #0f0f0f; border: none; border-radius: 20px; 
+            padding: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px;
         }
 
-        .yt-btn:hover {
-            background-color: #0097a7;
+        /* LOOK DES POSTS ET VIDEOS */
+        .post { background-color: #212121; border-radius: 14px; padding: 15px; margin-bottom: 15px; border: 1px solid #2f2f2f; }
+        .user-badge { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .avatar-circle { width: 36px; height: 36px; border-radius: 50%; background-color: #2f2f2f; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .video-wrapper { position: relative; padding-bottom: 177.77%; height: 0; margin-top: 10px; border-radius: 10px; overflow: hidden; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* MODAL DE LA POLITIQUE DE CONFIDENTIALITÉ */
+        .privacy-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
         }
 
-        /* LOG PRIVÉ / COMPTE INFOS */
-        .user-badge { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            margin-bottom: 15px; 
-        }
-        
-        .avatar-circle { 
-            width: 40px; 
-            height: 40px; 
-            border-radius: 50%; 
-            background-color: #2f2f2f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-
-        /* FIL COMPLET DES MESSAGES ET SHORTS */
-        .feed { 
-            width: 100%; 
-        }
-        
-        .post { 
-            background-color: #212121; 
-            border-radius: 14px; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border: 1px solid #2f2f2f;
-        }
-        
-        .video-wrapper { 
-            position: relative; 
-            padding-bottom: 177.77%; /* Format vertical 9:16 Shorts */
-            height: 0; 
-            margin-top: 12px; 
-            border-radius: 10px; 
-            overflow: hidden; 
-            border: 1px solid #333;
-        }
-        
-        .video-wrapper iframe { 
-            position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%; 
+        .privacy-box {
+            background-color: #212121; border-radius: 16px; padding: 25px;
+            width: 85%; max-width: 380px; box-sizing: border-box;
+            border: 1px solid #3f3f3f; text-align: center;
         }
     </style>
 </head>
@@ -156,87 +118,127 @@
 
     <div class="yt-header">
         <div class="yt-logo">🌐 TRANSFR <span>SOCIAL</span></div>
-        <button onclick="window.location.href='index.html'" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;" title="Retour Accueil">🏠</button>
+        <button onclick="window.location.href='index.html'" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">🏠</button>
     </div>
 
     <div class="main-content">
 
-        <div id="accountBox" class="card">
-            <h3 style="margin-top:0; color:#00bcd4; text-align: center;">👤 Rejoins TRANSFR SOCIAL</h3>
-            <p style="font-size: 13px; color:#aaa; text-align: center; margin-bottom: 15px;">Crée un compte pour pouvoir publier des messages et des vidéos.</p>
-            
-            <input type="text" id="regUser" placeholder="Choisis ton pseudo d'auditeur...">
-            <input type="password" id="regPass" placeholder="Crée un mot de passe de sécurité...">
-            
-            <label style="font-size:12px; color:#aaa; display:block; margin-bottom:6px; font-weight: bold;">Choisis ton icône de profil :</label>
-            <select id="regAvatar">
-                <option value="🦊">🦊 Renard Cool</option>
-                <option value="🥷">🥷 Ninja Gamer</option>
-                <option value="🚀">🚀 Astronaut Pro</option>
-                <option value="🐼">🐼 Panda Radio</option>
-                <option value="👑">👑 Créateur Chef</option>
-            </select>
-            
-            <button class="yt-btn" onclick="creerCompte()">Créer mon compte</button>
+        <div id="pageAccueil" class="page-section active">
+            <h3 style="margin-top: 0; font-size: 18px;">🏠 Fil d'actualité</h3>
+            <div id="feedGeneral"></div>
         </div>
 
-        <div id="publishBox" class="card" style="display: none;">
-            <div class="user-badge">
-                <div id="userAvatar" class="avatar-circle"></div>
-                <div>
-                    <strong id="displayUsername" style="color: #ffffff; display: block;"></strong>
-                    <span style="font-size: 11px; color:#00bcd4;">Membre Connecté ✔️</span>
-                </div>
-            </div>
-            
-            <textarea id="postText" placeholder="Ajoute un message sur le fil..." rows="2"></textarea>
-            <input type="text" id="postVideo" placeholder="Optionnel : Colle un lien de Short YouTube...">
-            
-            <button class="yt-btn" onclick="publierSurLeReseau()">Publier sur le fil d'actualité</button>
+        <div id="pageShorts" class="page-section">
+            <h3 style="margin-top: 0; font-size: 18px;">🩳 Flux des Shorts</h3>
+            <div id="feedShorts Only"></div>
         </div>
 
-        <h4 style="margin: 10px 0 15px 0; font-size:16px; align-self: flex-start; width: 100%; border-bottom: 1px solid #2f2f2f; padding-bottom: 8px;">📱 Fil d'actualité en direct</h4>
-        <div class="feed" id="ytFeed">
+        <div id="pageCreer" class="page-section">
+            <div id="createLocked" class="card" style="text-align: center;">
+                <p>🔒 Tu dois posséder un compte Transfr pour pouvoir publier ! Va sur l'onglet <strong>"Vous"</strong> en bas à droite.</p>
             </div>
+            <div id="createUnlocked" class="card" style="display: none;">
+                <h3 style="margin-top:0; color:#00bcd4;">🚀 Créer un Post / Short</h3>
+                <textarea id="postText" placeholder="De quoi veux-tu parler à la communauté ?" rows="3"></textarea>
+                <input type="text" id="postVideo" placeholder="Colle le lien de ton Short YouTube ici...">
+                <button class="yt-btn" onclick="publierSurLeReseau()">Mettre en ligne</button>
+            </div>
+        </div>
 
+        <div id="pageVous" class="page-section">
+            <div id="boxNotConnected" class="card">
+                <h3 style="margin-top:0; color:#00bcd4; text-align:center;">👤 Espace "Vous"</h3>
+                <p style="font-size:13px; color:#aaa; text-align:center;">Crée ton profil pour débloquer l'onglet de création.</p>
+                <input type="text" id="regUser" placeholder="Choisis ton pseudo...">
+                <input type="password" id="regPass" placeholder="Crée un mot de passe de sécurité...">
+                <select id="regAvatar">
+                    <option value="🦊">🦊 Renard Cool</option>
+                    <option value="🥷">🥷 Ninja Gamer</option>
+                    <option value="🚀">🚀 Astronaut Pro</option>
+                    <option value="👑">👑 Créateur Chef</option>
+                </select>
+                <button class="yt-btn" onclick="ouvrirPrivacy()">Créer mon compte</button>
+            </div>
+            <div id="boxConnected" class="card" style="display: none; text-align: center;">
+                <div id="myAvatar" style="font-size: 45px; margin-bottom: 10px;"></div>
+                <h2 id="myUsername" style="margin: 0 0 5px 0;"></h2>
+                <span style="color:#00bcd4; font-size: 13px;">Abonné Officiel de Transfr Radio ✔️</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="privacyModal" class="privacy-overlay">
+        <div class="privacy-box">
+            <h3 style="color:#ff0000; margin-top:0;">📋 Politique de Confidentialité</h3>
+            <div style="text-align: left; font-size: 12px; color:#ccc; max-height: 150px; overflow-y: auto; background:#0f0f0f; padding: 10px; border-radius: 8px; margin-bottom: 15px; line-height: 1.4;">
+                En créant un compte sur Transfr Social, vous acceptez que vos messages, vidéos et pseudos soient stockés de façon sécurisée. Vos informations privées ne seront jamais partagées à des personnes extérieures. Vous devez rester poli et respectueux dans vos posts sous peine de bannissement par l'administrateur de la radio.
+            </div>
+            <button class="yt-btn" onclick="accepterPrivacy()">J'accepte et je valide</button>
+        </div>
+    </div>
+
+    <div class="yt-bottom-nav">
+        <button class="nav-item active" id="btnNavAccueil" onclick="switchTab('Accueil')"><i>🏠</i><span>Accueil</span></button>
+        <button class="nav-item" id="btnNavShorts" onclick="switchTab('Shorts')"><i>🩳</i><span>Shorts</span></button>
+        <button class="nav-item" id="btnNavCreer" onclick="switchTab('Creer')"><i>➕</i><span>Créer</span></button>
+        <button class="nav-item" id="btnNavVous" onclick="switchTab('Vous')"><i>👤</i><span>Vous</span></button>
     </div>
 
     <script>
         let compteActif = null;
 
-        function creerCompte() {
-            let user = document.getElementById("regUser").value.trim();
-            let pass = document.getElementById("regPass").value.trim();
-            let avatar = document.getElementById("regAvatar").value;
+        // --- CHANGER D'ONGLET (STYLE YOUTUBE APP) ---
+        function switchTab(tabName) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
 
-            if(user === "" || pass === "") return alert("Erreur : Remplis toutes les cases ! 🔐");
-
-            compteActif = { pseudo: user, avatar: avatar };
-            
-            document.getElementById("accountBox").style.display = "none";
-            document.getElementById("publishBox").style.display = "block";
-            
-            document.getElementById("userAvatar").innerText = avatar;
-            document.getElementById("displayUsername").innerText = "@" + user;
+            document.getElementById('page' + tabName).classList.add('active');
+            document.getElementById('btnNav' + tabName).classList.add('active');
         }
 
+        // --- AFFICHAGE DE LA POLITIQUE DE CONFIDENTIALITÉ EN PLEIN ÉCRAN ---
+        function ouvrirPrivacy() {
+            let user = document.getElementById("regUser").value.trim();
+            let pass = document.getElementById("regPass").value.trim();
+            if(user === "" || pass === "") return alert("Remplis toutes les cases avant ! 🔐");
+            
+            document.getElementById("privacyModal").style.display = "flex";
+        }
+
+        // --- COMPTE CONFIRMÉ APRÈS ACCEPTATION ---
+        function accepterPrivacy() {
+            let user = document.getElementById("regUser").value.trim();
+            let avatar = document.getElementById("regAvatar").value;
+
+            compteActif = { pseudo: user, avatar: avatar };
+
+            document.getElementById("privacyModal").style.display = "none";
+            document.getElementById("boxNotConnected").style.display = "none";
+            document.getElementById("boxConnected").style.display = "block";
+            
+            document.getElementById("myAvatar").innerText = avatar;
+            document.getElementById("myUsername").innerText = "@" + user;
+
+            // Débloquer l'onglet Créer
+            document.getElementById("createLocked").style.display = "none";
+            document.getElementById("createUnlocked").style.display = "block";
+
+            alert("Bienvenue sur Transfr Social ! 🎉");
+            switchTab('Accueil');
+        }
+
+        // --- PUBLIER ---
         function publierSurLeReseau() {
             let texte = document.getElementById("postText").value.trim();
             let url = document.getElementById("postVideo").value.trim();
 
-            if(texte === "" && url === "") return alert("Mets au moins un texte ou une vidéo pour publier ! 💬");
-
             let videoId = "";
             if (url !== "") {
-                if (url.includes("shorts/")) {
-                    videoId = url.split("shorts/")[1].split("?")[0];
-                } else if (url.includes("watch?v=")) {
-                    videoId = url.split("v=")[1].split("&")[0];
-                } else if (url.includes("youtu.be/")) {
-                    videoId = url.split("youtu.be/")[1].split("?")[0];
-                } else {
-                    return alert("Lien non valide ! Utilise un lien YouTube classique ou Shorts. 🎬");
-                }
+                if (url.includes("shorts/")) videoId = url.split("shorts/")[1].split("?")[0];
+                else if (url.includes("watch?v=")) videoId = url.split("v=")[1].split("&")[0];
+                else if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].split("?")[0];
+                else return alert("Lien non valide ! Utilise un lien YouTube ou Shorts.");
             }
 
             let nouveauPost = {
@@ -255,34 +257,48 @@
             document.getElementById("postVideo").value = "";
             
             chargerLeFil();
+            switchTab('Accueil');
         }
 
+        // --- INTEGRATION DES DEUX FLUX (ACCUEIL ET SHORTS SEULS) ---
         function chargerLeFil() {
-            let feed = document.getElementById("ytFeed");
+            let feedGen = document.getElementById("feedGeneral");
+            let feedShorts = document.getElementById("feedShortsOnly");
             let liste = JSON.parse(localStorage.getItem("yt_posts")) || [];
 
-            feed.innerHTML = "";
+            feedGen.innerHTML = "";
+            feedShorts.innerHTML = "";
+
             if(liste.length === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:#606060; font-style:italic; margin-top:20px;'>Aucun message pour le moment. Soyez le premier ! 🎉</p>";
+                feedGen.innerHTML = "<p style='text-align:center; color:#555; font-style:italic;'>Aucun post.</p>";
+                feedShorts.innerHTML = "<p style='text-align:center; color:#555; font-style:italic;'>Aucun Short.</p>";
                 return;
             }
 
             liste.forEach(p => {
                 let videoHTML = p.vid ? `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${p.vid}" frameborder="0" allowfullscreen></iframe></div>` : "";
                 
-                feed.innerHTML += `
+                let postHTML = `
                     <div class="post">
                         <div class="user-badge">
                             <div class="avatar-circle">${p.avatar}</div>
                             <div>
                                 <strong style="color:#00bcd4;">@${p.auteur}</strong>
-                                <span style="font-size:10px; color:#606060; display:block;">Posté à ${p.date || "un moment mystère"}</span>
+                                <span style="font-size:10px; color:#606060; display:block;">Posté à ${p.date}</span>
                             </div>
                         </div>
-                        <p style="margin:5px 0; font-size:14px; white-space: pre-wrap; line-height:1.4;">${p.msg}</p>
+                        <p style="margin:5px 0; font-size:14px; white-space: pre-wrap;">${p.msg}</p>
                         ${videoHTML}
                     </div>
                 `;
+
+                // Tout va dans l'accueil
+                feedGen.innerHTML += postHTML;
+
+                // Si c'est une vidéo, elle va aussi dans l'onglet Shorts
+                if(p.vid) {
+                    feedShorts.innerHTML += postHTML;
+                }
             });
         }
 
