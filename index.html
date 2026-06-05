@@ -3,79 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr</title>
+    <title>Transfr - Plateforme Officielle</title>
     <style>
         body {
             background-color: #0f0f0f; /* Noir YouTube */
             color: #ffffff;
             font-family: "Roboto", Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .container {
-            background-color: #1f1f1f;
-            border-radius: 12px;
-            padding: 20px;
+        /* BARRE DU HAUT STYLE YT */
+        .yt-header {
+            background-color: #212121;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0px 4px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
-            margin-top: 40px;
+            z-index: 1000;
+            border-bottom: 1px solid #333;
         }
 
-        .header-title {
-            color: #00bcd4;
-            font-size: 28px;
-            text-align: center;
-            margin: 10px 0;
+        .yt-logo {
             font-weight: bold;
+            font-size: 22px;
+            color: #ffffff;
+            letter-spacing: 1px;
         }
 
-        .status-badge {
-            background-color: #333333;
-            color: #aaa;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: block;
-            width: fit-content;
-            margin: 0 auto 20px auto;
-            font-weight: bold;
-        }
-
-        .box-style {
-            background-color: #0f0f0f;
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #333333;
-            margin-bottom: 20px;
-        }
-
-        .cyan-button {
+        .yt-logo span {
             background-color: #00bcd4;
             color: #0f0f0f;
-            border: none;
-            border-radius: 20px;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
             font-size: 14px;
-            width: 100%;
-            box-sizing: border-box;
-            transition: background 0.2s;
+            margin-left: 5px;
         }
 
-        .cyan-button:hover { background-color: #0097a7; }
-
-        /* BOUTON ADMIN DANS UN COIN (FIXÉ EN HAUT À DROITE) */
-        .admin-corner-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
+        /* BOUTON ADMIN DANS LE COIN DROIT */
+        .admin-btn {
             background-color: #272727;
             color: #aaa;
             border: 1px solid #3f3f3f;
@@ -84,139 +57,162 @@
             height: 36px;
             font-size: 16px;
             cursor: pointer;
-            z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        #adminPanel {
-            display: none;
-            border: 2px dashed #ff4444;
-        }
-
-        .btn-record {
-            background-color: #ff0000;
+        .admin-btn:hover {
+            background-color: #383838;
             color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-            cursor: pointer;
-            display: block;
-            margin: 10px auto 0 auto;
         }
 
-        /* ENREGISTREUR FLOTTANT */
-        .recording-section {
-            position: fixed;
-            bottom: 20px; left: 50%;
-            transform: translateX(-50%);
-            width: 90%; max-width: 420px;
+        /* CONTENU PRINCIPAL */
+        .main-container {
+            margin-top: 90px;
+            width: 90%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .welcome-box {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .welcome-box h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .welcome-box p {
+            color: #aaa;
+            font-size: 14px;
+            margin: 5px 0 0 0;
+        }
+
+        /* BOUTONS DE NAVIGATION INTER-SITES */
+        .menu-card {
             background-color: #212121;
-            border: 2px solid #00bcd4;
-            border-radius: 12px;
-            padding: 15px;
-            z-index: 99999;
-            display: none;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid #2f2f2f;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-2px);
+            border-color: #00bcd4;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .nav-link-btn {
+            background-color: #00bcd4;
+            color: #0f0f0f;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            text-decoration: none;
             text-align: center;
         }
 
-        audio { width: 100%; margin-top: 5px; }
+        .nav-link-btn:hover {
+            background-color: #0097a7;
+        }
+
+        /* PANNEAU ADMIN MASQUÉ */
+        #adminSecretPanel {
+            display: none;
+            background-color: #212121;
+            border: 2px dashed #ff4444;
+            border-radius: 14px;
+            padding: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-    <button class="admin-corner-btn" onclick="ouvrirAdmin()" title="Admin">⚙️</button>
-
-    <div class="container">
-        
-        <div class="header-section">
-            <h1 class="header-title">📻 RADIO TRANSFR</h1>
-            <div id="statusBadge" class="status-badge">⚪ Studio Hors Ligne</div>
-        </div>
-
-        <div class="box-style" style="text-align: center;">
-            <button class="cyan-button" style="background-color: #ffffff; color: #0f0f0f;" onclick="window.location.href='reseau.html'">🌐 OUVRIR LE RÉSEAU SOCIAL</button>
-        </div>
-
-        <div id="adminPanel" class="box-style">
-            <h3 style="margin:0 0 10px 0; color:#ff4444; text-align:center;">🛠️ COMMANDES ADMIN</h3>
-            <button class="cyan-button" style="background-color:#ff0000; color:white; margin-bottom:15px;" onclick="toggleLive()">⚡ ALLUMER LE LIVE</button>
-            <div style="text-align: center;">
-                <span style="font-size:13px; color:#aaa;">ENREGISTRER UN PODCAST</span>
-                <p id="recordStatus" style="font-size:12px; color:#606060; margin:5px 0;">Prêt.</p>
-                <button id="recordBtn" class="btn-record" onclick="toggleEnregistrement()">🎤</button>
-            </div>
-        </div>
-
-        <div class="box-style">
-            <h3 style="margin:0 0 10px 0; color:#00bcd4; font-size:16px;">💾 Émissions & Podcasts</h3>
-            <div style="background:#0f0f0f; padding:10px; border-radius:8px; border:1px solid #333;">
-                <span style="font-size:13px; font-weight:bold; color:#00bcd4;">📻 Émission n°1</span>
-                <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" controls style="margin-top:5px;"></audio>
-            </div>
-        </div>
-
+    <div class="yt-header">
+        <div class="yt-logo">🌐 TRANSFR <span>HUB</span></div>
+        <button class="admin-btn" onclick="ouvrirCoinAdmin()" title="Admin Studio">⚙️</button>
     </div>
 
-    <div id="recordingSection" class="recording-section">
-        <span style="color: #00bcd4; font-weight: bold; display: block; margin-bottom: 5px;">🎧 Émission Enregistrée !</span>
-        <audio id="audioPlayback" controls></audio>
-        <button class="cyan-button" style="margin-top: 8px; padding: 5px; background-color:#ff0000; color:white; border-radius: 6px;" onclick="fermerFenetreAudio()">Fermer</button>
+    <div class="main-container">
+
+        <div class="welcome-box">
+            <h2>Bienvenue sur l'application Transfr</h2>
+            <p>Choisis la plateforme où tu veux te rendre :</p>
+        </div>
+
+        <div id="adminSecretPanel">
+            <h3 style="color:#ff4444; margin-top:0;">🛠️ Commandes du Boss</h3>
+            <p style="font-size:13px; color:#aaa;">Ici tu pourras bientôt piloter ta radio en tant qu'administrateur.</p>
+            <button class="nav-link-btn" style="background-color:#ff4444; color:white;" onclick="alert('Bientôt connecté au fichier radio !')">Ouvrir les commandes Radio</button>
+        </div>
+
+        <div class="menu-card">
+            <div class="card-icon">📱</div>
+            <div class="card-title">TRANSFR RÉSEAU</div>
+            <div class="card-desc">Crée ton compte, discute avec les auditeurs et regarde les meilleurs Shorts YouTube.</div>
+            <a href="reseau.html" class="nav-link-btn" style="background-color: #ffffff; color: #0f0f0f;">Ouvrir le Réseau</a>
+        </div>
+
+        <div class="menu-card">
+            <div class="card-icon">🎵</div>
+            <div class="card-title">TRANSFR MUSIQUE</div>
+            <div class="card-desc">Découvre les musiques libres de droits exclusives sélectionnées pour l'émission.</div>
+            <a href="musique.html" class="nav-link-btn">Ouvrir la Musique</a>
+        </div>
+
+        <div class="menu-card">
+            <div class="card-icon">📻</div>
+            <div class="card-title">TRANSFR RADIO</div>
+            <div class="card-desc">Écoute les podcasts et suis les diffusions de la radio en direct.</div>
+            <a href="radio.html" class="nav-link-btn" style="background-color: #272727; color: #ffffff; border: 1px solid #3f3f3f;">Ouvrir la Radio</a>
+        </div>
+
     </div>
 
     <script>
-        function ouvrirAdmin() {
+        function ouvrirCoinAdmin() {
             var code = prompt("Code secret Admin :");
             if (code === "1234") {
-                document.getElementById("adminPanel").style.display = "block";
-            } else { alert("Accès refusé !"); }
-        }
-
-        let liveActif = false;
-        function toggleLive() {
-            const badge = document.getElementById("statusBadge");
-            liveActif = !liveActif;
-            if(liveActif) {
-                badge.innerText = "🔴 EN DIRECT STUDIO";
-                badge.style.backgroundColor = "#ff0000";
-                badge.style.color = "#ffffff";
+                document.getElementById("adminSecretPanel").style.display = "block";
+                alert("Mode créateur activé ! 👑");
             } else {
-                badge.innerText = "⚪ Studio Hors Ligne";
-                badge.style.backgroundColor = "#333333";
-                badge.style.color = "#aaa";
+                alert("Accès refusé !");
             }
         }
-
-        let mediaRecorder; let audioChunks = []; let estEnTrainDEnregistrer = false;
-        function toggleEnregistrement() {
-            const btn = document.getElementById("recordBtn");
-            const statusText = document.getElementById("recordStatus");
-            if (!estEnTrainDEnregistrer) {
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                        document.getElementById("audioPlayback").src = URL.createObjectURL(audioBlob);
-                        document.getElementById("recordingSection").style.display = "block";
-                    };
-                    mediaRecorder.start();
-                    estEnTrainDEnregistrer = true;
-                    btn.style.backgroundColor = "#990000"; btn.innerText = "🛑";
-                    statusText.innerText = "Enregistrement...";
-                }).catch(err => alert("Micro bloqué."));
-            } else {
-                mediaRecorder.stop();
-                estEnTrainDEnregistrer = false;
-                btn.style.backgroundColor = "#ff0000"; btn.innerText = "🎤";
-                statusText.innerText = "Prêt.";
-            }
-        }
-        function fermerFenetreAudio() { document.getElementById("recordingSection").style.display = "none"; }
     </script>
 </body>
 </html>
