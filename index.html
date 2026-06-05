@@ -5,62 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radio Transfr</title>
     <style>
-        /* DESIGN D'ORIGINE DE TA RADIO */
         body {
-            background-color: #111625;
+            background-color: #0f0f0f; /* Noir YouTube */
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: "Roboto", Arial, sans-serif;
             margin: 0;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
         .container {
-            background-color: #1a2035;
-            border-radius: 16px;
+            background-color: #1f1f1f;
+            border-radius: 12px;
             padding: 20px;
             width: 100%;
             max-width: 450px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
-        }
-
-        .header-section {
-            text-align: center;
-            margin-bottom: 20px;
+            margin-top: 40px;
         }
 
         .header-title {
             color: #00bcd4;
-            font-size: 26px;
+            font-size: 28px;
+            text-align: center;
             margin: 10px 0;
+            font-weight: bold;
         }
 
         .status-badge {
-            background-color: #707a9e;
-            color: white;
-            padding: 5px 12px;
+            background-color: #333333;
+            color: #aaa;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 12px;
-            display: inline-block;
+            display: block;
+            width: fit-content;
+            margin: 0 auto 20px auto;
             font-weight: bold;
         }
 
         .box-style {
-            background-color: #111625;
+            background-color: #0f0f0f;
             border-radius: 12px;
             padding: 15px;
-            border: 1px solid #252d4a;
+            border: 1px solid #333333;
             margin-bottom: 20px;
         }
 
         .cyan-button {
             background-color: #00bcd4;
-            color: #111625;
+            color: #0f0f0f;
             border: none;
-            border-radius: 8px;
+            border-radius: 20px;
             padding: 12px;
             font-weight: bold;
             cursor: pointer;
@@ -72,91 +71,54 @@
 
         .cyan-button:hover { background-color: #0097a7; }
 
-        /* PANNEAU ADMIN MASQUÉ PAR DÉFAUT */
+        /* BOUTON ADMIN DANS UN COIN (FIXÉ EN HAUT À DROITE) */
+        .admin-corner-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background-color: #272727;
+            color: #aaa;
+            border: 1px solid #3f3f3f;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         #adminPanel {
             display: none;
             border: 2px dashed #ff4444;
         }
 
         .btn-record {
-            background-color: #ff4444;
+            background-color: #ff0000;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 55px;
-            height: 55px;
-            font-size: 22px;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
             cursor: pointer;
             display: block;
             margin: 10px auto 0 auto;
         }
 
-        .btn-record.recording {
-            background-color: #aa0000;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* SECTION COMMUNAUTÉ : RÉSEAU & SHORTS ENSEMBLE */
-        .input-social, .textarea-social {
-            width: 100%;
-            background-color: #0b0e19;
-            border: 1px solid #252d4a;
-            border-radius: 8px;
-            padding: 10px;
-            color: white;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-            outline: none;
-        }
-
-        .feed-box {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-            margin-top: 15px;
-        }
-
-        .post-card {
-            background-color: #252d4a;
-            border-radius: 12px;
-            padding: 12px;
-            border-left: 4px solid #00bcd4;
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 177.77%; /* Format vertical 9:16 Shorts */
-            height: 0;
-            margin-top: 10px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-        }
-
-        /* ENREGISTREUR EN BAS */
+        /* ENREGISTREUR FLOTTANT */
         .recording-section {
             position: fixed;
             bottom: 20px; left: 50%;
             transform: translateX(-50%);
             width: 90%; max-width: 420px;
-            background-color: #1a2035;
+            background-color: #212121;
             border: 2px solid #00bcd4;
             border-radius: 12px;
             padding: 15px;
             z-index: 99999;
-            box-shadow: 0px -4px 25px rgba(0, 0, 0, 0.6);
             display: none;
             text-align: center;
         }
@@ -166,50 +128,95 @@
 </head>
 <body>
 
+    <button class="admin-corner-btn" onclick="ouvrirAdmin()" title="Admin">⚙️</button>
+
     <div class="container">
         
         <div class="header-section">
             <h1 class="header-title">📻 RADIO TRANSFR</h1>
             <div id="statusBadge" class="status-badge">⚪ Studio Hors Ligne</div>
-            <button onclick="ouvrirAdmin()" style="background: none; border: none; color: #707a9e; font-size: 11px; cursor: pointer; display: block; margin: 5px auto 0 auto;">🔑 Connexion Admin</button>
+        </div>
+
+        <div class="box-style" style="text-align: center;">
+            <button class="cyan-button" style="background-color: #ffffff; color: #0f0f0f;" onclick="window.location.href='reseau.html'">🌐 OUVRIR LE RÉSEAU SOCIAL</button>
         </div>
 
         <div id="adminPanel" class="box-style">
-            <h3 style="margin:0 0 10px 0; color:#ff4444; text-align:center;">🛠️ STUDIO ADMIN SECRETS</h3>
-            <button class="cyan-button" style="background-color:#ff4444; color:white; margin-bottom:15px;" onclick="toggleLive()">⚡ ALLUMER / ÉTEINDRE LE LIVE</button>
-            
-            <div style="text-align: center; border-top: 1px solid #252d4a; padding-top: 10px;">
-                <span style="font-size:13px; color:#a0aec0;">ENREGISTRER UNE ÉMISSION</span>
-                <p id="recordStatus" style="font-size:12px; color:#707a9e; margin:5px 0;">Prêt à enregistrer ?</p>
+            <h3 style="margin:0 0 10px 0; color:#ff4444; text-align:center;">🛠️ COMMANDES ADMIN</h3>
+            <button class="cyan-button" style="background-color:#ff0000; color:white; margin-bottom:15px;" onclick="toggleLive()">⚡ ALLUMER LE LIVE</button>
+            <div style="text-align: center;">
+                <span style="font-size:13px; color:#aaa;">ENREGISTRER UN PODCAST</span>
+                <p id="recordStatus" style="font-size:12px; color:#606060; margin:5px 0;">Prêt.</p>
                 <button id="recordBtn" class="btn-record" onclick="toggleEnregistrement()">🎤</button>
             </div>
         </div>
 
         <div class="box-style">
             <h3 style="margin:0 0 10px 0; color:#00bcd4; font-size:16px;">💾 Émissions & Podcasts</h3>
-            <div style="background:#111625; padding:10px; border-radius:8px; border:1px solid #252d4a;">
-                <span style="font-size:13px; font-weight:bold; color:#00bcd4;">📻 Émission n°1 - Le Grand Lancement</span>
+            <div style="background:#0f0f0f; padding:10px; border-radius:8px; border:1px solid #333;">
+                <span style="font-size:13px; font-weight:bold; color:#00bcd4;">📻 Émission n°1</span>
                 <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" controls style="margin-top:5px;"></audio>
             </div>
-        </div>
-
-        <div class="box-style">
-            <h3 style="margin:0 0 10px 0; color:#00bcd4;">🌐 TRANSFR RÉSEAU & SHORTS</h3>
-            <p style="font-size:12px; color:#707a9e; margin:0 0 10px 0;">Poste un message ou ajoute un Short YouTube !</p>
-            
-            <input type="text" id="usernameInput" class="input-social" placeholder="Ton pseudo...">
-            <textarea id="postInput" class="textarea-social" placeholder="Écris ton message ici..." rows="2"></textarea>
-            <input type="text" id="videoUrl" class="input-social" placeholder="Optionnel : Colle un lien YouTube / Shorts...">
-            
-            <button class="cyan-button" onclick="publierTout()">🚀 Publier sur le fil</button>
-
-            <div id="mainFeed" class="feed-box">
-                </div>
         </div>
 
     </div>
 
     <div id="recordingSection" class="recording-section">
-        <span style="color: #00bcd4; font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px;">🎧 Émission Enregistrée !</span>
+        <span style="color: #00bcd4; font-weight: bold; display: block; margin-bottom: 5px;">🎧 Émission Enregistrée !</span>
         <audio id="audioPlayback" controls></audio>
-        <button class="cyan-button" style="margin-top:
+        <button class="cyan-button" style="margin-top: 8px; padding: 5px; background-color:#ff0000; color:white; border-radius: 6px;" onclick="fermerFenetreAudio()">Fermer</button>
+    </div>
+
+    <script>
+        function ouvrirAdmin() {
+            var code = prompt("Code secret Admin :");
+            if (code === "1234") {
+                document.getElementById("adminPanel").style.display = "block";
+            } else { alert("Accès refusé !"); }
+        }
+
+        let liveActif = false;
+        function toggleLive() {
+            const badge = document.getElementById("statusBadge");
+            liveActif = !liveActif;
+            if(liveActif) {
+                badge.innerText = "🔴 EN DIRECT STUDIO";
+                badge.style.backgroundColor = "#ff0000";
+                badge.style.color = "#ffffff";
+            } else {
+                badge.innerText = "⚪ Studio Hors Ligne";
+                badge.style.backgroundColor = "#333333";
+                badge.style.color = "#aaa";
+            }
+        }
+
+        let mediaRecorder; let audioChunks = []; let estEnTrainDEnregistrer = false;
+        function toggleEnregistrement() {
+            const btn = document.getElementById("recordBtn");
+            const statusText = document.getElementById("recordStatus");
+            if (!estEnTrainDEnregistrer) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        document.getElementById("audioPlayback").src = URL.createObjectURL(audioBlob);
+                        document.getElementById("recordingSection").style.display = "block";
+                    };
+                    mediaRecorder.start();
+                    estEnTrainDEnregistrer = true;
+                    btn.style.backgroundColor = "#990000"; btn.innerText = "🛑";
+                    statusText.innerText = "Enregistrement...";
+                }).catch(err => alert("Micro bloqué."));
+            } else {
+                mediaRecorder.stop();
+                estEnTrainDEnregistrer = false;
+                btn.style.backgroundColor = "#ff0000"; btn.innerText = "🎤";
+                statusText.innerText = "Prêt.";
+            }
+        }
+        function fermerFenetreAudio() { document.getElementById("recordingSection").style.display = "none"; }
+    </script>
+</body>
+</html>
