@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfr Musique</title>
+    <style>
+        body {
+            background-color: #0f0f0f; /* Style YouTube Music */
+            color: #ffffff;
+            font-family: "Roboto", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* BARRE DU HAUT */
+        .yt-header {
+            background-color: #212121;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0; width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-bottom: 1px solid #333;
+        }
+
+        .yt-logo {
+            font-weight: bold; font-size: 22px; color: #ffffff; letter-spacing: 1px;
+        }
+
+        .yt-logo span {
+            background-color: #ff0000; color: #ffffff; padding: 2px 8px; border-radius: 4px; font-size: 14px; margin-left: 5px;
+        }
+
+        /* CONTENEUR PRINCIPAL */
+        .main-container {
+            margin-top: 90px;
+            width: 90%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .box-style {
+            background-color: #212121;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #2f2f2f;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* BARRE DE RECHERCHE */
+        .search-bar {
+            width: 100%;
+            background-color: #2f2f2f;
+            border: 1px solid #3f3f3f;
+            border-radius: 20px;
+            padding: 10px 15px;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .search-bar:focus {
+            border-color: #ff0000;
+        }
+
+        /* LISTE DES MUSIQUES */
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .track-card {
+            background-color: #151515;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #252525;
+        }
+
+        .track-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .track-title {
+            font-weight: bold;
+            font-size: 15px;
+            color: #ffffff;
+        }
+
+        .track-artist {
+            font-size: 13px;
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        audio {
+            width: 100%;
+            height: 32px;
+            margin-top: 5px;
+        }
+
+        /* NOTE EN BAS */
+        .info-note {
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="yt-header">
+        <div class="yt-logo">🎵 TRANSFR <span>MUSIC</span></div>
+        <button onclick="window.location.href='index.html'" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">🏠</button>
+    </div>
+
+    <div class="main-container">
+
+        <div class="box-style">
+            <input type="text" id="musicSearch" class="search-bar" placeholder="Rechercher un artiste ou un style..." onkeyup="filtrerMusique()">
+            <p style="margin: 5px 0 0 5px; font-size: 11px; color: #aaa;">Bibliothèque de musiques libres pour l'émission</p>
+        </div>
+
+        <div class="box-style">
+            <h3 style="margin: 0 0 5px 0; font-size: 18px;">🎵 Liste des Artistes Autorisés</h3>
+            <p style="font-size: 12px; color: #aaa; margin: 0 0 15px 0;">Pense bien à citer ces créateurs à la fin de ton show !</p>
+            
+            <div id="playlist" class="track-list">
+                
+                <div class="track-card">
+                    <div class="track-info">
+                        <span class="track-title">Chill Vibes Mix</span>
+                        <span class="track-artist">LAKEY INSPIRED</span>
+                    </div>
+                    <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" controls></audio>
+                </div>
+
+                <div class="track-card">
+                    <div class="track-info">
+                        <span class="track-title">Lo-Fi Study Beats</span>
+                        <span class="track-artist">Idealism</span>
+                    </div>
+                    <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" controls></audio>
+                </div>
+
+                <div class="track-card">
+                    <div class="track-info">
+                        <span class="track-title">Gaming Electro</span>
+                        <span class="track-artist">TheFatRat</span>
+                    </div>
+                    <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" controls></audio>
+                </div>
+
+                <div class="track-card">
+                    <div class="track-info">
+                        <span class="track-title">Summer Progressive</span>
+                        <span class="track-artist">Tobu</span>
+                    </div>
+                    <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" controls></audio>
+                </div>
+
+                <div class="track-card">
+                    <div class="track-info">
+                        <span class="track-title">Creative Commons Loop</span>
+                        <span class="track-artist">Kevin MacLeod</span>
+                    </div>
+                    <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" controls></audio>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="info-note">
+            💡 <strong>Astuce de la team :</strong> Tu peux aussi trouver des milliers d'autres musiques gratuites directement dans la <em>Bibliothèque audio YouTube</em> pour enrichir ton émission !
+        </div>
+
+    </div>
+
+    <script>
+        // --- LOGIQUE DE LA BARRE DE RECHERCHE ---
+        function filtrerMusique() {
+            let input = document.getElementById('musicSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('track-card');
+
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].getElementsByClassName('track-title')[0].innerText.toLowerCase();
+                let artist = cards[i].getElementsByClassName('track-artist')[0].innerText.toLowerCase();
+                
+                if (title.includes(input) || artist.includes(input)) {
+                    cards[i].style.display = "flex";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
