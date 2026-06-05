@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Transfr - Studio Pro</title>
+    <title>Radio Transfr - Plateforme Complète</title>
     <style>
-        /* DESIGN GLOBAL DE LA RADIO */
+        /* DESIGN GLOBAL */
         body {
             background-color: #111625;
             color: #ffffff;
@@ -15,7 +15,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom: 120px; /* Espace pour pas que la boîte d'enregistrement cache le bas */
+            padding-bottom: 140px; /* Place pour l'enregistreur */
         }
 
         .container {
@@ -40,7 +40,7 @@
         }
 
         .status-badge {
-            background-color: #ff4444;
+            background-color: #707a9e;
             color: white;
             padding: 5px 12px;
             border-radius: 20px;
@@ -49,16 +49,52 @@
             font-weight: bold;
         }
 
-        /* BOUTONS NAVIGATION MULTIMÉDIA */
-        .nav-buttons-container {
+        /* MENU DE NAVIGATION EN ONGLETS */
+        .nav-tabs {
             display: flex;
-            gap: 10px;
-            margin: 15px 0;
-            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
             width: 100%;
         }
 
-        .cyan-button {
+        .tab-btn {
+            flex: 1;
+            background-color: #252d4a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: #00bcd4;
+            color: #111625;
+        }
+
+        /* GESTION DES PAGES COMPOSANTS */
+        .page-content {
+            display: none; /* Cache les pages */
+        }
+
+        .page-content.active {
+            display: block; /* Montre la page active */
+        }
+
+        /* BOUTONS ET BLOCS STYLE RADIO */
+        .studio-box, .podcast-box, .social-box {
+            background-color: #111625;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #252d4a;
+            margin-bottom: 15px;
+        }
+
+        .action-btn {
             background-color: #00bcd4;
             color: #111625;
             border: none;
@@ -66,33 +102,14 @@
             padding: 10px 15px;
             font-weight: bold;
             cursor: pointer;
+            width: 100%;
             font-size: 14px;
-            flex: 1;
-            text-align: center;
-            transition: background 0.2s;
+            margin-top: 10px;
         }
 
-        .cyan-button:hover {
-            background-color: #0097a7;
-        }
-
-        .red-button {
+        .live-btn {
             background-color: #ff4444;
             color: white;
-        }
-
-        .red-button:hover {
-            background-color: #cc3333;
-        }
-
-        /* LECTEUR ET STUDIO AUDIO */
-        .studio-box {
-            background-color: #111625;
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #252d4a;
-            margin-bottom: 20px;
-            text-align: center;
         }
 
         .btn-record {
@@ -100,17 +117,18 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 24px;
+            width: 55px;
+            height: 55px;
+            font-size: 22px;
             cursor: pointer;
+            display: block;
+            margin: 10px auto 0 auto;
             box-shadow: 0 4px 10px rgba(255, 68, 68, 0.4);
-            outline: none;
         }
 
         .btn-record.recording {
-            animation: pulse 1s infinite;
             background-color: #aa0000;
+            animation: pulse 1s infinite;
         }
 
         @keyframes pulse {
@@ -119,7 +137,71 @@
             100% { transform: scale(1); }
         }
 
-        /* CORRECTION MAJEURE : LA BOÎTE D'ENREGISTREMENT FLOTTANTE */
+        /* DESIGN RÉSEAU SOCIAL */
+        .input-social, .textarea-social {
+            width: 100%;
+            background-color: #0b0e19;
+            border: 1px solid #252d4a;
+            border-radius: 8px;
+            padding: 8px;
+            color: white;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+            outline: none;
+        }
+
+        .feed-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .post {
+            background-color: #252d4a;
+            border-radius: 10px;
+            padding: 10px;
+            border-left: 3px solid #00bcd4;
+        }
+
+        /* DESIGN SHORTS */
+        .shorts-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .short-card {
+            background-color: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #252d4a;
+            position: relative;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 177.77%; /* Format vertical 9:16 */
+            height: 0;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        .short-info {
+            padding: 10px;
+            background: rgba(0,0,0,0.7);
+            position: absolute;
+            bottom: 0; width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* FIX ENREGISTREUR BAS D'ÉCRAN */
         .recording-section {
             position: fixed;
             bottom: 20px;
@@ -131,69 +213,14 @@
             border: 2px solid #00bcd4;
             border-radius: 12px;
             padding: 15px;
-            z-index: 99999; /* Reste au-dessus de absolument tout */
+            z-index: 99999;
             box-shadow: 0px -4px 25px rgba(0, 0, 0, 0.6);
             box-sizing: border-box;
-            display: none; /* Cachée par défaut, s'affiche en JS */
+            display: none;
             text-align: center;
         }
 
-        /* LE TCHAT EN DIRECT */
-        .chat-box {
-            background-color: #111625;
-            border: 1px solid #252d4a;
-            border-radius: 12px;
-            padding: 10px;
-        }
-
-        .chat-messages {
-            height: 150px;
-            overflow-y: auto;
-            border-bottom: 1px solid #252d4a;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .msg {
-            font-size: 14px;
-            background-color: #252d4a;
-            padding: 8px 12px;
-            border-radius: 8px;
-            width: fit-content;
-            max-width: 85%;
-        }
-
-        .msg-user {
-            color: #00bcd4;
-            font-weight: bold;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-        }
-
-        .chat-input {
-            flex: 1;
-            background-color: #0b0e19;
-            border: 1px solid #252d4a;
-            border-radius: 6px;
-            padding: 8px;
-            color: white;
-            outline: none;
-        }
-
-        .chat-input:focus {
-            border-color: #00bcd4;
-        }
-
-        audio {
-            width: 100%;
-            margin-top: 10px;
-        }
+        audio { width: 100%; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -201,30 +228,63 @@
     <div class="container">
         
         <div class="header-section">
-            <h1 class="header-title">📻 RADIO TRANSFR</h1>
-            <div id="statusBadge" class="status-badge">🔴 En Direct Studio</div>
+            <h1 class="header-title">📻 TRANSFR</h1>
+            <div id="statusBadge" class="status-badge">⚪ Studio Hors Ligne</div>
         </div>
 
-        <div class="nav-buttons-container">
-            <button class="cyan-button" onclick="window.location.href='reseau.html'">🌐 Transfr Réseau</button>
-            <button class="cyan-button red-button" onclick="window.location.href='shorts.html'">🎬 Transfr Shorts</button>
+        <div class="nav-tabs">
+            <button id="btn-radio" class="tab-btn active" onclick="changerOnglet('radio')">📻 Radio</button>
+            <button id="btn-reseau" class="tab-btn" onclick="changerOnglet('reseau')">🌐 Réseau</button>
+            <button id="btn-shorts" class="tab-btn" onclick="changerOnglet('shorts')">🎬 Shorts</button>
         </div>
 
-        <div class="studio-box">
-            <h3 style="margin-top:0; color:#a0aec0; font-size:14px;">STUDIO D'ENREGISTREMENT</h3>
-            <p id="recordStatus" style="font-size:13px; color:#707a9e;">Prêt à enregistrer ton émission ?</p>
-            <button id="recordBtn" class="btn-record" onclick="toggleEnregistrement()">🎤</button>
-        </div>
-
-        <div class="chat-box">
-            <h4 style="margin: 0 0 10px 0; font-size: 14px; color:#00bcd4;">💬 Tchat en direct</h4>
-            <div id="chatMessages" class="chat-messages">
-                <div class="msg"><span class="msg-user">@Système:</span> Bienvenue sur le tchat de la radio TRANSFR ! 🎉</div>
+        <div id="page-radio" class="page-content active">
+            
+            <div class="studio-box" style="text-align: center;">
+                <h3 style="margin:0; color:#00bcd4;">🔴 LE DIRECT</h3>
+                <p style="font-size:13px; color:#a0aec0; margin: 5px 0;">Lance ton émission en live quand tu veux !</p>
+                <button class="action-btn live-btn" onclick="toggleLive()">⚡ CONFIGURER LE LIVE</button>
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatMsgInput" class="chat-input" placeholder="Écris un message...">
-                <button class="cyan-button" style="flex:none; padding:0 15px;" onclick="envoyerMessage()">Envoyer</button>
+
+            <div class="studio-box" style="text-align: center;">
+                <h3 style="margin:0; color:#a0aec0; font-size:14px;">STUDIO D'ENREGISTREMENT</h3>
+                <p id="recordStatus" style="font-size:13px; color:#707a9e; margin:5px 0;">Prêt à enregistrer ton émission ?</p>
+                <button id="recordBtn" class="btn-record" onclick="toggleEnregistrement()">🎤</button>
             </div>
+
+            <div class="podcast-box">
+                <h3 style="margin:0 0 10px 0; color:#00bcd4; font-size:16px;">💾 Émissions & Podcasts</h3>
+                <p style="font-size:13px; color:#707a9e; margin: 0 0 10px 0;">Retrouve ici les derniers enregistrements.</p>
+                <div style="background:#111625; padding:10px; border-radius:8px; border:1px solid #252d4a;">
+                    <span style="font-size:13px; font-weight:bold; color:#00bcd4;">📻 Émission n°1 - Lancement</span>
+                    <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" controls style="margin-top:5px;"></audio>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-reseau" class="page-content">
+            <div class="social-box">
+                <h3 style="margin:0 0 10px 0; color:#00bcd4;">🌐 TRANSFR RÉSEAU</h3>
+                <input type="text" id="usernameInput" class="input-social" placeholder="Ton pseudo...">
+                <textarea id="postInput" class="textarea-social" placeholder="Quoi de neuf sur la radio ?" rows="2"></textarea>
+                <button class="action-btn" onclick="publierMessage()">🚀 Publier sur le fil</button>
+            </div>
+
+            <h4 style="margin: 10px 0; font-size:15px;">📱 Fil d'actualité</h4>
+            <div id="feed" class="feed-box">
+                </div>
+        </div>
+
+        <div id="page-shorts" class="page-content">
+            <div class="social-box">
+                <h3 style="margin:0 0 10px 0; color:#ff4444;">🎬 TRANSFR SHORTS</h3>
+                <input type="text" id="videoUrl" class="input-social" placeholder="Lien YouTube ou Shorts...">
+                <input type="text" id="shortUser" class="input-social" placeholder="Ton pseudo...">
+                <button class="action-btn" style="background-color:#ff4444; color:white;" onclick="ajouterShort()">PUBLIER LE SHORT</button>
+            </div>
+
+            <div id="shortsFeed" class="shorts-feed">
+                </div>
         </div>
 
     </div>
@@ -232,16 +292,42 @@
     <div id="recordingSection" class="recording-section">
         <span style="color: #00bcd4; font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px;">🎧 Émission Enregistrée !</span>
         <audio id="audioPlayback" controls></audio>
-        <div style="margin-top: 10px; display: flex; gap: 8px;">
-            <button class="cyan-button" style="font-size: 12px; padding: 6px;" onclick="fermerFenetreAudio()">Fermer</button>
-        </div>
+        <button class="action-btn" style="margin-top: 8px; padding: 5px;" onclick="fermerFenetreAudio()">Fermer et Sauvegarder</button>
     </div>
 
     <script>
-        // --- LOGIQUE ENREGISTREUR AUDIO ---
-        let mediaRecorder;
-        let audioChunks = [];
-        let estEnTrainDEnregistrer = false;
+        // --- SYSTÈME D'ONGLETS SANS CHANGER DE SITE ---
+        function changerOnglet(onglet) {
+            // Désactiver tous les onglets et pages
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
+
+            // Activer le bon onglet et la bonne page
+            document.getElementById('btn-' + onglet).classList.add('active');
+            document.getElementById('page-' + onglet).classList.add('active');
+
+            // Charger les données si besoin
+            if(onglet === 'reseau') afficherLeFil();
+            if(onglet === 'shorts') afficherShorts();
+        }
+
+        // --- GESTION DU LIVE DIRECT ---
+        let liveActif = false;
+        function toggleLive() {
+            const badge = document.getElementById("statusBadge");
+            liveActif = !liveActif;
+            if(liveActif) {
+                badge.innerText = "🔴 EN DIRECT STUDIO";
+                badge.style.backgroundColor = "#ff4444";
+                alert("Studio configuré ! Ton micro est prêt pour le Live ! 🎙️");
+            } else {
+                badge.innerText = "⚪ Studio Hors Ligne";
+                badge.style.backgroundColor = "#707a9e";
+            }
+        }
+
+        // --- ENREGISTREUR AUDIO ---
+        let mediaRecorder; let audioChunks = []; let estEnTrainDEnregistrer = false;
 
         function toggleEnregistrement() {
             const btn = document.getElementById("recordBtn");
@@ -249,76 +335,84 @@
             const bottomSection = document.getElementById("recordingSection");
 
             if (!estEnTrainDEnregistrer) {
-                // Lancer l'enregistrement
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(stream => {
-                        mediaRecorder = new MediaRecorder(stream);
-                        audioChunks = [];
-
-                        mediaRecorder.ondataavailable = event => {
-                            audioChunks.push(event.data);
-                        };
-
-                        mediaRecorder.onstop = () => {
-                            const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                            const audioUrl = URL.createObjectURL(audioBlob);
-                            document.getElementById("audioPlayback").src = audioUrl;
-                            
-                            // Faire apparaître la boîte flottante tout en bas
-                            bottomSection.style.display = "block";
-                        };
-
-                        mediaRecorder.start();
-                        estEnTrainDEnregistrer = true;
-                        btn.classList.add("recording");
-                        btn.innerText = "🛑";
-                        statusText.innerText = "🔴 Enregistrement en cours de ton émission...";
-                    })
-                    .catch(err => {
-                        alert("Erreur micro : Autorise le micro pour enregistrer ta radio ! 🎙️");
-                        console.error(err);
-                    });
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        document.getElementById("audioPlayback").src = URL.createObjectURL(audioBlob);
+                        bottomSection.style.display = "block";
+                    };
+                    mediaRecorder.start();
+                    estEnTrainDEnregistrer = true;
+                    btn.classList.add("recording"); btn.innerText = "🛑";
+                    statusText.innerText = "🔴 Enregistrement en cours...";
+                }).catch(err => alert("Active ton micro pour enregistrer !"));
             } else {
-                // Arrêter l'enregistrement
                 mediaRecorder.stop();
                 estEnTrainDEnregistrer = false;
-                btn.classList.remove("recording");
-                btn.innerText = "🎤";
-                statusText.innerText = "Émission enregistrée avec succès ! Regarde en bas de ton écran.";
+                btn.classList.remove("recording"); btn.innerText = "🎤";
+                statusText.innerText = "Enregistré ! Regarde en bas de ton écran.";
             }
         }
+        function fermerFenetreAudio() { document.getElementById("recordingSection").style.display = "none"; }
 
-        function fermerFenetreAudio() {
-            document.getElementById("recordingSection").style.display = "none";
-            document.getElementById("recordStatus").innerText = "Prêt à enregistrer ton émission ?";
+        // --- CODE RÉSEAU SOCIAL ---
+        function publierMessage() {
+            var pseudo = document.getElementById("usernameInput").value.trim();
+            var message = document.getElementById("postInput").value.trim();
+            if (pseudo === "" || message === "") return alert("Remplis les cases ! 😎");
+
+            var nouveauPost = { auteur: pseudo, texte: message, temps: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'}) };
+            var liste = JSON.parse(localStorage.getItem("transfr_reseau_posts")) || [];
+            liste.unshift(nouveauPost);
+            localStorage.setItem("transfr_reseau_posts", JSON.stringify(liste));
+            document.getElementById("postInput").value = "";
+            afficherLeFil();
+        }
+        function afficherLeFil() {
+            var feed = document.getElementById("feed");
+            var liste = JSON.parse(localStorage.getItem("transfr_reseau_posts")) || [];
+            if (liste.length === 0) { feed.innerHTML = '<p style="color:#707a9e; font-style:italic;">Aucun message.</p>'; return; }
+            feed.innerHTML = "";
+            liste.forEach(p => {
+                feed.innerHTML += `<div class="post"><strong>@${p.auteur}</strong> <span style="font-size:10px; color:#707a9e;">à ${p.temps}</span><br><span style="font-size:14px;">${p.texte}</span></div>`;
+            });
         }
 
-        // --- LOGIQUE DU TCHAT ---
-        function envoyerMessage() {
-            const input = document.getElementById("chatMsgInput");
-            const messageText = input.value.trim();
-            if (messageText === "") return;
+        // --- CODE SHORTS (YOUTUBE INTEGRATION) ---
+        function ajouterShort() {
+            var url = document.getElementById("videoUrl").value.trim();
+            var user = document.getElementById("shortUser").value.trim();
+            if(url === "" || user === "") return alert("Complète toutes les infos ! 🎥");
 
-            const chatMessages = document.getElementById("chatMessages");
-            
-            // Création du message de l'utilisateur
-            const nouveauMessage = document.createElement("div");
-            nouveauMessage.className = "msg";
-            nouveauMessage.innerHTML = `<span class="msg-user">@Auditeur:</span> ${messageText}`;
-            
-            chatMessages.appendChild(nouveauMessage);
-            input.value = "";
-            
-            // Scroll automatique vers le bas
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            var videoId = "";
+            if(url.includes("shorts/")) videoId = url.split("shorts/")[1].split("?")[0];
+            else if(url.includes("watch?v=")) videoId = url.split("v=")[1].split("&")[0];
+            else return alert("Prends un lien YouTube ou Shorts valide !");
+
+            var liste = JSON.parse(localStorage.getItem("transfr_shorts")) || [];
+            liste.unshift({ id: videoId, auteur: user });
+            localStorage.setItem("transfr_shorts", JSON.stringify(liste));
+            document.getElementById("videoUrl").value = "";
+            afficherShorts();
+        }
+        function afficherShorts() {
+            var feed = document.getElementById("shortsFeed");
+            var liste = JSON.parse(localStorage.getItem("transfr_shorts")) || [];
+            if(liste.length === 0) { feed.innerHTML = "<p style='color:#555;'>Aucun short pour le moment.</p>"; return; }
+            feed.innerHTML = "";
+            liste.forEach(s => {
+                feed.innerHTML += `<div class="short-card"><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${s.id}" frameborder="0" allowfullscreen></iframe></div><div class="short-info"><strong>@${s.auteur}</strong></div></div>`;
+            });
         }
 
-        // Permettre d'envoyer le message avec la touche "Entrée"
-        document.getElementById("chatMsgInput").addEventListener("keyup", function(event) {
-            if (event.key === "Enter") {
-                envoyerMessage();
-            }
-        });
+        // Charger le pseudo au démarrage
+        window.onload = function() {
+            var saved = localStorage.getItem("transfr_saved_username");
+            if(saved) document.getElementById("usernameInput").value = saved;
+        };
     </script>
 </body>
 </html>
