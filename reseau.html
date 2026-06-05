@@ -40,9 +40,11 @@
             background: none; border: none; color: #aaa;
             display: flex; flex-direction: column; align-items: center;
             font-size: 10px; cursor: pointer; width: 20%;
+            outline: none;
         }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; font-style: normal; }
         .nav-item.active { color: #00bcd4; font-weight: bold; }
+        .nav-item.active span { color: #00bcd4; }
 
         .page-section { width: 100%; display: none; }
         .page-section.active { display: block; }
@@ -66,6 +68,10 @@
         .secondary-btn {
             background-color: #272727; color: white; border: 1px solid #3f3f3f; border-radius: 20px;
             padding: 8px 12px; font-size: 12px; cursor: pointer; margin-bottom: 15px; font-weight: bold;
+        }
+
+        .link-btn {
+            background: none; border: none; color: #00bcd4; text-decoration: underline; cursor: pointer; font-size: 13px; margin-top: 10px;
         }
 
         /* ENREGISTREUR WEB CAM */
@@ -123,7 +129,7 @@
 
         <div id="pageCreer" class="page-section">
             <div id="createLocked" class="card" style="text-align: center;">
-                <p>🔒 Tu dois posséder un compte pour publier ! Va sur l'onglet <strong>"Vous"</strong> en bas.</p>
+                <p>🔒 Tu doit posséder un compte pour publier ! Va sur l'onglet <strong>"Vous"</strong> en bas.</p>
             </div>
             
             <div id="createUnlocked" class="card" style="display: none;">
@@ -174,8 +180,9 @@
         </div>
 
         <div id="pageVous" class="page-section">
-            <div id="boxNotConnected" class="card">
-                <h3 style="margin-top:0; color:#00bcd4; text-align:center;">👤 Espace "Vous"</h3>
+            
+            <div id="boxRegister" class="card">
+                <h3 style="margin-top:0; color:#00bcd4; text-align:center;">👤 Créer un compte</h3>
                 <input type="text" id="regUser" placeholder="Choisis ton pseudo...">
                 <input type="password" id="regPass" placeholder="Crée un mot de passe de sécurité...">
                 <select id="regAvatar">
@@ -185,11 +192,23 @@
                     <option value="👑">👑 Créateur Chef</option>
                 </select>
                 <button class="yt-btn" onclick="ouvrirPrivacy()">Créer mon compte</button>
+                <center><button class="link-btn" onclick="afficherFormulaireConnexion()">Déjà un compte ? Se connecter</button></center>
             </div>
+
+            <div id="boxLogin" class="card" style="display: none;">
+                <h3 style="margin-top:0; color:#00bcd4; text-align:center;">🔐 Connexion</h3>
+                <p style="font-size:12px; color:#aaa; text-align:center;">Connecte-toi avec tes identifiants existants.</p>
+                <input type="text" id="loginUser" placeholder="Ton pseudo...">
+                <input type="password" id="loginPass" placeholder="Ton mot de passe...">
+                <button class="yt-btn" onclick="connecterCompteExistant()">Se connecter</button>
+                <center><button class="link-btn" onclick="afficherFormulaireInscription()">Pas encore de compte ? S'inscrire</button></center>
+            </div>
+
             <div id="boxConnected" class="card" style="display: none; text-align: center;">
                 <div id="myAvatar" style="font-size: 45px; margin-bottom: 10px;"></div>
                 <h2 id="myUsername" style="margin: 0 0 5px 0;"></h2>
                 <span style="color:#00bcd4; font-size: 13px;">Membre Officiel ✔️</span>
+                <button class="secondary-btn" style="margin-top: 20px; width:100%;" onclick="deconnexion()">Se déconnecter</button>
             </div>
         </div>
 
@@ -222,186 +241,4 @@
         const pseudosChat = ["Maxime_99", "GamerPro", "Sarah_Radio", "Lucas_Transfr", "Néo_07", "Dorian"];
         const messagesChat = ["Waaaw stylé le live !", "Le son de Transfr est incroyable !", "Salut le boss !", "Tu passes quand ma musique ?", "Incroyable l'application !", "Gros big up !! 🔥"];
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            document.getElementById('page' + tabName).classList.add('active');
-            document.getElementById('btnNav' + tabName).classList.add('active');
-            if (tabName !== 'Creer') {
-                if (streamCamera) coupeCamera();
-                if (streamLive) couperLiveStream();
-            }
-        }
-
-        function ajouterNouvelInputVideo() {
-            let container = document.getElementById("youtubeLinksContainer");
-            let newInput = document.createElement("input");
-            newInput.type = "text"; newInput.className = "video-input-link";
-            newInput.placeholder = "Colle un autre lien vidéo YouTube...";
-            container.appendChild(newInput);
-        }
-
-        function demarrerCamera() {
-            let container = document.getElementById("cameraContainer");
-            let video = document.getElementById("webcam");
-            let btn = document.getElementById("btnCamToggle");
-            if (!streamCamera) {
-                if(streamLive) couperLiveStream();
-                navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-                    streamCamera = stream; video.srcObject = stream;
-                    container.style.display = "block"; btn.innerText = "🛑 Couper la caméra";
-                });
-            } else { coupeCamera(); }
-        }
-
-        function coupeCamera() {
-            if(streamCamera) { streamCamera.getTracks().forEach(t => t.stop()); streamCamera = null; }
-            document.getElementById("cameraContainer").style.display = "none";
-            document.getElementById("btnCamToggle").innerText = "🎥 Allumer la caméra vidéo";
-        }
-
-        function appliquerEffetCamera() {
-            document.getElementById("webcam").className = document.getElementById("effectsSelect").value;
-        }
-
-        // --- 🔴 LOGIQUE DU VRAI COMPTEUR INTERNET ---
-        function actualiserVraisAuditeurs() {
-            // On appelle l'API pour ajouter +1 (visite) et lire le total en direct
-            fetch('https://api.countapi.xyz/hit/transfr_social/live_key_2026')
-                .then(response => response.json())
-                .then(data => {
-                    // Si plusieurs personnes sont sur la page, la valeur augmente en vrai !
-                    let vraisAuditeurs = data.value || 1;
-                    document.getElementById("liveViewerCount").innerText = "👥 " + vraisAuditeurs + " en direct";
-                })
-                .catch(() => {
-                    // Si l'API externe ralentit, on met une simulation réaliste pour que ça reste fun
-                    let simu = Math.floor(Math.random() * 4) + 1;
-                    document.getElementById("liveViewerCount").innerText = "👥 " + simu + " en direct";
-                });
-        }
-
-        function toggleLiveStream() {
-            let container = document.getElementById("liveStreamContainer");
-            let video = document.getElementById("liveWebcam");
-            let btn = document.getElementById("btnLiveToggle");
-
-            if (!streamLive) {
-                if(streamCamera) coupeCamera();
-                navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-                    streamLive = stream;
-                    video.srcObject = stream;
-                    container.style.display = "block";
-                    btn.innerText = "🛑 ARRÊTER LE LIVE STREAM";
-                    btn.style.backgroundColor = "#333333";
-                    
-                    document.getElementById("liveChat").innerHTML = '<p class="chat-msg" style="color:#aaa; font-style:italic;">Le direct a commencé...</p>';
-                    
-                    // Lancement du vrai compteur d'auditeurs internet (toutes les 3 secondes)
-                    actualiserVraisAuditeurs();
-                    liveApiTimer = setInterval(actualiserVraisAuditeurs, 3000);
-
-                    // Tchat automatique d'ambiance
-                    chatTimer = setInterval(() => {
-                        let randomUser = pseudosChat[Math.floor(Math.random() * pseudosChat.length)];
-                        let randomMsg = messagesChat[Math.floor(Math.random() * messagesChat.length)];
-                        let chat = document.getElementById("liveChat");
-                        chat.innerHTML += `<p class="chat-msg"><span class="chat-user">@${randomUser}</span>: ${randomMsg}</p>`;
-                        chat.scrollTop = chat.scrollHeight;
-                    }, 4000);
-                }).catch(err => alert("Erreur d'accès à la caméra pour le Live."));
-            } else { couperLiveStream(); }
-        }
-
-        function couperLiveStream() {
-            if(streamLive) { streamLive.getTracks().forEach(t => t.stop()); streamLive = null; }
-            clearInterval(liveApiTimer);
-            clearInterval(chatTimer);
-            document.getElementById("liveStreamContainer").style.display = "none";
-            let btn = document.getElementById("btnLiveToggle");
-            btn.innerText = "🔴 PASSER EN DIRECT (LIVE)";
-            btn.style.backgroundColor = "#ff0000";
-            alert("Live Stream terminé ! Vos statistiques d'audience ont été synchronisées. 📊");
-        }
-
-        // --- AUTH ---
-        function ouvrirPrivacy() {
-            if(document.getElementById("regUser").value.trim() === "") return alert("Mets un pseudo !");
-            document.getElementById("privacyModal").style.display = "flex";
-        }
-
-        function accepterPrivacy() {
-            let user = document.getElementById("regUser").value.trim();
-            let avatar = document.getElementById("regAvatar").value;
-            compteActif = { pseudo: user, avatar: avatar };
-            document.getElementById("privacyModal").style.display = "none";
-            document.getElementById("boxNotConnected").style.display = "none";
-            document.getElementById("boxConnected").style.display = "block";
-            document.getElementById("myAvatar").innerText = avatar;
-            document.getElementById("myUsername").innerText = "@" + user;
-            document.getElementById("createLocked").style.display = "none";
-            document.getElementById("createUnlocked").style.display = "block";
-            switchTab('Accueil');
-        }
-
-        function publierStudio() {
-            let text = document.getElementById("postText").value.trim();
-            let inputs = document.getElementsByClassName("video-input-link");
-            let ids = [];
-            for (let i of inputs) {
-                let url = i.value.trim();
-                if(url !== "") {
-                    let id = "";
-                    if(url.includes("shorts/")) id = url.split("shorts/")[1].split("?")[0];
-                    else if(url.includes("watch?v=")) id = url.split("v=")[1].split("&")[0];
-                    else if(url.includes("youtu.be/")) id = url.split("youtu.be/")[1].split("?")[0];
-                    if(id !== "") ids.push(id);
-                }
-            }
-            let list = JSON.parse(localStorage.getItem("yt_posts")) || [];
-            if (ids.length > 0) {
-                ids.forEach(id => {
-                    list.unshift({ auteur: compteActif.pseudo, avatar: compteActif.avatar, msg: text || "Nouvelle vidéo !", vid: id, date: new Date().toLocaleTimeString('fr-FR') });
-                });
-            } else {
-                if(text === "" && !streamLive && !streamCamera) return alert("Rien à publier !");
-                list.unshift({ auteur: compteActif.pseudo, avatar: compteActif.avatar, msg: text + (streamLive ? " 🔴 [Posté pendant le live]" : ""), vid: "", date: new Date().toLocaleTimeString('fr-FR') });
-            }
-            localStorage.setItem("yt_posts", JSON.stringify(list));
-            document.getElementById("postText").value = "";
-            document.getElementById("youtubeLinksContainer").innerHTML = '<input type="text" class="video-input-link" placeholder="Colle le lien de ta vidéo ou Short YouTube...">';
-            if (streamCamera) coupeCamera();
-            if (streamLive) couperLiveStream();
-            chargerLeFil();
-            switchTab('Accueil');
-        }
-
-        function chargerLeFil() {
-            let feedGen = document.getElementById("feedGeneral");
-            let feedShorts = document.getElementById("feedShortsOnly");
-            let liste = JSON.parse(localStorage.getItem("yt_posts")) || [];
-            feedGen.innerHTML = ""; if(feedShorts) feedShorts.innerHTML = "";
-            if(liste.length === 0) {
-                feedGen.innerHTML = "<p style='text-align:center; color:#555;'>Aucun post.</p>";
-                return;
-            }
-            liste.forEach(p => {
-                let videoHTML = p.vid ? `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${p.vid}" frameborder="0" allowfullscreen></iframe></div>` : "";
-                let postHTML = `
-                    <div class="post">
-                        <div class="user-badge">
-                            <div class="avatar-circle">${p.avatar}</div>
-                            <div><strong style="color:#00bcd4;">@${p.auteur}</strong><span style="font-size:10px; color:#606060; display:block;">Posté à ${p.date}</span></div>
-                        </div>
-                        <p style="margin:5px 0; font-size:14px; white-space: pre-wrap;">${p.msg}</p>
-                        ${videoHTML}
-                    </div>
-                `;
-                feedGen.innerHTML += postHTML;
-                if(p.vid && feedShorts) feedShorts.innerHTML += postHTML;
-            });
-        }
-        window.onload = chargerLeFil;
-    </script>
-</body>
-</html>
+        // ---
