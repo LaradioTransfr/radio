@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfr Social & Shorts</title>
+    <style>
+        body {
+            background-color: #0f0f0f; /* Noir YouTube */
+            color: #ffffff;
+            font-family: "Roboto", Arial, sans-serif;
+            margin: 0; 
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* BARRE DU HAUT YOUTUBE STYLE */
+        .yt-header {
+            background-color: #212121;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed; 
+            top: 0; width: 100%; 
+            box-sizing: border-box; 
+            z-index: 1000;
+            border-bottom: 1px solid #333;
+        }
+
+        .yt-logo {
+            font-weight: bold; 
+            font-size: 22px; 
+            color: #ffffff; 
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .yt-logo span { 
+            background-color: #00bcd4; 
+            color: #0f0f0f; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 14px; 
+        }
+
+        .main-content { 
+            margin-top: 90px; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            width: 90%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: #212121; 
+            border-radius: 14px; 
+            padding: 20px; 
+            width: 100%; 
+            box-sizing: border-box; 
+            margin-bottom: 20px;
+            border: 1px solid #2f2f2f;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        input, textarea, select {
+            width: 100%; 
+            background-color: #0f0f0f; 
+            border: 1px solid #3f3f3f; 
+            border-radius: 8px; 
+            padding: 12px; 
+            color: white; 
+            box-sizing: border-box; 
+            margin-bottom: 12px; 
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #00bcd4;
+        }
+
+        .yt-btn {
+            background-color: #00bcd4; 
+            color: #0f0f0f; 
+            border: none; 
+            border-radius: 20px; 
+            padding: 12px 20px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: 100%;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .yt-btn:hover {
+            background-color: #0097a7;
+        }
+
+        /* LOG PRIVÉ / COMPTE INFOS */
+        .user-badge { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin-bottom: 15px; 
+        }
+        
+        .avatar-circle { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            background-color: #2f2f2f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        /* FIL COMPLET DES MESSAGES ET SHORTS */
+        .feed { 
+            width: 100%; 
+        }
+        
+        .post { 
+            background-color: #212121; 
+            border-radius: 14px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border: 1px solid #2f2f2f;
+        }
+        
+        .video-wrapper { 
+            position: relative; 
+            padding-bottom: 177.77%; /* Format vertical 9:16 Shorts */
+            height: 0; 
+            margin-top: 12px; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            border: 1px solid #333;
+        }
+        
+        .video-wrapper iframe { 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="yt-header">
+        <div class="yt-logo">🌐 TRANSFR <span>SOCIAL</span></div>
+        <button onclick="window.location.href='index.html'" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;" title="Retour Accueil">🏠</button>
+    </div>
+
+    <div class="main-content">
+
+        <div id="accountBox" class="card">
+            <h3 style="margin-top:0; color:#00bcd4; text-align: center;">👤 Rejoins TRANSFR SOCIAL</h3>
+            <p style="font-size: 13px; color:#aaa; text-align: center; margin-bottom: 15px;">Crée un compte pour pouvoir publier des messages et des vidéos.</p>
+            
+            <input type="text" id="regUser" placeholder="Choisis ton pseudo d'auditeur...">
+            <input type="password" id="regPass" placeholder="Crée un mot de passe de sécurité...">
+            
+            <label style="font-size:12px; color:#aaa; display:block; margin-bottom:6px; font-weight: bold;">Choisis ton icône de profil :</label>
+            <select id="regAvatar">
+                <option value="🦊">🦊 Renard Cool</option>
+                <option value="🥷">🥷 Ninja Gamer</option>
+                <option value="🚀">🚀 Astronaut Pro</option>
+                <option value="🐼">🐼 Panda Radio</option>
+                <option value="👑">👑 Créateur Chef</option>
+            </select>
+            
+            <button class="yt-btn" onclick="creerCompte()">Créer mon compte</button>
+        </div>
+
+        <div id="publishBox" class="card" style="display: none;">
+            <div class="user-badge">
+                <div id="userAvatar" class="avatar-circle"></div>
+                <div>
+                    <strong id="displayUsername" style="color: #ffffff; display: block;"></strong>
+                    <span style="font-size: 11px; color:#00bcd4;">Membre Connecté ✔️</span>
+                </div>
+            </div>
+            
+            <textarea id="postText" placeholder="Ajoute un message sur le fil..." rows="2"></textarea>
+            <input type="text" id="postVideo" placeholder="Optionnel : Colle un lien de Short YouTube...">
+            
+            <button class="yt-btn" onclick="publierSurLeReseau()">Publier sur le fil d'actualité</button>
+        </div>
+
+        <h4 style="margin: 10px 0 15px 0; font-size:16px; align-self: flex-start; width: 100%; border-bottom: 1px solid #2f2f2f; padding-bottom: 8px;">📱 Fil d'actualité en direct</h4>
+        <div class="feed" id="ytFeed">
+            </div>
+
+    </div>
+
+    <script>
+        let compteActif = null;
+
+        function creerCompte() {
+            let user = document.getElementById("regUser").value.trim();
+            let pass = document.getElementById("regPass").value.trim();
+            let avatar = document.getElementById("regAvatar").value;
+
+            if(user === "" || pass === "") return alert("Erreur : Remplis toutes les cases ! 🔐");
+
+            compteActif = { pseudo: user, avatar: avatar };
+            
+            document.getElementById("accountBox").style.display = "none";
+            document.getElementById("publishBox").style.display = "block";
+            
+            document.getElementById("userAvatar").innerText = avatar;
+            document.getElementById("displayUsername").innerText = "@" + user;
+        }
+
+        function publierSurLeReseau() {
+            let texte = document.getElementById("postText").value.trim();
+            let url = document.getElementById("postVideo").value.trim();
+
+            if(texte === "" && url === "") return alert("Mets au moins un texte ou une vidéo pour publier ! 💬");
+
+            let videoId = "";
+            if (url !== "") {
+                if (url.includes("shorts/")) {
+                    videoId = url.split("shorts/")[1].split("?")[0];
+                } else if (url.includes("watch?v=")) {
+                    videoId = url.split("v=")[1].split("&")[0];
+                } else if (url.includes("youtu.be/")) {
+                    videoId = url.split("youtu.be/")[1].split("?")[0];
+                } else {
+                    return alert("Lien non valide ! Utilise un lien YouTube classique ou Shorts. 🎬");
+                }
+            }
+
+            let nouveauPost = {
+                auteur: compteActif.pseudo,
+                avatar: compteActif.avatar,
+                msg: texte,
+                vid: videoId,
+                date: new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})
+            };
+
+            let liste = JSON.parse(localStorage.getItem("yt_posts")) || [];
+            liste.unshift(nouveauPost);
+            localStorage.setItem("yt_posts", JSON.stringify(liste));
+
+            document.getElementById("postText").value = "";
+            document.getElementById("postVideo").value = "";
+            
+            chargerLeFil();
+        }
+
+        function chargerLeFil() {
+            let feed = document.getElementById("ytFeed");
+            let liste = JSON.parse(localStorage.getItem("yt_posts")) || [];
+
+            feed.innerHTML = "";
+            if(liste.length === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:#606060; font-style:italic; margin-top:20px;'>Aucun message pour le moment. Soyez le premier ! 🎉</p>";
+                return;
+            }
+
+            liste.forEach(p => {
+                let videoHTML = p.vid ? `<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${p.vid}" frameborder="0" allowfullscreen></iframe></div>` : "";
+                
+                feed.innerHTML += `
+                    <div class="post">
+                        <div class="user-badge">
+                            <div class="avatar-circle">${p.avatar}</div>
+                            <div>
+                                <strong style="color:#00bcd4;">@${p.auteur}</strong>
+                                <span style="font-size:10px; color:#606060; display:block;">Posté à ${p.date || "un moment mystère"}</span>
+                            </div>
+                        </div>
+                        <p style="margin:5px 0; font-size:14px; white-space: pre-wrap; line-height:1.4;">${p.msg}</p>
+                        ${videoHTML}
+                    </div>
+                `;
+            });
+        }
+
+        window.onload = chargerLeFil;
+    </script>
+</body>
+</html>
