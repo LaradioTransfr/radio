@@ -12,11 +12,12 @@
         .BOUTON-JAUNE-ADMIN { background-color: #ffcc00; color: #0b0c10; border: 2px solid #ffffff; padding: 12px 24px; font-weight: bold; border-radius: 25px; cursor: pointer; text-transform: uppercase; }
         .CONTENEUR { padding: 25px; max-width: 550px; margin: 0 auto; }
         .CARTE-STUDIO { background: #1f2833; border: 1px solid #45a29e; border-radius: 20px; padding: 35px; margin-top: 20px; text-align: center; }
-        .STATUT-ANTENNE { display: inline-block; background: #252525; color: #aaa; padding: 6px 14px; border-radius: 30px; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
-        .STATUT-ANTENNE.en-direct { background: #ff0000; color: white; }
+        .STATUT-ANTENNE { display: inline-block; background: #252525; color: #aaa; padding: 8px 16px; border-radius: 30px; font-size: 14px; font-weight: bold; margin-bottom: 15px; border: 1px solid #444; }
+        .STATUT-ANTENNE.en-direct { background: #ff0000; color: white; border-color: #ff6666; }
         .COMPTEUR-REEL { background-color: #0b0c10; color: #66fcf1; padding: 12px; border-radius: 10px; font-size: 18px; font-weight: bold; margin: 20px 0; border: 1px solid #45a29e; text-align: center; }
-        .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .CHAT-LIVE { background: #0b0c10; border: 1px solid #333; height: 130px; overflow-y: auto; border-radius: 10px; margin-top: 20px; padding: 12px; text-align: left; font-size: 13px; }
+        .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; width: 100%; max-width: 300px; margin: 0 auto; text-transform: uppercase; }
+        .BOUTON-PLAY.actif { background: linear-gradient(90deg, #ff0000, #ff6600); color: white; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
+        .CHAT-LIVE { background: #0b0c10; border: 1px solid #333; height: 110px; overflow-y: auto; border-radius: 10px; margin-top: 20px; padding: 12px; text-align: left; font-size: 13px; }
         .SECTION-PODCASTS { margin-top: 30px; border-top: 1px solid #45a29e; padding-top: 20px; text-align: left; }
         .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; }
         
@@ -25,7 +26,7 @@
         input, select, .ACTION-ADMIN { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0c10; color: white; border: 1px solid #45a29e; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
         .ACTION-ADMIN { background: #66fcf1; color: #0b0c10; font-weight: bold; cursor: pointer; border: none; border-radius: 50px; text-transform: uppercase; }
         
-        /* LE CLAVIER DE SÉCURITÉ GÉANT (POP-UP) */
+        /* CLAVIER SECRET IMPIRATABLE (1944) */
         .FOND-POPUP { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 99999; }
         .BOITE-POPUP { background: #1f2833; padding: 25px; border-radius: 15px; border: 2px solid #ffcc00; text-align: center; width: 280px; }
         .ECRAN-CODE { width: 100%; padding: 12px; font-size: 22px; text-align: center; background: #0b0c10; color: #ffcc00; border: 1px solid #45a29e; border-radius: 8px; margin-bottom: 15px; letter-spacing: 5px; font-weight: bold; }
@@ -45,10 +46,13 @@
             <div class="CARTE-STUDIO">
                 <div id="badgeDirect" class="STATUT-ANTENNE">⚫ ANTENNE HORS-LIGNE (PAS DE DIRECT)</div>
                 <div id="vraiCompteur" class="COMPTEUR-REEL">👥 Connectés : Chargement...</div>
-                <button class="BOUTON-PLAY" onclick="alert('📻 Connexion au direct de Transfr...')">▶️ ÉCOUTER LE LIVE</button>
-                <div id="boiteChat" class="CHAT-LIVE"><p style="margin:0; color:#666;">Discussion Transfr...</p></div>
+                
+                <button id="boutonEcouterLive" class="BOUTON-PLAY" onclick="declencherEcouteFluxDirect()">▶️ ÉCOUTER LE LIVE</button>
+                
+                <div id="boiteChat" class="CHAT-LIVE"><p style="margin:0; color:#666;">Salon Transfr connecté...</p></div>
+                
                 <div class="SECTION-PODCASTS">
-                    <h3 style="color:#66fcf1; margin:0 0 15px 0;">🎙️ Podcasts Partagés</h3>
+                    <h3 style="color:#66fcf1; margin:0 0 15px 0;">🎙️ Podcasts Transfr</h3>
                     <div id="espacePodcastsPublic"></div>
                 </div>
             </div>
@@ -56,24 +60,25 @@
 
         <div id="ecranAdmin" class="CARTE-ADMIN">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h2 style="color:#ffcc00; margin:0;">🎛️ CONSOLE TRANSFR</h2>
+                <h2 style="color:#ffcc00; margin:0;">🎛️ CONSOLE DE CONTRÔLE</h2>
                 <button onclick="fermerLeStudio()" style="background:#ff3333; color:white; border:none; padding:8px 14px; cursor:pointer; font-weight:bold; border-radius: 5px;">Quitter</button>
             </div>
-            <button class="ACTION-ADMIN" style="background-color: #ff3333; color: white; margin-bottom:10px;" onclick="changerStatutDirectAntenne(true)">🚀 Passer en Direct</button>
-            <button class="ACTION-ADMIN" style="background-color: #333; color: #aaa;" onclick="changerStatutDirectAntenne(false)">🛑 Éteindre le Direct</button>
+            <button class="ACTION-ADMIN" style="background-color: #ff3333; color: white; margin-bottom:10px;" onclick="changerStatutDirectAntenne(true)">🚀 Allumer l'Antenne (Lancer le Direct)</button>
+            <button class="ACTION-ADMIN" style="background-color: #333; color: #aaa;" onclick="changerStatutDirectAntenne(false)">🛑 Éteindre l'Antenne</button>
             
             <hr style="border-color:#45a29e; margin:25px 0;">
             
+            <h3 style="color:#66fcf1; font-size:16px; margin-bottom:10px;">🎙️ Publier un nouveau Podcast</h3>
             <input type="text" id="titrePod" placeholder="Titre du podcast...">
             <select id="statutPod" onchange="document.getElementById('sousCode').style.display = (this.value === 'prive') ? 'block' : 'none';">
                 <option value="public">🌐 Public (Tout le monde)</option>
-                <option value="prive">🔒 Privé (Avec Code)</option>
+                <option value="prive">🔒 Privé (Verrouillé par code secret)</option>
             </select>
             <div id="sousCode" style="display:none; background:#0b0c10; padding:15px; border:1px dashed #ffcc00; margin-bottom:15px;">
-                <label style="font-size:12px; color:#ffcc00; display:block; margin-bottom:5px;">🔑 Crée le mot de passe du Podcast :</label>
+                <label style="font-size:12px; color:#ffcc00; display:block; margin-bottom:5px;">🔑 Mot de passe d'accès pour ce podcast :</label>
                 <input type="text" id="codeSecretPod" value="TRANSFR">
             </div>
-            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Envoyer le Podcast</button>
+            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Envoyer le Podcast sur le réseau</button>
         </div>
     </div>
 
@@ -81,7 +86,7 @@
         <div class="BOITE-POPUP">
             <h3 style="color:#ffcc00; margin-top:0; font-size:16px;">🔒 CODE COMPTE STUDIO</h3>
             <input type="password" id="ecranSaisieCode" class="ECRAN-CODE" readonly placeholder="••••">
-            <input type="text" id="champsClavierCache" placeholder="Tape le code ici..." style="background:transparent; color:white; text-align:center; border:1px solid #444; width:100%; padding:10px; border-radius:6px;" oninput="detecterFrappeCode()">
+            <input type="text" id="champsClavierCache" placeholder="Tape le code secret..." style="background:transparent; color:white; text-align:center; border:1px solid #444; width:100%; padding:10px; border-radius:6px;" oninput="document.getElementById('ecranSaisieCode').value = this.value;">
             <button class="ACTION-ADMIN" style="margin-top:15px;" onclick="validerCodeStudio()">VALIDER</button>
             <button class="ACTION-ADMIN" style="background:#333; color:white; margin-top:8px;" onclick="fermerFenetreCode()">ANNULER</button>
         </div>
@@ -93,33 +98,24 @@
         try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) {}
 
         let monID = "user_" + Math.floor(Math.random() * 100000);
-        const CODE_STUDIO_VRAI = "1944"; // Ton nouveau code secret !
+        const CODE_STUDIO_VRAI = "1944"; 
+        let antenneEstActive = false;
 
-        // OUVERTURE DU CLAVIER DE PROTECTION
         function ouvrirFenetreCode() {
             document.getElementById("popupVerrou").style.display = "flex";
             document.getElementById("champsClavierCache").value = "";
             document.getElementById("ecranSaisieCode").value = "";
             document.getElementById("champsClavierCache").focus();
         }
-
-        function fermerFenetreCode() {
-            document.getElementById("popupVerrou").style.display = "none";
-        }
-
-        function detecterFrappeCode() {
-            let texte = document.getElementById("champsClavierCache").value;
-            document.getElementById("ecranSaisieCode").value = texte;
-        }
+        function fermerFenetreCode() { document.getElementById("popupVerrou").style.display = "none"; }
 
         function validerCodeStudio() {
-            let codeTape = document.getElementById("champsClavierCache").value;
-            if (codeTape === CODE_STUDIO_VRAI) {
+            if (document.getElementById("champsClavierCache").value === CODE_STUDIO_VRAI) {
                 fermerFenetreCode();
                 document.getElementById("ecranPublic").style.display = "none";
                 document.getElementById("ecranAdmin").style.display = "block";
             } else {
-                alert("❌ Code incorrect ! Accès au Studio Transfr refusé.");
+                alert("❌ Code incorrect !");
                 document.getElementById("champsClavierCache").value = "";
                 document.getElementById("ecranSaisieCode").value = "";
             }
@@ -130,47 +126,96 @@
             document.getElementById("ecranPublic").style.display = "block";
         }
 
+        // --- LE LEVIER DE SÉCURITÉ TOUTES LES 2 SECONDES ---
+        function radarVerificationToutesLes2Secondes() {
+            if (!database) return;
+
+            // 1. Vérification automatique du Direct
+            database.ref("statut_direct").once("value", function(s) {
+                antenneEstActive = s.val() || false;
+                let b = document.getElementById("badgeDirect");
+                let btnPlay = document.getElementById("boutonEcouterLive");
+
+                if (antenneEstActive) {
+                    b.innerText = "🔴 EN DIRECT SUR TOUS LES APPAREILS";
+                    b.className = "STATUT-ANTENNE en-direct";
+                    btnPlay.innerText = "⚡ REJOINDRE LE DIRECT EN COURS";
+                    btnPlay.classList.add("actif");
+                } else {
+                    b.innerText = "⚫ ANTENNE HORS-LIGNE (PAS DE DIRECT)";
+                    b.className = "STATUT-ANTENNE";
+                    btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
+                    btnPlay.classList.remove("actif");
+                }
+            });
+
+            // 2. Vérification et synchronisation automatique des Podcasts
+            database.ref("podcasts_partages").once("value", function(s) {
+                let l = []; s.forEach(function(c) { l.push(c.val()); });
+                let conteneur = document.getElementById("espacePodcastsPublic");
+                conteneur.innerHTML = l.length ? "" : "<p style='color:#666; font-size:12px;'>Aucun podcast disponible.</p>";
+                
+                l.reverse().forEach((p) => {
+                    let typeBadge = p.statut === 'prive' ? '🔒 Privé' : '🌐 Public';
+                    let couleurBadge = p.statut === 'prive' ? '#ffcc00' : '#66fcf1';
+                    conteneur.innerHTML += `
+                        <div class="BOX-PODCAST">
+                            <div>
+                                <strong>${p.titre}</strong><br>
+                                <span style="font-size:11px; color:${couleurBadge}; font-weight:bold;">${typeBadge}</span>
+                            </div>
+                            <button onclick="lancerEcoute('${p.titre}','${p.statut}','${p.code}')" style="background:#66fcf1; border:none; padding:8px 14px; cursor:pointer; font-weight:bold; border-radius:6px; color:black;">Écouter</button>
+                        </div>`;
+                });
+            });
+        }
+
         window.onload = function() {
             if(database) {
                 database.ref("auditeurs_en_direct/" + monID).set(true);
                 database.ref("auditeurs_en_direct/" + monID).onDisconnect().remove();
+                
                 database.ref("auditeurs_en_direct").on("value", function(s) {
-                    let t = s.numChildren() || 0;
-                    document.getElementById("vraiCompteur").innerText = "👥 Connectés en direct : " + t;
+                    document.getElementById("vraiCompteur").innerText = "👥 Connectés en direct : " + (s.numChildren() || 0);
                 });
-                database.ref("statut_direct").on("value", function(s) {
-                    let d = s.val();
-                    let b = document.getElementById("badgeDirect");
-                    b.innerText = d ? "🔴 EN DIRECT SUR TOUS LES APPAREILS" : "⚫ ANTENNE HORS-LIGNE (PAS DE DIRECT)";
-                    b.style.backgroundColor = d ? "red" : "#252525";
-                    b.style.color = d ? "white" : "#aaa";
-                });
-                database.ref("podcasts_partages").on("value", function(s) {
-                    let l = []; s.forEach(function(c) { l.push(c.val()); });
-                    let conteneur = document.getElementById("espacePodcastsPublic");
-                    conteneur.innerHTML = l.length ? "" : "<p style='color:#666;'>Aucun podcast.</p>";
-                    l.reverse().forEach((p) => {
-                        conteneur.innerHTML += `<div class="BOX-PODCAST"><div><strong>${p.titre}</strong><br><span style="font-size:11px;color:#66fcf1;">${p.statut === 'prive' ? '🔒 Privé' : '🌐 Libre'}</span></div><button onclick="lancerEcoute('${p.titre}','${p.statut}','${p.code}')" style="background:#66fcf1;border:none;padding:8px 14px;cursor:pointer;font-weight:bold;border-radius:6px;">Écouter</button></div>`;
-                    });
-                });
+
+                // Lancement du Radar de vérification : toutes les 2000 millisecondes (2 secondes)
+                setInterval(radarVerificationToutesLes2Secondes, 2000);
+                radarVerificationToutesLes2Secondes(); // Lancer une première fois direct au démarrage
             }
         };
 
-        function changerStatutDirectAntenne(statut) { if(database) database.ref("statut_direct").set(statut); }
+        function changerStatutDirectAntenne(statut) {
+            if(database) {
+                database.ref("statut_direct").set(statut);
+                alert(statut ? "🚀 Direct activé à l'antenne globale !" : "🛑 Direct éteint.");
+            }
+        }
+
         function uploaderPodcast() {
             let t = document.getElementById("titrePod").value.trim();
             let s = document.getElementById("statutPod").value;
             let c = document.getElementById("codeSecretPod").value.trim();
-            if(t === "") return alert("Mets un titre !");
+            if(t === "") return alert("Indique un titre pour le podcast !");
             if(database) database.ref("podcasts_partages").push({ titre: t, statut: s, code: (s === "prive" ? c : "") });
             document.getElementById("titrePod").value = "";
+            alert("🚀 Enregistré ! Le radar va le distribuer partout dans 2 secondes.");
         }
+
+        function declencherEcouteFluxDirect() {
+            if (antenneEstActive) {
+                alert("📻 Connexion établie ! Tu écoutes actuellement Macéo en direct sur Transfr !");
+            } else {
+                alert("📻 L'antenne est vide pour le moment. Attends que le créateur passe en direct !");
+            }
+        }
+
         function lancerEcoute(titre, statut, codeCorrect) {
             if (statut === "prive") {
-                let check = prompt("🔒 Ce podcast est verrouillé. Code secret :");
-                if (check === codeCorrect) alert("🔓 Lecture acceptée : " + titre);
-                else alert("❌ Code secret erroné.");
-            } else { alert("▶️ Lecture : " + titre); }
+                let verif = prompt("🔒 Podcast privé. Saisis le code secret pour lancer la lecture :");
+                if (verif === codeCorrect) alert("🔓 Code bon ! Lecture : " + titre);
+                else alert("❌ Code secret refusé.");
+            } else { alert("▶️ Lecture du podcast : " + titre); }
         }
     </script>
 </body>
