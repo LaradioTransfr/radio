@@ -2,48 +2,351 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfr Radio & Studio</title>
+    <title>Transfr Radio</title>
     <style>
+        /* BASE DE LA PAGE */
         body { 
-            background-color: #0f0f0f; 
-            color: white; 
-            font-family: "Roboto", Arial, sans-serif; 
-            text-align: center; 
-            margin: 0; padding: 0; 
+            background-color: #111111; 
+            color: #ffffff; 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
         }
 
-        /* BARRE DU HAUT AVEC LE BOUTON FLASHY ADMIN */
-        .radio-header {
-            background-color: #161616; padding: 15px 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            border-bottom: 2px solid #00bcd4; box-sizing: border-box;
+        /* BARRE DU HAUT */
+        .BARRE-HAUT {
+            background-color: #222222;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #00bcd4;
         }
-        .logo { font-size: 24px; font-weight: bold; color: #fff; letter-spacing: 1px; }
-        .logo span { color: #00bcd4; }
-        
-        /* BOUTON ADMIN SUPER VISIBLE */
-        .btn-admin-yellow {
-            background-color: #ffb700; color: #0f0f0f; border: 2px solid #ffffff;
-            padding: 10px 20px; font-weight: bold; border-radius: 20px;
-            cursor: pointer; font-size: 14px; box-shadow: 0 0 15px rgba(255,183,0,0.6);
-            text-transform: uppercase;
+        .TITRE-RADIO {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .TITRE-RADIO span {
+            color: #00bcd4;
         }
 
-        .container { padding: 20px; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
+        /* BOUTON JAUNE ADMIN */
+        .BOUTON-JAUNE-ADMIN {
+            background-color: #ffcc00;
+            color: #000000;
+            border: none;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-        /* INTERFACE PUBLIC */
-        .player-card { background: #161616; border: 1px solid #2f2f2f; border-radius: 16px; padding: 30px; margin-top: 20px; }
-        .live-badge { background: #ff0000; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; animation: blinker 1.5s linear infinite; }
-        .auditeurs { color: #aaa; font-size: 14px; margin-top: 10px; font-weight: bold; }
-        .btn-play { background: #00bcd4; color: #0f0f0f; border: none; border-radius: 50%; width: 70px; height: 70px; font-size: 24px; cursor: pointer; margin-top: 20px; font-weight: bold; }
-        
-        /* CHAT DU DIRECT */
-        .live-chat-box { background-color: #0f0f0f; height: 140px; overflow-y: auto; padding: 10px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; font-size: 12px; text-align: left; border: 1px solid #333; border-radius: 8px; margin-top: 15px; }
-        .chat-msg { margin: 0; line-height: 1.3; }
-        .chat-user { color: #00bcd4; font-weight: bold; }
-        .chat-ia { color: #bb86fc; font-weight: bold; }
+        /* CONTENEUR PRINCIPAL */
+        .CONTENU {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
 
-        .podcast-section { margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
-        .podcast-item { background: #212121; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-listen { background: #272727; color: white; border: 1px solid #3f3f3f
+        /* BOITE DU LECTEUR PUBLIC */
+        .CARTE-PUBLIC {
+            background-color: #1c1c1c;
+            border: 2px solid #333333;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        .BADGE-ROUGE {
+            background-color: #ff0000;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .COMPTEUR {
+            margin: 15px 0;
+            font-size: 16px;
+            color: #cccccc;
+        }
+        .BOUTON-PLAY {
+            background-color: #00bcd4;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        /* ZONE DU CHAT */
+        .BOITE-CHAT {
+            background-color: #000000;
+            border: 1px solid #444444;
+            height: 120px;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding: 10px;
+            text-align: left;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        /* LISTE DES PODCASTS */
+        .ZONE-PODCASTS {
+            margin-top: 25px;
+            border-top: 1px solid #444444;
+            padding-top: 15px;
+            text-align: left;
+        }
+        .ELEMENT-PODCAST {
+            background-color: #252525;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ==================== INTERFACE ADMIN ==================== */
+        .CARTE-ADMIN {
+            display: none; /* Caché au début, s'affiche avec le code */
+            background-color: #1a1a1a;
+            border: 2px solid #00bcd4;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .ONGLETS {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .BOUTON-ONGLET {
+            flex: 1;
+            padding: 10px;
+            background-color: #333333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .BOUTON-ONGLET.actif {
+            background-color: #00bcd4;
+            color: black;
+        }
+        .SECTION-ADMIN {
+            display: none;
+        }
+        .SECTION-ADMIN.actif {
+            display: block;
+        }
+        input, select, .BOUTON-ACTION {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            background-color: #000000;
+            color: white;
+            border: 1px solid #555555;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .BOUTON-ACTION {
+            background-color: #00bcd4;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .BOUTON-IA {
+            background-color: #a066ff;
+            color: black;
+            font-weight: bold;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="BARRE-HAUT">
+        <div class="TITRE-RADIO">🌐 TRANSFR <span>RADIO</span></div>
+        <button id="btnAdminAccess" class="BOUTON-JAUNE-ADMIN" onclick="ouvrirAdmin()">⚙️ STUDIO ADMIN</button>
+    </div>
+
+    <div class="CONTENU">
+
+        <div id="zonePublic">
+            <div class="CARTE-PUBLIC">
+                <span class="BADGE-ROUGE">🔴 DIRECT</span>
+                <div id="liveAuditeurs" class="COMPTEUR">👥 12 auditeurs en ligne</div>
+
+                <button class="BOUTON-PLAY" onclick="ecouter()">▶️ ÉCOUTER LA RADIO</button>
+
+                <div id="liveChat" class="BOITE-CHAT">
+                    <p style="margin:0; color:#888;">Bienvenue sur le chat de Transfr...</p>
+                </div>
+
+                <div class="ZONE-PODCASTS">
+                    <h3 style="color:#00bcd4; margin:0 0 10px 0;">🎙️ Émissions & Podcasts</h3>
+                    <div id="listePodcastsPublic"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="zoneAdmin" class="CARTE-ADMIN">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="color:#00bcd4; margin:0;">🎛️ CONSOLE ADMIN</h2>
+                <button onclick="fermerAdmin()" style="background:#ff3333; color:white; border:none; padding:5px 10px; cursor:pointer;">Quitter</button>
+            </div>
+
+            <div class="ONGLETS">
+                <button id="tabDirect" class="BOUTON-ONGLET actif" onclick="changerOnglet('direct')">🔴 Direct</button>
+                <button id="tabPodcast" class="BOUTON-ONGLET" onclick="changerOnglet('podcast')">🎙️ Créer Podcast</button>
+            </div>
+
+            <div id="secDirect" class="SECTION-ADMIN actif">
+                <p>Statut : <strong style="color:#00ff66;">EN DIRECT (PUBLIC)</strong></p>
+                <p>Auditeurs en direct : <strong id="adminCompteur" style="color:#ff0000;">12</strong></p>
+                <input type="text" id="titreLive" placeholder="Titre de ton émission en cours...">
+                <button class="BOUTON-ACTION" onclick="lancerDirect()">🚀 Diffuser l'émission</button>
+                
+                <hr style="border-color:#333;">
+                <p style="font-size:12px; color:#aaa;">Pilote automatique :</p>
+                <button id="btnIa" class="BOUTON-IA" onclick="activerIA()">🤖 Laisser l'IA prendre le contrôle</button>
+            </div>
+
+            <div id="secPodcast" class="SECTION-ADMIN">
+                <input type="text" id="titrePodcast" placeholder="Nom de l'enregistrement...">
+                <label>Confidentialité :</label>
+                <select id="statutPodcast" onchange="verifierTypePodcast()">
+                    <option value="public">🌐 Public (Pour tout le monde)</option>
+                    <option value="prive">🔒 Privé (Avec mot de passe)</option>
+                </select>
+
+                <div id="blocCodeSecret" style="display:none; background:#000; padding:10px; border:1px dashed #ff3333; margin-bottom:10px;">
+                    <label style="color:#ff3333; font-weight:bold;">🔑 Choisis le code d'accès :</label>
+                    <input type="text" id="codeSecretPodcast" value="1234">
+                </div>
+
+                <button class="BOUTON-ACTION" onclick="publierPodcast()">💾 Publier le Podcast</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const CLÉ_ADMIN = "transfr2026";
+        let iaMise = false;
+        let iaHorloge = null;
+
+        const artistesIA = ["LAKEY INSPIRED", "Idealism", "TheFatRat", "Tobu", "Kevin MacLeod"];
+        const messagesIA = [
+            "L'IA de Transfr est aux commandes ! Bon son à tous !",
+            "Musique libre de droits en cours de diffusion...",
+            "N'oubliez pas de partager la radio Transfr autour de vous !",
+            "Le boss est absent, mais le show continue !"
+        ];
+
+        // Compteur d'auditeurs qui bouge tout seul
+        function majAuditeurs() {
+            let nombre = Math.floor(Math.random() * 6) + 12; // Entre 12 et 17
+            document.getElementById("liveAuditeurs").innerText = "👥 " + nombre + " auditeurs en ligne";
+            document.getElementById("adminCompteur").innerText = nombre;
+        }
+        setInterval(majAuditeurs, 4000);
+
+        window.onload = function() {
+            majAuditeurs();
+            chargerPodcasts();
+        };
+
+        // ENTRER ET SORTIR DE L'ADMIN
+        function ouvrirAdmin() {
+            let essai = prompt("🔑 Saisis le mot de passe Admin Transfr :");
+            if (essai === CLÉ_ADMIN) {
+                document.getElementById("zonePublic").style.display = "none";
+                document.getElementById("zoneAdmin").style.display = "block";
+                document.getElementById("btnAdminAccess").style.display = "none";
+            } else {
+                alert("❌ Code incorrect.");
+            }
+        }
+
+        function fermerAdmin() {
+            document.getElementById("zoneAdmin").style.display = "none";
+            document.getElementById("zonePublic").style.display = "block";
+            document.getElementById("btnAdminAccess").style.display = "block";
+        }
+
+        // CHANGER D'ONGLET DANS L'ADMIN
+        function changerOnglet(nom) {
+            document.getElementById("tabDirect").classList.remove("actif");
+            document.getElementById("tabPodcast").classList.remove("actif");
+            document.getElementById("secDirect").classList.remove("actif");
+            document.getElementById("secPodcast").classList.remove("actif");
+
+            if(nom === 'direct') {
+                document.getElementById("tabDirect").classList.add("actif");
+                document.getElementById("secDirect").classList.add("actif");
+            } else {
+                document.getElementById("tabPodcast").classList.add("actif");
+                document.getElementById("secPodcast").classList.add("actif");
+            }
+        }
+
+        function verifierTypePodcast() {
+            let choix = document.getElementById("statutPodcast").value;
+            document.getElementById("blocCodeSecret").style.display = (choix === "prive") ? "block" : "none";
+        }
+
+        // ACTIONS ADMIN
+        function lancerDirect() {
+            let t = document.getElementById("titreLive").value;
+            alert("🚀 Émission lancée en direct : " + (t ? t : "Transfr Live"));
+        }
+
+        function activerIA() {
+            let b = document.getElementById("btnIa");
+            let c = document.getElementById("liveChat");
+
+            if (!iaMise) {
+                iaMise = true;
+                b.innerText = "🛑 Désactiver l'IA";
+                b.style.backgroundColor = "#ff3333";
+                b.style.color = "white";
+                
+                c.innerHTML += `<p style="margin:4px 0; color:#a066ff;"><b>[🤖 IA TRANSFR]</b>: Mode automatique activé ! Je gère la radio. 📻</p>`;
+                
+                iaHorloge = setInterval(() => {
+                    let art = artistesIA[Math.floor(Math.random() * artistesIA.length)];
+                    let msg = messagesIA[Math.floor(Math.random() * messagesIA.length)];
+                    c.innerHTML += `<p style="margin:4px 0; color:#a066ff;"><b>[🤖 IA TRANSFR]</b>: 🎵 Mini-jeu / Musique de ${art} - ${msg}</p>`;
+                    c.scrollTop = c.scrollHeight;
+                }, 5000);
+            } else {
+                iaMise = false;
+                b.innerText = "🤖 Laisser l'IA prendre le contrôle";
+                b.style.backgroundColor = "#a066ff";
+                b.style.color = "black";
+                clearInterval(iaHorloge);
+                c.innerHTML += `<p style="margin:4px 0; color:#a066ff;"><b>[🤖 IA TRANSFR]</b>: Le créateur a repris les commandes.</p>`;
+            }
+        }
+
+        // CRÉER ET AFFICHER LES PODCASTS
+        function publierPodcast() {
+            let t = document.getElementById("titrePodcast").value.trim();
+            let s = document.getElementById("statutPodcast").value;
+            let c = document.getElementById("codeSecretPodcast").value.trim();
+
+            if(t === "") return alert("Mets un titre !");
+            if(s
