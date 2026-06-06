@@ -3,252 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfr Radio - Studio & Direct</title>
+    <title>Transfr Radio - Dashboard Admin</title>
     <style>
         body {
-            background-color: #0f0f0f; /* Design Noir YouTube */
+            background-color: #0f0f0f;
             color: #ffffff;
             font-family: "Roboto", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* BARRE DU HAUT STYLE YT */
-        .yt-header {
-            background-color: #212121;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: fixed;
-            top: 0; width: 100%;
-            box-sizing: border-box;
-            z-index: 1000;
-            border-bottom: 1px solid #333;
+        /* HEADER */
+        .radio-header {
+            background-color: #161616; padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: fixed; top: 0; width: 100%; box-sizing: border-box;
+            border-bottom: 2px solid #00bcd4; z-index: 1000;
+        }
+        .radio-title { font-weight: bold; font-size: 22px; letter-spacing: 1px; color: #fff; }
+        .radio-title span { color: #00bcd4; }
+
+        .container {
+            margin-top: 80px; margin-bottom: 40px; padding: 20px;
+            width: 100%; max-width: 600px; box-sizing: border-box;
         }
 
-        .yt-logo {
-            font-weight: bold; font-size: 22px; color: #ffffff; letter-spacing: 1px;
+        /* ZONE ADMIN LOOK STUDIO */
+        .admin-card {
+            background: linear-gradient(145deg, #161616, #212121);
+            border-radius: 16px; padding: 25px;
+            border: 1px solid #2f2f2f; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
         }
 
-        .yt-logo span {
-            background-color: #00bcd4; color: #0f0f0f; padding: 2px 8px; border-radius: 4px; font-size: 14px; margin-left: 5px;
+        h2 { margin-top: 0; font-size: 20px; color: #00bcd4; display: flex; align-items: center; gap: 10px; }
+        
+        .section-title {
+            font-size: 12px; color: #aaa; text-transform: uppercase;
+            font-weight: bold; margin-top: 20px; margin-bottom: 10px;
+            letter-spacing: 0.5px; border-bottom: 1px solid #333; padding-bottom: 5px;
         }
 
-        /* BOUTON COIN SECRET EN HAUT À DROITE */
-        .admin-corner-btn {
-            background-color: #272727;
-            color: #aaa;
-            border: 1px solid #3f3f3f;
-            border-radius: 50%;
-            width: 36px; height: 36px;
-            font-size: 16px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+        /* GRILLE DE STATUS */
+        .status-grid {
+            display: flex; gap: 15px; margin-bottom: 20px;
         }
-
-        .admin-corner-btn:hover { background-color: #383838; color: white; }
-
-        /* CONTENEUR PRINCIPAL */
-        .main-container {
-            margin-top: 90px;
-            width: 90%;
-            max-width: 450px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding-bottom: 140px; /* Espace pour la boîte d'enregistrement */
+        .status-box {
+            flex: 1; background-color: #0f0f0f; padding: 15px; border-radius: 10px;
+            border: 1px solid #3f3f3f; text-align: center;
         }
+        .status-box .label { font-size: 11px; color: #aaa; margin-bottom: 5px; }
+        .status-box .value { font-size: 16px; font-weight: bold; }
+        
+        /* COULEURS DES BADGES STATUS */
+        .status-public { color: #00ff66; }
+        .status-prive { color: #ff3333; }
 
-        .box-style {
-            background-color: #212121;
-            border-radius: 14px;
-            padding: 20px;
-            border: 1px solid #2f2f2f;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        /* BOUTONS DE SÉLECTION DU MODE */
+        .mode-container {
+            display: flex; gap: 10px; margin-bottom: 15px;
         }
-
-        .status-badge {
-            background-color: #333333;
-            color: #aaa;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            display: block;
-            width: fit-content;
-            margin: 10px auto;
-            font-weight: bold;
-            text-align: center;
+        .mode-btn {
+            flex: 1; padding: 12px; border: 1px solid #3f3f3f; border-radius: 8px;
+            font-weight: bold; cursor: pointer; font-size: 14px; background-color: #272727; color: white;
+            transition: all 0.3s ease;
         }
+        .mode-btn.active-public { background-color: #00ff66; color: #0f0f0f; border: none; box-shadow: 0 0 10px rgba(0,255,102,0.3); }
+        .mode-btn.active-prive { background-color: #ff3333; color: white; border: none; box-shadow: 0 0 10px rgba(255,51,51,0.3); }
 
-        .cyan-button {
-            background-color: #00bcd4;
-            color: #0f0f0f;
-            border: none;
-            border-radius: 20px;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-            box-sizing: border-box;
-            transition: background 0.2s;
+        /* INPUTS */
+        input[type="text"], input[type="password"], select {
+            width: 100%; background-color: #0f0f0f; border: 1px solid #3f3f3f;
+            border-radius: 8px; padding: 12px; color: white; box-sizing: border-box;
+            margin-bottom: 15px; outline: none; font-size: 14px; transition: border 0.3s;
         }
+        input:focus { border-color: #00bcd4; }
 
-        .cyan-button:hover { background-color: #0097a7; }
-
-        /* PANNEAU ADMIN MASQUÉ (VRAI CODE 1944) */
-        #adminPanel {
-            display: none;
-            border: 2px dashed #ff4444;
+        .btn-action {
+            background-color: #00bcd4; color: #0f0f0f; border: none; border-radius: 25px;
+            padding: 14px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px;
+            box-shadow: 0 4px 15px rgba(0,188,212,0.3); transition: transform 0.2s;
         }
+        .btn-action:active { transform: scale(0.98); }
 
-        .btn-record {
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 55px; height: 55px;
-            font-size: 22px; cursor: pointer;
-            display: block; margin: 10px auto 0 auto;
-            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+        /* CONTRÔLES AUDIO SIMULÉS */
+        .audio-rack {
+            background-color: #0f0f0f; border: 1px solid #333; border-radius: 8px;
+            padding: 15px; margin-top: 15px;
         }
-
-        /* LECTEUR PODCAST */
-        .podcast-item {
-            background: #0f0f0f;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            margin-top: 10px;
-        }
-
-        audio { width: 100%; margin-top: 8px; }
-
-        /* LA BOÎTE D'ENREGISTREMENT FLOTTANTE DU BOSS */
-        .recording-section {
-            position: fixed;
-            bottom: 20px; left: 50%;
-            transform: translateX(-50%);
-            width: 90%; max-width: 420px;
-            background-color: #212121;
-            border: 2px solid #00bcd4;
-            border-radius: 12px;
-            padding: 15px;
-            z-index: 99999;
-            box-shadow: 0px -4px 25px rgba(0, 0, 0, 0.6);
-            display: none;
-            text-align: center;
-        }
+        .slider-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .slider-group label { font-size: 13px; color: #ccc; }
+        .slider-group input[type="range"] { accent-color: #00bcd4; width: 60%; }
     </style>
 </head>
 <body>
 
-    <div class="yt-header">
-        <div class="yt-logo">📻 TRANSFR <span>RADIO</span></div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="admin-corner-btn" onclick="ouvrirAdmin()" title="Studio Admin">⚙️</button>
-            <button onclick="window.location.href='index.html'" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">🏠</button>
-        </div>
+    <div class="radio-header">
+        <div class="radio-title">🎙️ TRANSFR <span>STUDIO</span></div>
+        <button onclick="window.location.href='index.html'" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">🏠</button>
     </div>
 
-    <div class="main-container">
+    <div class="container">
 
-        <div class="box-style" style="text-align: center;">
-            <h2 style="margin: 0; font-size: 20px; color: #00bcd4;">ÉCOUTER LE DIRECT</h2>
-            <div id="statusBadge" class="status-badge">⚪ Studio Hors Ligne</div>
-            <p style="font-size: 13px; color: #aaa; margin: 10px 0 0 0;">Dès que le boss lance le live, le studio s'allume ici !</p>
-        </div>
-
-        <div id="adminPanel" class="box-style">
-            <h3 style="margin:0 0 10px 0; color:#ff4444; text-align:center;">🛠️ PANNEAU CRÉATEUR</h3>
-            <button class="cyan-button" style="background-color:#ff0000; color:white; margin-bottom:15px;" onclick="toggleLive()">⚡ ALLUMER / ÉTEINDRE LE LIVE</button>
+        <div class="admin-card">
+            <h2>🎛️ Console de Contrôle Antenne</h2>
             
-            <div style="text-align: center; border-top: 1px solid #333; padding-top: 15px;">
-                <span style="font-size:14px; font-weight:bold; color:#aaa;">🎤 ENREGISTRER UN PODCAST</span>
-                <p id="recordStatus" style="font-size:12px; color:#606060; margin:5px 0;">Prêt à enregistrer ton émission ?</p>
-                <button id="recordBtn" class="btn-record" onclick="toggleEnregistrement()">🎤</button>
+            <div class="status-grid">
+                <div class="status-box">
+                    <div class="label">Statut Antenne</div>
+                    <div id="badgeStatut" class="value status-public">PUBLIC</div>
+                </div>
+                <div class="status-box">
+                    <div class="label">Auditeurs</div>
+                    <div class="value" style="color: #00bcd4;">👥 12</div>
+                </div>
             </div>
-        </div>
 
-        <div class="box-style">
-            <h3 style="margin:0; color:#00bcd4; font-size:18px;">💾 Émissions & Podcasts</h3>
-            <p style="font-size:12px; color:#aaa; margin: 5px 0 15px 0;">Retrouve ici tous les derniers enregistrements de la radio.</p>
-            
-            <div class="podcast-item">
-                <span style="font-size:14px; font-weight:bold; color:#ffffff;">📻 Émission n°1 - Le Grand Lancement</span>
-                <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" controls></audio>
+            <div class="section-title">Confidentialité du flux de la radio</div>
+            <div class="mode-container">
+                <button id="btnModePublic" class="mode-btn active-public" onclick="changerModeRadio('public')">🌐 Diffusion Public</button>
+                <button id="btnModePrive" class="mode-btn" onclick="changerModeRadio('prive')">🔒 Diffusion Privée</button>
             </div>
-        </div>
 
-    </div>
+            <div id="zonePassword" style="display: none; background-color: rgba(255,51,51,0.05); padding: 15px; border-radius: 8px; border: 1px dashed #ff3333; margin-bottom: 15px;">
+                <label style="font-size: 13px; color: #ff3333; font-weight: bold; display: block; margin-bottom: 8px;">🔑 Clé d'accès requise pour les auditeurs :</label>
+                <input type="text" id="radioPassword" placeholder="Ex: TRANSFR2026" value="SECRET123" oninput="sauvegarderCle()">
+                <p style="margin: 0; font-size: 11px; color: #aaa;">Les auditeurs devront taper ce mot de passe pour écouter l'émission.</p>
+            </div>
 
-    <div id="recordingSection" class="recording-section">
-        <span style="color: #00bcd4; font-weight: bold; display: block; margin-bottom: 5px;">🎧 Émission Enregistrée avec succès !</span>
-        <audio id="audioPlayback" controls></audio>
-        <button class="cyan-button" style="margin-top: 10px; padding: 6px; background-color:#ff0000; color:white; border-radius: 8px;" onclick="fermerFenetreAudio()">Fermer</button>
-    </div>
+            <div class="section-title">Gestion des Émissions & Jingle</div>
+            <label style="font-size: 13px; color: #aaa;">Prochain artiste programmé :</label>
+            <select id="selectArtiste">
+                <option value="LAKEY INSPIRED">LAKEY INSPIRED 🎵</option>
+                <option value="Idealism">Idealism ☕</option>
+                <option value="TheFatRat">TheFatRat ⚡</option>
+                <option value="Tobu">Tobu ✨</option>
+                <option value="Kevin MacLeod">Kevin MacLeod 🎬</option>
+            </select>
 
-    <script>
-        // --- VÉRIFICATION DU CODE ADMIN (1944) ---
-        function ouvrirAdmin() {
-            var code = prompt("Entre ton code secret de créateur TRANSFR :");
-            if (code === "1944") {
-                document.getElementById("adminPanel").style.display = "block";
-                alert("Accès accordé, chef ! Le studio secret est déverrouillé. 👑");
-            } else {
-                alert("Code incorrect ! Seul le boss de Transfr peut ouvrir le studio. 🚷");
-            }
-        }
-
-        // --- ALLUMER LE LIVE ---
-        let liveActif = false;
-        function toggleLive() {
-            const badge = document.getElementById("statusBadge");
-            liveActif = !liveActif;
-            if(liveActif) {
-                badge.innerText = "🔴 EN DIRECT STUDIO";
-                badge.style.backgroundColor = "#ff0000";
-                badge.style.color = "#ffffff";
-            } else {
-                badge.innerText = "⚪ Studio Hors Ligne";
-                badge.style.backgroundColor = "#333333";
-                badge.style.color = "#aaa";
-            }
-        }
-
-        // --- SYSTEME ENREGISTREUR AUDIO ---
-        let mediaRecorder; let audioChunks = []; let estEnTrainDEnregistrer = false;
-        function toggleEnregistrement() {
-            const btn = document.getElementById("recordBtn");
-            const statusText = document.getElementById("recordStatus");
-            const bottomSection = document.getElementById("recordingSection");
-
-            if (!estEnTrainDEnregistrer) {
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                        document.getElementById("audioPlayback").src = URL.createObjectURL(audioBlob);
-                        bottomSection.style.display = "block"; // Affiche la box flottante en bas
-                    };
-                    mediaRecorder.start();
-                    estEnTrainDEnregistrer = true;
-                    btn.style.backgroundColor = "#990000"; btn.innerText = "🛑";
-                    statusText.innerText = "🔴 Enregistrement de ton émission en cours...";
-                }).catch(err => alert("Impossible d'accéder au micro ! Autorise-le sur ton navigateur."));
-            } else {
-                mediaRecorder.stop();
-                estEnTrainDEnregistrer = false;
-                btn.style.backgroundColor = "#ff0000"; btn.innerText = "🎤";
-                statusText.innerText = "Émission enregistrée ! Regarde en bas de ton écran.";
-            }
-        }
-        function fermerFenetreAudio() { document.getElementById("recordingSection").style.display = "none"; }
-    </script>
-</body>
-</html>
+            <div class="section-title">Table de Mixage Virtuelle</div>
+            <div class="audio-rack">
+                <div class="slider-group">
+                    <label>Volume Micro</label>
+                    <input
