@@ -5,126 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transfr Radio - Network</title>
     <style>
-        /* DESIGN GLOBAL PREMIUM */
-        body { 
-            background-color: #0b0c10; 
-            color: #ffffff; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; padding: 0; 
-        }
-
-        /* BARRE DE NAVIGATION STYLE NÉON */
-        .BARRE-HAUT {
-            background-color: #1f2833;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid #66fcf1;
-            box-shadow: 0px 4px 15px rgba(102, 252, 241, 0.2);
-            position: relative;
-            z-index: 10;
-        }
-        .TITRE-RADIO { 
-            font-size: 26px; 
-            font-weight: 900; 
-            letter-spacing: 2px;
-            color: #ffffff;
-        }
+        body { background-color: #0b0c10; color: #ffffff; font-family: sans-serif; margin: 0; padding: 0; }
+        .BARRE-HAUT { background-color: #1f2833; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #66fcf1; }
+        .TITRE-RADIO { font-size: 26px; font-weight: bold; }
         .TITRE-RADIO span { color: #66fcf1; }
-
-        /* GROS BOUTON STUDIO ADMIN JAUNE FLASHY CORRIGÉ */
-        .BOUTON-JAUNE-ADMIN {
-            background-color: #ffcc00 !important;
-            color: #0b0c10 !important;
-            border: 2px solid #ffffff !important;
-            padding: 12px 24px !important;
-            font-weight: bold !important;
-            border-radius: 25px !important;
-            cursor: pointer !important;
-            font-size: 14px !important;
-            text-transform: uppercase !important;
-            box-shadow: 0 0 15px rgba(255,204,0,0.8) !important;
-            display: inline-block !important;
-            position: relative !important;
-            z-index: 99999 !important; /* Priorité absolue sur tout le reste */
-        }
-
+        .BOUTON-JAUNE-ADMIN { background-color: #ffcc00; color: #0b0c10; border: 2px solid #ffffff; padding: 12px 24px; font-weight: bold; border-radius: 25px; cursor: pointer; text-transform: uppercase; }
         .CONTENEUR { padding: 25px; max-width: 550px; margin: 0 auto; }
-
-        /* INTERFACE PUBLIC (TRÈS PRO) */
-        .CARTE-STUDIO { 
-            background: #1f2833; 
-            border: 1px solid #45a29e; 
-            border-radius: 20px; 
-            padding: 35px; 
-            margin-top: 20px; 
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        /* ANTENNE ET STATUTS */
-        .STATUT-ANTENNE {
-            display: inline-block;
-            background: #252525;
-            color: #aaa;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            border: 1px solid #333;
-        }
-        .STATUT-ANTENNE.en-direct {
-            background: #ff0000;
-            color: white;
-            border: 1px solid #ff6666;
-            animation: pulse 1.5s infinite;
-        }
-        
-        /* LE VRAI COMPTEUR INTER-APPAREILS */
-        .COMPTEUR-REEL { 
-            background-color: #0b0c10; 
-            color: #66fcf1; 
-            padding: 12px; 
-            border-radius: 10px; 
-            font-size: 18px; 
-            font-weight: bold; 
-            margin: 20px 0; 
-            border: 1px solid #45a29e;
-            text-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
-        }
-
-        .BOUTON-PLAY { 
-            background: linear-gradient(90deg, #66fcf1, #45a29e); 
-            color: #0b0c10; 
-            border: none; 
-            border-radius: 50px; 
-            padding: 16px 35px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            box-shadow: 0px 5px 15px rgba(102, 252, 241, 0.3);
-        }
-
+        .CARTE-STUDIO { background: #1f2833; border: 1px solid #45a29e; border-radius: 20px; padding: 35px; margin-top: 20px; text-align: center; }
+        .STATUT-ANTENNE { display: inline-block; background: #252525; color: #aaa; padding: 6px 14px; border-radius: 30px; font-size: 13px; font-weight: bold; margin-bottom: 15px; }
+        .STATUT-ANTENNE.en-direct { background: #ff0000; color: white; }
+        .COMPTEUR-REEL { background-color: #0b0c10; color: #66fcf1; padding: 12px; border-radius: 10px; font-size: 18px; font-weight: bold; margin: 20px 0; border: 1px solid #45a29e; text-align: center; }
+        .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .CHAT-LIVE { background: #0b0c10; border: 1px solid #333; height: 130px; overflow-y: auto; border-radius: 10px; margin-top: 20px; padding: 12px; text-align: left; font-size: 13px; }
-
         .SECTION-PODCASTS { margin-top: 30px; border-top: 1px solid #45a29e; padding-top: 20px; text-align: left; }
         .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; }
-
-        /* INTERFACE ADMIN MODERNE */
-        .CARTE-ADMIN { display: none; background: #1f2833; border: 2px solid #ffcc00; border-radius: 20px; padding: 30px; text-align: left; margin-top: 20px; box-shadow: 0px 10px 30px rgba(255, 204, 0, 0.1); }
+        .CARTE-ADMIN { display: none; background: #1f2833; border: 2px solid #ffcc00; border-radius: 20px; padding: 30px; text-align: left; margin-top: 20px; }
         input, select, .ACTION-ADMIN { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0c10; color: white; border: 1px solid #45a29e; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        input:focus, select:focus { border-color: #66fcf1; outline: none; }
-        .ACTION-ADMIN { background: #66fcf1; color: #0b0c10; font-weight: bold; cursor: pointer; border: none; border-radius: 50px; text-transform: uppercase; font-size: 14px; }
-        .BOUTON-IA { background: #a066ff; color: black; font-weight: bold; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; text-transform: uppercase; font-size: 13px; }
-
-        /* FENÊTRE POP-UP DU CODE ADMIN */
-        .POPUP-MODAL { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100000; }
-        .POPUP-CONTENU { background: #1f2833; padding: 30px; border-radius: 15px; border: 2px solid #ffcc00; text-align: center; width: 320px; box-shadow: 0 0 20px rgba(255,204,0,0.4); }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .ACTION-ADMIN { background: #66fcf1; color: #0b0c10; font-weight: bold; cursor: pointer; border: none; border-radius: 50px; text-transform: uppercase; }
+        .BOUTON-IA { background: #a066ff; color: black; font-weight: bold; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
     </style>
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
@@ -132,25 +31,18 @@
 
     <div class="BARRE-HAUT">
         <div class="TITRE-RADIO">🌐 TRANSFR <span>STUDIO</span></div>
-        <button id="boutonAdmin" class="BOUTON-JAUNE-ADMIN" onclick="ouvrirFenetreCodeAdmin()">⚙️ Studio Admin</button>
+        <button class="BOUTON-JAUNE-ADMIN" onclick="ouvrirDirectAdmin()">⚙️ Studio Admin</button>
     </div>
 
     <div class="CONTENEUR">
-
         <div id="ecranPublic">
             <div class="CARTE-STUDIO">
                 <div id="badgeDirect" class="STATUT-ANTENNE">⚫ ANTENNE HORS-LIGNE (PAS DE DIRECT)</div>
-                
                 <div id="vraiCompteur" class="COMPTEUR-REEL">👥 Connectés : Chargement...</div>
-
-                <button class="BOUTON-PLAY" onclick="ecouterDirect()">▶️ ÉCOUTER LE LIVE</button>
-
-                <div id="boiteChat" class="CHAT-LIVE">
-                    <p style="margin:0; color:#666;">Salon de discussion Transfr en ligne...</p>
-                </div>
-
+                <button class="BOUTON-PLAY" onclick="alert('📻 Connexion au direct de Transfr...')">▶️ ÉCOUTER LE LIVE</button>
+                <div id="boiteChat" class="CHAT-LIVE"><p style="margin:0; color:#666;">Discussion Transfr...</p></div>
                 <div class="SECTION-PODCASTS">
-                    <h3 style="color:#66fcf1; margin:0 0 15px 0; font-size: 20px;">🎙️ Flux des Podcasts Partagés</h3>
+                    <h3 style="color:#66fcf1; margin:0 0 15px 0;">🎙️ Podcasts Partagés</h3>
                     <div id="espacePodcastsPublic"></div>
                 </div>
             </div>
@@ -158,171 +50,85 @@
 
         <div id="ecranAdmin" class="CARTE-ADMIN">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h2 style="color:#ffcc00; margin:0; font-size: 22px;">🎛️ CONSOLE DE CONTRÔLE</h2>
+                <h2 style="color:#ffcc00; margin:0;">🎛️ CONSOLE TRANSFR</h2>
                 <button onclick="fermerLeStudio()" style="background:#ff3333; color:white; border:none; padding:8px 14px; cursor:pointer; font-weight:bold; border-radius: 5px;">Quitter</button>
             </div>
-
-            <h3 style="color:#66fcf1; margin: 0 0 10px 0; font-size: 16px;">🔴 Contrôle du Direct Global</h3>
-            <p style="font-size:13px; color:#aaa; margin-bottom: 12px;">Auditeurs en direct sur le réseau : <strong id="adminCompteurReel" style="color:#66fcf1;">0</strong></p>
+            <button class="ACTION-ADMIN" style="background-color: #ff3333; color: white;" onclick="changerStatutDirectAntenne(true)">🚀 Passer en Direct</button>
+            <button class="ACTION-ADMIN" style="background-color: #333; color: #aaa;" onclick="changerStatutDirectAntenne(false)">🛑 Éteindre le Direct</button>
             
-            <button id="btnDirectOn" class="ACTION-ADMIN" style="background-color: #ff3333; color: white; margin-bottom: 10px;" onclick="changerStatutDirectAntenne(true)">🚀 Allumer l'Antenne et passer en Direct</button>
-            <button id="btnDirectOff" class="ACTION-ADMIN" style="background-color: #333; color: #aaa; margin-bottom: 15px;" onclick="changerStatutDirectAntenne(false)">🛑 Éteindre le Direct</button>
-            
-            <button id="btnIa" class="BOUTON-IA" onclick="declencherIA()">🤖 Passer le relais à l'IA Transfr</button>
-
             <hr style="border-color:#45a29e; margin:25px 0;">
-
-            <h3 style="color:#66fcf1; margin: 0 0 10px 0; font-size: 16px;">🎙️ Publier un nouveau Podcast inter-appareils</h3>
-            <input type="text" id="titrePod" placeholder="Titre de ton podcast ou émission...">
             
-            <label style="font-size:12px; color:#aaa; display:block; margin-bottom: 5px;">Confidentialité de l'émission :</label>
-            <select id="statutPod" onchange="gestionMasqueCode()">
-                <option value="public">🌐 Mettre en Public (Tout le monde peut écouter)</option>
-                <option value="prive">🔒 Mettre en Privé (Verrouillé par mot de passe)</option>
+            <input type="text" id="titrePod" placeholder="Titre du podcast...">
+            <select id="statutPod" onchange="document.getElementById('sousCode').style.display = (this.value === 'prive') ? 'block' : 'none';">
+                <option value="public">🌐 Public (Tout le monde)</option>
+                <option value="prive">🔒 Privé (Avec Code)</option>
             </select>
-
-            <div id="sousCode" style="display:none; background:#0b0c10; padding:15px; border:1px dashed #ffcc00; margin-bottom:15px; border-radius: 8px;">
-                <label style="color:#ffcc00; font-size:12px; font-weight:bold; display:block; margin-bottom:5px;">🔑 Crée le mot de passe secret de ton choix :</label>
-                <input type="text" id="codeSecretPod" value="TRANSFR" style="margin-bottom: 0;">
+            <div id="sousCode" style="display:none; background:#0b0c10; padding:15px; border:1px dashed #ffcc00; margin-bottom:15px;">
+                <input type="text" id="codeSecretPod" value="TRANSFR">
             </div>
-
-            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Envoyer instantanément sur tous les écrans</button>
-        </div>
-    </div>
-
-    <div id="modalAdmin" class="POPUP-MODAL">
-        <div class="POPUP-CONTENU">
-            <h3 style="color: #ffcc00; margin-top:0;">🔑 Code d'accès Studio</h3>
-            <input type="password" id="champsCodeAdmin" placeholder="Entre le code admin...">
-            <button class="ACTION-ADMIN" onclick="verifierCodeAdminFenetre()">Valider</button>
-            <button class="ACTION-ADMIN" style="background:#333; color:white; margin-top:8px;" onclick="fermerFenetreCodeAdmin()">Annuler</button>
+            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Envoyer le Podcast</button>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = {
-            databaseURL: "https://transfr-radio-default-rtdb.europe-west1.firebasedatabase.app/"
-        };
-        
+        const firebaseConfig = { databaseURL: "https://transfr-radio-default-rtdb.europe-west1.firebasedatabase.app/" };
         let database;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            database = firebase.database();
-        } catch(e) { console.log("Erreur de connexion"); }
+        try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) {}
 
-        const CODE_SECRET_ADMIN = "transfr2026";
-        let iaControle = false;
-        let iaInterval = null;
         let monID = "user_" + Math.floor(Math.random() * 100000);
 
-        const sonsIA = ["LAKEY INSPIRED", "Idealism", "TheFatRat", "Tobu", "Kevin MacLeod"];
-        const repliquesIA = ["L'IA gère l'antenne !", "Musique sélectionnée dans la liste libre de droits.", "Transfr Radio, disponible sur tous les appareils !"];
-
-        // --- FONCTIONS DU BOUTON JAUNE SÉCURISÉES AU MAXIMUM ---
-        function ouvrirFenetreCodeAdmin() {
-            document.getElementById("modalAdmin").style.display = "flex";
-            document.getElementById("champsCodeAdmin").focus();
+        // LE BOUTON PASSE TOUT DE SUITE À L'ADMIN SANS DEMANDER DE CODE
+        function ouvrirDirectAdmin() {
+            document.getElementById("ecranPublic").style.display = "none";
+            document.getElementById("ecranAdmin").style.display = "block";
         }
-
-        function fermerFenetreCodeAdmin() {
-            document.getElementById("modalAdmin").style.display = "none";
-            document.getElementById("champsCodeAdmin").value = "";
-        }
-
-        function verifierCodeAdminFenetre() {
-            let saisie = document.getElementById("champsCodeAdmin").value;
-            if (saisie === CODE_SECRET_ADMIN) {
-                fermerFenetreCodeAdmin();
-                document.getElementById("ecranPublic").style.display = "none";
-                document.getElementById("ecranAdmin").style.display = "block";
-                document.getElementById("boutonAdmin").style.display = "none";
-            } else {
-                alert("❌ Code erroné ! Accès refusé au Studio.");
-            }
-        }
-
-        // DOUBLE SÉCURITÉ : Attacher l'événement directement par le script en plus du HTML
-        window.onload = function() {
-            document.getElementById("boutonAdmin").addEventListener("click", ouvrirFenetreCodeAdmin);
-            
-            if(database) {
-                // Ajouter l'appareil actuel
-                let presenceRef = database.ref("auditeurs_en_direct/" + monID);
-                presenceRef.set(true);
-                presenceRef.onDisconnect().remove();
-
-                // Gestion en temps réel
-                database.ref("auditeurs_en_direct").on("value", function(snapshot) {
-                    let total = snapshot.numChildren() || 0;
-                    document.getElementById("vraiCompteur").innerText = "👥 Connectés en direct : " + total;
-                    document.getElementById("adminCompteurReel").innerText = total;
-                });
-
-                database.ref("statut_direct").on("value", function(snapshot) {
-                    let enDirect = snapshot.val();
-                    let badge = document.getElementById("badgeDirect");
-                    if (enDirect) {
-                        badge.innerText = "🔴 EN DIRECT SUR TOUS LES APPAREILS";
-                        badge.classList.add("en-direct");
-                    } else {
-                        badge.innerText = "⚫ ANTENNE HORS-LIGNE (PAS DE DIRECT)";
-                        badge.classList.remove("en-direct");
-                    }
-                });
-
-                database.ref("podcasts_partages").on("value", function(snapshot) {
-                    let liste = [];
-                    snapshot.forEach(function(child) {
-                        liste.push(child.val());
-                    });
-                    genererPodcastsEcran(liste);
-                });
-            }
-        };
 
         function fermerLeStudio() {
             document.getElementById("ecranAdmin").style.display = "none";
             document.getElementById("ecranPublic").style.display = "block";
-            document.getElementById("boutonAdmin").style.display = "block";
         }
 
-        function gestionMasqueCode() {
-            let statut = document.getElementById("statutPod").value;
-            document.getElementById("sousCode").style.display = (statut === "prive") ? "block" : "none";
-        }
-
-        function changerStatutDirectAntenne(statut) {
-            if (database) {
-                database.ref("statut_direct").set(statut);
-                alert(statut ? "🚀 Antenne allumée ! Tout le monde te voit en direct en même temps." : "🛑 Antenne coupée.");
+        window.onload = function() {
+            if(database) {
+                database.ref("auditeurs_en_direct/" + monID).set(true);
+                database.ref("auditeurs_en_direct/" + monID).onDisconnect().remove();
+                database.ref("auditeurs_en_direct").on("value", function(s) {
+                    let t = s.numChildren() || 0;
+                    document.getElementById("vraiCompteur").innerText = "👥 Connectés en direct : " + t;
+                });
+                database.ref("statut_direct").on("value", function(s) {
+                    let d = s.val();
+                    let b = document.getElementById("badgeDirect");
+                    b.innerText = d ? "🔴 EN DIRECT SUR TOUS LES APPAREILS" : "⚫ ANTENNE HORS-LIGNE (PAS DE DIRECT)";
+                    b.style.backgroundColor = d ? "red" : "#252525";
+                    b.style.color = d ? "white" : "#aaa";
+                });
+                database.ref("podcasts_partages").on("value", function(s) {
+                    let l = []; s.forEach(function(c) { l.push(c.val()); });
+                    let conteneur = document.getElementById("espacePodcastsPublic");
+                    conteneur.innerHTML = l.length ? "" : "<p style='color:#666;'>Aucun podcast.</p>";
+                    l.reverse().forEach((p) => {
+                        conteneur.innerHTML += `<div class="BOX-PODCAST"><div><strong>${p.titre}</strong><br><span style="font-size:11px;color:#66fcf1;">${p.statut === 'prive' ? '🔒 Privé' : '🌐 Libre'}</span></div><button onclick="lancerEcoute('${p.titre}','${p.statut}','${p.code}')" style="background:#66fcf1;border:none;padding:8px 14px;cursor:pointer;font-weight:bold;border-radius:6px;">Écouter</button></div>`;
+                    });
+                });
             }
-        }
+        };
 
+        function changerStatutDirectAntenne(statut) { if(database) database.ref("statut_direct").set(statut); }
         function uploaderPodcast() {
-            let titre = document.getElementById("titrePod").value.trim();
-            let statut = document.getElementById("statutPod").value;
-            let code = document.getElementById("codeSecretPod").value.trim();
-
-            if (titre === "") return alert("Mets un titre à ton podcast !");
-            if (statut === "prive" && code === "") return alert("Mets un code d'accès !");
-
-            let nouveauPod = { titre: titre, statut: statut, code: (statut === "prive" ? code : "") };
-
-            if (database) {
-                database.ref("podcasts_partages").push(nouveauPod);
-                alert("🚀 Podcast envoyé avec succès sur tous les appareils !");
-            }
+            let t = document.getElementById("titrePod").value.trim();
+            let s = document.getElementById("statutPod").value;
+            let c = document.getElementById("codeSecretPod").value.trim();
+            if(t === "") return alert("Mets un titre !");
+            if(database) database.ref("podcasts_partages").push({ titre: t, statut: s, code: (s === "prive" ? c : "") });
             document.getElementById("titrePod").value = "";
         }
-
-        function genererPodcastsEcran(liste) {
-            let conteneur = document.getElementById("espacePodcastsPublic");
-            conteneur.innerHTML = "";
-
-            if (liste.length === 0) {
-                conteneur.innerHTML = "<p style='color:#666; font-size:12px;'>Aucun podcast disponible.</p>";
-                return;
-            }
-
-            liste.reverse().forEach((pod) => {
-                let badgeTxt = pod.statut === "prive" ? "🔒 Privé" : "🌐 Écoute libre";
+        function lancerEcoute(titre, statut, codeCorrect) {
+            if (statut === "prive") {
+                if (prompt("🔒 Code secret :") === codeCorrect) alert("🔓 Lecture : " + titre);
+                else alert("❌ Faux.");
+            } else { alert("▶️ Lecture : " + titre); }
+        }
+    </script>
+</body>
+</html>
