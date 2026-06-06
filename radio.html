@@ -3,101 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfr Radio - Écouter en Direct</title>
+    <title>Transfr Radio & Studio</title>
     <style>
-        body { background-color: #0f0f0f; color: white; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
-        .player-card { background: #161616; border: 1px solid #2f2f2f; border-radius: 16px; padding: 30px; max-width: 400px; margin: 50px auto; }
-        .logo { font-size: 28px; font-weight: bold; color: #00bcd4; margin-bottom: 5px; }
-        .live-badge { background: #ff0000; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        body { 
+            background-color: #0f0f0f; 
+            color: white; 
+            font-family: "Roboto", Arial, sans-serif; 
+            text-align: center; 
+            margin: 0; padding: 0; 
+        }
+
+        /* BARRE DU HAUT AVEC LE BOUTON JAUNE ADMIN */
+        .radio-header {
+            background-color: #161616; padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 2px solid #00bcd4; box-sizing: border-box;
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #fff; letter-spacing: 1px; }
+        .logo span { color: #00bcd4; }
+        
+        .btn-admin-yellow {
+            background-color: #ffcc00; color: #0f0f0f; border: none;
+            padding: 8px 16px; font-weight: bold; border-radius: 20px;
+            cursor: pointer; font-size: 13px; box-shadow: 0 0 10px rgba(255,204,0,0.3);
+        }
+
+        .container { padding: 20px; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
+
+        /* INTERFACE PUBLIC */
+        .player-card { background: #161616; border: 1px solid #2f2f2f; border-radius: 16px; padding: 30px; margin-top: 20px; }
+        .live-badge { background: #ff0000; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; animation: blinker 1.5s linear infinite; }
         .auditeurs { color: #aaa; font-size: 14px; margin-top: 10px; font-weight: bold; }
         .btn-play { background: #00bcd4; color: #0f0f0f; border: none; border-radius: 50%; width: 70px; height: 70px; font-size: 24px; cursor: pointer; margin-top: 20px; font-weight: bold; }
+        
+        /* CHAT EN DIRECT PUBLIC */
+        .live-chat-box { background-color: #0f0f0f; height: 120px; overflow-y: auto; padding: 8px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; font-size: 12px; text-align: left; border: 1px solid #333; border-radius: 8px; margin-top: 15px; }
+        .chat-msg { margin: 0; line-height: 1.3; }
+        .chat-user { color: #00bcd4; font-weight: bold; }
+        .chat-ia { color: #bb86fc; font-weight: bold; }
+
         .podcast-section { margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
         .podcast-item { background: #212121; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .btn-listen { background: #272727; color: white; border: 1px solid #3f3f3f; padding: 6px 12px; border-radius: 15px; cursor: pointer; }
+
+        /* INTERFACE ZONE ADMIN CONSOLE */
+        .admin-box { 
+            display: none; background: linear-gradient(145deg, #161616, #212121); 
+            border: 1px solid #2f2f2f; border-radius: 16px; padding: 25px; text-align: left; margin-top: 20px;
+        }
+        .top-nav-admin { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; background: #272727; color: white; border: 1px solid #3f3f3f; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center;}
+        .tab-btn.active { background: #00bcd4; color: #0f0f0f; border: none; }
+        .panel-section { display: none; }
+        .panel-section.active { display: block; }
+        
+        input, select, button.action-btn { width: 100%; padding: 12px; background: #0f0f0f; border: 1px solid #3f3f3f; border-radius: 8px; color: white; box-sizing: border-box; margin-bottom: 12px; font-size: 14px; outline: none; }
+        button.action-btn { background: #00bcd4; color: #0f0f0f; font-weight: bold; border: none; cursor: pointer; border-radius: 20px; margin-top: 10px; }
+        
+        /* BOUTON IA PURPLE */
+        .btn-ia-toggle { background-color: #bb86fc; color: #0f0f0f; border: none; border-radius: 20px; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px; margin-top: 10px; box-shadow: 0 0 10px rgba(187,134,252,0.3); }
+        .btn-ia-toggle.active { background-color: #ff3333; color: white; box-shadow: 0 0 10px rgba(255,51,51,0.5); }
+
+        @keyframes blinker { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div class="player-card">
-        <div class="logo">🌐 TRANSFR</div>
-        <span class="live-badge">🔴 DIRECT</span>
-        
-        <div id="liveAuditeurs" class="auditeurs">👥 Chargement des auditeurs...</div>
-
-        <button class="btn-play" onclick="ecouterDirect()">▶️</button>
-
-        <div class="podcast-section">
-            <h4 style="color: #00bcd4; margin-bottom: 15px;">🎙️ Derniers Podcasts</h4>
-            <div id="publicPodcastList"></div>
-        </div>
+    <div class="radio-header">
+        <div class="logo">🌐 TRANSFR <span>RADIO</span></div>
+        <button id="btnAdminAccess" class="btn-admin-yellow" onclick="ouvrirZoneAdmin()">⚡ Accès Studio Admin</button>
     </div>
 
-    <script>
-        // Récupérer le vrai nombre d'auditeurs en direct via l'API
-        function rafraichirAuditeurs() {
-            // On simule une connexion active sur l'API globale pour ton émission
-            fetch('https://api.countapi.xyz/hit/transfr_radio/live_listeners_2026')
-                .then(res => res.json())
-                .then(data => {
-                    // Si l'API répond, on affiche la vraie valeur globale de tous les appareils
-                    let connectes = data.value || 1;
-                    document.getElementById("liveAuditeurs").innerText = "👥 " + connectes + " auditeurs en direct";
-                })
-                .catch(() => {
-                    // Code de secours si l'appareil est hors-ligne
-                    document.getElementById("liveAuditeurs").innerText = "👥 1 auditeur en direct";
-                });
-        }
+    <div class="container">
 
-        // Rafraîchir toutes les 3 secondes pour voir les nouveaux connectés
-        setInterval(rafraichirAuditeurs, 3000);
-        window.onload = function() {
-            rafraichirAuditeurs();
-            afficherPodcastsCotePublic();
-        };
+        <div id="interfacePublic">
+            <div class="player-card">
+                <span class="live-badge">🔴 EN DIRECT</span>
+                <div id="liveAuditeurs" class="auditeurs">👥 Connexion au compteur...</div>
 
-        function ecouterDirect() {
-            alert("📻 Connexion au flux audio de Transfr en direct...");
-        }
+                <button class="btn-play" onclick="ecouterDirect()">▶️ ÉCOUTER</button>
 
-        function afficherPodcastsCotePublic() {
-            let liste = JSON.parse(localStorage.getItem("transfr_podcasts")) || [];
-            let container = document.getElementById("publicPodcastList");
-            container.innerHTML = "";
+                <div id="liveChat" class="live-chat-box">
+                    <p class="chat-msg" style="color:#aaa; font-style:italic;">Bienvenue sur le chat de Transfr...</p>
+                </div>
 
-            if(liste.length === 0) {
-                container.innerHTML = "<p style='color:#555; font-size:12px;'>Aucun podcast disponible.</p>";
-                return;
-            }
-
-            liste.forEach((pod, index) => {
-                container.innerHTML += `
-                    <div class="podcast-item">
-                        <div style="text-align:left;">
-                            <span style="font-size:14px; font-weight:bold;">${pod.titre}</span>
-                            <span style="font-size:11px; color:#aaa; display:block;">${pod.statut === 'prive' ? '🔒 Privé' : '🌐 Public'}</span>
-                        </div>
-                        <button class="btn-listen" onclick="lirePodcast(${index})">Écouter</button>
-                    </div>
-                `;
-            });
-        }
-
-        function lirePodcast(index) {
-            let liste = JSON.parse(localStorage.getItem("transfr_podcasts")) || [];
-            let pod = liste[index];
-
-            if (pod.statut === "prive") {
-                let codeEntre = prompt("🔒 Ce podcast est privé. Entre le mot de passe requis :");
-                if (codeEntre === pod.cle) {
-                    alert("🔓 Code correct ! Lancement du podcast : " + pod.titre);
-                } else {
-                    alert("❌ Code incorrect. Accès refusé.");
-                }
-            } else {
-                alert("▶️ Lancement du podcast public : " + pod.titre);
-            }
-        }
-    </script>
-</body>
-</html>
+                <div class="podcast
