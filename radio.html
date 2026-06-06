@@ -2,351 +2,138 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Transfr Radio</title>
+    <title>Transfr Radio Network</title>
     <style>
-        /* BASE DE LA PAGE */
         body { 
-            background-color: #111111; 
-            color: #ffffff; 
+            background-color: #0f0f0f; 
+            color: white; 
             font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
+            margin: 0; padding: 0; 
         }
 
-        /* BARRE DU HAUT */
+        /* BARRE DE NAVIGATION */
         .BARRE-HAUT {
-            background-color: #222222;
-            padding: 15px;
+            background-color: #161616;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 3px solid #00bcd4;
         }
-        .TITRE-RADIO {
-            font-size: 22px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-        .TITRE-RADIO span {
-            color: #00bcd4;
-        }
+        .TITRE-RADIO { font-size: 24px; font-weight: bold; }
+        .TITRE-RADIO span { color: #00bcd4; }
 
-        /* BOUTON JAUNE ADMIN */
+        /* BOUTON JAUNE ADMIN SÉCURISÉ */
         .BOUTON-JAUNE-ADMIN {
             background-color: #ffcc00;
-            color: #000000;
-            border: none;
-            padding: 10px 15px;
+            color: black;
+            border: 2px solid white;
+            padding: 10px 20px;
             font-weight: bold;
-            border-radius: 5px;
+            border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
+            box-shadow: 0 0 10px rgba(255,204,0,0.5);
         }
 
-        /* CONTENEUR PRINCIPAL */
-        .CONTENU {
-            padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
+        .CONTENEUR { padding: 20px; max-width: 500px; margin: 0 auto; }
+
+        /* INTERFACE PUBLIC */
+        .CARTE-STUDIO { background: #161616; border: 1px solid #333; border-radius: 16px; padding: 30px; margin-top: 20px; }
+        .BADGE-ROUGE { background: red; color: white; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        
+        .COMPTEUR-REEL { 
+            background-color: #000; color: #00ff66; 
+            padding: 10px; border-radius: 8px; font-size: 18px; 
+            font-weight: bold; margin: 15px 0; border: 1px solid #222;
         }
 
-        /* BOITE DU LECTEUR PUBLIC */
-        .CARTE-PUBLIC {
-            background-color: #1c1c1c;
-            border: 2px solid #333333;
-            border-radius: 12px;
-            padding: 25px;
-            margin-top: 20px;
-        }
-        .BADGE-ROUGE {
-            background-color: #ff0000;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-        }
-        .COMPTEUR {
-            margin: 15px 0;
-            font-size: 16px;
-            color: #cccccc;
-        }
-        .BOUTON-PLAY {
-            background-color: #00bcd4;
-            color: black;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-        }
+        .BOUTON-PLAY { background: #00bcd4; color: black; border: none; border-radius: 50px; padding: 15px 30px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
 
-        /* ZONE DU CHAT */
-        .BOITE-CHAT {
-            background-color: #000000;
-            border: 1px solid #444444;
-            height: 120px;
-            overflow-y: auto;
-            margin-top: 15px;
-            padding: 10px;
-            text-align: left;
-            border-radius: 6px;
-            font-size: 13px;
-        }
+        .CHAT-LIVE { background: black; border: 1px solid #333; height: 120px; overflow-y: auto; border-radius: 8px; margin-top: 15px; padding: 10px; text-align: left; font-size: 13px; }
 
-        /* LISTE DES PODCASTS */
-        .ZONE-PODCASTS {
-            margin-top: 25px;
-            border-top: 1px solid #444444;
-            padding-top: 15px;
-            text-align: left;
-        }
-        .ELEMENT-PODCAST {
-            background-color: #252525;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .SECTION-PODCASTS { margin-top: 25px; border-top: 1px solid #333; padding-top: 20px; text-align: left; }
+        .BOX-PODCAST { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* ==================== INTERFACE ADMIN ==================== */
-        .CARTE-ADMIN {
-            display: none; /* Caché au début, s'affiche avec le code */
-            background-color: #1a1a1a;
-            border: 2px solid #00bcd4;
-            border-radius: 12px;
-            padding: 25px;
-            margin-top: 20px;
-            text-align: left;
-        }
-        .ONGLETS {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .BOUTON-ONGLET {
-            flex: 1;
-            padding: 10px;
-            background-color: #333333;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .BOUTON-ONGLET.actif {
-            background-color: #00bcd4;
-            color: black;
-        }
-        .SECTION-ADMIN {
-            display: none;
-        }
-        .SECTION-ADMIN.actif {
-            display: block;
-        }
-        input, select, .BOUTON-ACTION {
-            width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            margin-bottom: 12px;
-            background-color: #000000;
-            color: white;
-            border: 1px solid #555555;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .BOUTON-ACTION {
-            background-color: #00bcd4;
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .BOUTON-IA {
-            background-color: #a066ff;
-            color: black;
-            font-weight: bold;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+        /* INTERFACE ADMIN */
+        .CARTE-ADMIN { display: none; background: #1a1a1a; border: 2px solid #ffcc00; border-radius: 16px; padding: 25px; text-align: left; margin-top: 20px; }
+        input, select, .ACTION-ADMIN { width: 100%; padding: 12px; margin-bottom: 12px; background: black; color: white; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
+        .ACTION-ADMIN { background: #00bcd4; color: black; font-weight: bold; cursor: pointer; border: none; border-radius: 20px; }
+        .BOUTON-IA { background: #a066ff; color: black; font-weight: bold; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
     <div class="BARRE-HAUT">
         <div class="TITRE-RADIO">🌐 TRANSFR <span>RADIO</span></div>
-        <button id="btnAdminAccess" class="BOUTON-JAUNE-ADMIN" onclick="ouvrirAdmin()">⚙️ STUDIO ADMIN</button>
+        <button id="boutonAdmin" class="BOUTON-JAUNE-ADMIN">⚙️ STUDIO ADMIN</button>
     </div>
 
-    <div class="CONTENU">
+    <div class="CONTENEUR">
 
-        <div id="zonePublic">
-            <div class="CARTE-PUBLIC">
-                <span class="BADGE-ROUGE">🔴 DIRECT</span>
-                <div id="liveAuditeurs" class="COMPTEUR">👥 12 auditeurs en ligne</div>
+        <div id="ecranPublic">
+            <div class="CARTE-STUDIO">
+                <span class="BADGE-ROUGE">🔴 DIRECT ANTENNE</span>
+                
+                <div id="vraiCompteur" class="COMPTEUR-REEL">👥 Connectés : Chargement...</div>
 
-                <button class="BOUTON-PLAY" onclick="ecouter()">▶️ ÉCOUTER LA RADIO</button>
+                <button class="BOUTON-PLAY" onclick="ecouterDirect()">▶️ ÉCOUTER LE LIVE</button>
 
-                <div id="liveChat" class="BOITE-CHAT">
-                    <p style="margin:0; color:#888;">Bienvenue sur le chat de Transfr...</p>
+                <div id="boiteChat" class="CHAT-LIVE">
+                    <p style="margin:0; color:#666;">Salon de discussion Transfr en ligne...</p>
                 </div>
 
-                <div class="ZONE-PODCASTS">
-                    <h3 style="color:#00bcd4; margin:0 0 10px 0;">🎙️ Émissions & Podcasts</h3>
-                    <div id="listePodcastsPublic"></div>
+                <div class="SECTION-PODCASTS">
+                    <h3 style="color:#00bcd4; margin:0 0 12px 0;">🎙️ Podcasts Partagés</h3>
+                    <div id="espacePodcastsPublic"></div>
                 </div>
             </div>
         </div>
 
-        <div id="zoneAdmin" class="CARTE-ADMIN">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="color:#00bcd4; margin:0;">🎛️ CONSOLE ADMIN</h2>
-                <button onclick="fermerAdmin()" style="background:#ff3333; color:white; border:none; padding:5px 10px; cursor:pointer;">Quitter</button>
+        <div id="ecranAdmin" class="CARTE-ADMIN">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color:#ffcc00; margin:0;">🎛️ CONSOLE TRANSFR</h2>
+                <button onclick="fermerLeStudio()" style="background:red; color:white; border:none; padding:6px 12px; cursor:pointer; font-weight:bold;">Quitter</button>
             </div>
 
-            <div class="ONGLETS">
-                <button id="tabDirect" class="BOUTON-ONGLET actif" onclick="changerOnglet('direct')">🔴 Direct</button>
-                <button id="tabPodcast" class="BOUTON-ONGLET" onclick="changerOnglet('podcast')">🎙️ Créer Podcast</button>
+            <h4 style="color:#00bcd4; margin: 0 0 10px 0;">🔴 Gestion du Direct Public</h4>
+            <p style="font-size:13px; color:#aaa;">Auditeurs sur l'antenne : <strong id="adminCompteurReel" style="color:#00ff66;">0</strong></p>
+            <button id="btnIa" class="BOUTON-IA" onclick="declencherIA()">🤖 Lancer l'IA de secours</button>
+
+            <hr style="border-color:#333; margin:20px 0;">
+
+            <h4 style="color:#00bcd4; margin: 0 0 10px 0;">🎙️ Envoyer un Podcast sur tous les appareils</h4>
+            <input type="text" id="titrePod" placeholder="Titre du podcast...">
+            
+            <label style="font-size:12px; color:#aaa;">Disponibilité :</label>
+            <select id="statutPod" onchange="gestionMasqueCode()">
+                <option value="public">🌐 Envoyer en Public (Tout le monde)</option>
+                <option value="prive">🔒 Bloquer en Privé (Avec Code)</option>
+            </select>
+
+            <div id="sousCode" style="display:none; background:#000; padding:10px; border:1px dashed red; margin-bottom:12px;">
+                <label style="color:red; font-size:12px; font-weight:bold;">🔑 Choisis le code secret pour les auditeurs :</label>
+                <input type="text" id="codeSecretPod" value="TRANSFR">
             </div>
 
-            <div id="secDirect" class="SECTION-ADMIN actif">
-                <p>Statut : <strong style="color:#00ff66;">EN DIRECT (PUBLIC)</strong></p>
-                <p>Auditeurs en direct : <strong id="adminCompteur" style="color:#ff0000;">12</strong></p>
-                <input type="text" id="titreLive" placeholder="Titre de ton émission en cours...">
-                <button class="BOUTON-ACTION" onclick="lancerDirect()">🚀 Diffuser l'émission</button>
-                
-                <hr style="border-color:#333;">
-                <p style="font-size:12px; color:#aaa;">Pilote automatique :</p>
-                <button id="btnIa" class="BOUTON-IA" onclick="activerIA()">🤖 Laisser l'IA prendre le contrôle</button>
-            </div>
-
-            <div id="secPodcast" class="SECTION-ADMIN">
-                <input type="text" id="titrePodcast" placeholder="Nom de l'enregistrement...">
-                <label>Confidentialité :</label>
-                <select id="statutPodcast" onchange="verifierTypePodcast()">
-                    <option value="public">🌐 Public (Pour tout le monde)</option>
-                    <option value="prive">🔒 Privé (Avec mot de passe)</option>
-                </select>
-
-                <div id="blocCodeSecret" style="display:none; background:#000; padding:10px; border:1px dashed #ff3333; margin-bottom:10px;">
-                    <label style="color:#ff3333; font-weight:bold;">🔑 Choisis le code d'accès :</label>
-                    <input type="text" id="codeSecretPodcast" value="1234">
-                </div>
-
-                <button class="BOUTON-ACTION" onclick="publierPodcast()">💾 Publier le Podcast</button>
-            </div>
+            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Envoyer le Podcast aux abonnés</button>
         </div>
 
     </div>
 
     <script>
-        const CLÉ_ADMIN = "transfr2026";
-        let iaMise = false;
-        let iaHorloge = null;
-
-        const artistesIA = ["LAKEY INSPIRED", "Idealism", "TheFatRat", "Tobu", "Kevin MacLeod"];
-        const messagesIA = [
-            "L'IA de Transfr est aux commandes ! Bon son à tous !",
-            "Musique libre de droits en cours de diffusion...",
-            "N'oubliez pas de partager la radio Transfr autour de vous !",
-            "Le boss est absent, mais le show continue !"
-        ];
-
-        // Compteur d'auditeurs qui bouge tout seul
-        function majAuditeurs() {
-            let nombre = Math.floor(Math.random() * 6) + 12; // Entre 12 et 17
-            document.getElementById("liveAuditeurs").innerText = "👥 " + nombre + " auditeurs en ligne";
-            document.getElementById("adminCompteur").innerText = nombre;
-        }
-        setInterval(majAuditeurs, 4000);
-
-        window.onload = function() {
-            majAuditeurs();
-            chargerPodcasts();
+        // CONFIGURATION D'UN SERVEUR DE DONNÉES EN DIRECT GRATUIT (Base test publique)
+        const firebaseConfig = {
+            databaseURL: "https://transfr-radio-default-rtdb.europe-west1.firebasedatabase.app/"
         };
-
-        // ENTRER ET SORTIR DE L'ADMIN
-        function ouvrirAdmin() {
-            let essai = prompt("🔑 Saisis le mot de passe Admin Transfr :");
-            if (essai === CLÉ_ADMIN) {
-                document.getElementById("zonePublic").style.display = "none";
-                document.getElementById("zoneAdmin").style.display = "block";
-                document.getElementById("btnAdminAccess").style.display = "none";
-            } else {
-                alert("❌ Code incorrect.");
-            }
-        }
-
-        function fermerAdmin() {
-            document.getElementById("zoneAdmin").style.display = "none";
-            document.getElementById("zonePublic").style.display = "block";
-            document.getElementById("btnAdminAccess").style.display = "block";
-        }
-
-        // CHANGER D'ONGLET DANS L'ADMIN
-        function changerOnglet(nom) {
-            document.getElementById("tabDirect").classList.remove("actif");
-            document.getElementById("tabPodcast").classList.remove("actif");
-            document.getElementById("secDirect").classList.remove("actif");
-            document.getElementById("secPodcast").classList.remove("actif");
-
-            if(nom === 'direct') {
-                document.getElementById("tabDirect").classList.add("actif");
-                document.getElementById("secDirect").classList.add("actif");
-            } else {
-                document.getElementById("tabPodcast").classList.add("actif");
-                document.getElementById("secPodcast").classList.add("actif");
-            }
-        }
-
-        function verifierTypePodcast() {
-            let choix = document.getElementById("statutPodcast").value;
-            document.getElementById("blocCodeSecret").style.display = (choix === "prive") ? "block" : "none";
-        }
-
-        // ACTIONS ADMIN
-        function lancerDirect() {
-            let t = document.getElementById("titreLive").value;
-            alert("🚀 Émission lancée en direct : " + (t ? t : "Transfr Live"));
-        }
-
-        function activerIA() {
-            let b = document.getElementById("btnIa");
-            let c = document.getElementById("liveChat");
-
-            if (!iaMise) {
-                iaMise = true;
-                b.innerText = "🛑 Désactiver l'IA";
-                b.style.backgroundColor = "#ff3333";
-                b.style.color = "white";
-                
-                c.innerHTML += `<p style="margin:4px 0; color:#a066ff;"><b>[🤖 IA TRANSFR]</b>: Mode automatique activé ! Je gère la radio. 📻</p>`;
-                
-                iaHorloge = setInterval(() => {
-                    let art = artistesIA[Math.floor(Math.random() * artistesIA.length)];
-                    let msg = messagesIA[Math.floor(Math.random() * messagesIA.length)];
-                    c.innerHTML += `<p style="margin:4px 0; color:#a066ff;"><b>[🤖 IA TRANSFR]</b>: 🎵 Mini-jeu / Musique de ${art} - ${msg}</p>`;
-                    c.scrollTop = c.scrollHeight;
-                }, 5000);
-            } else {
-                iaMise = false;
-                b.innerText = "🤖 Laisser l'IA prendre le contrôle";
-                b.style.backgroundColor = "#a066ff";
-                b.style.color = "black";
-                clearInterval(iaHorloge);
-                c.innerHTML += `<p style="margin:4px 0; color:#a066ff;"><b>[🤖 IA TRANSFR]</b>: Le créateur a repris les commandes.</p>`;
-            }
-        }
-
-        // CRÉER ET AFFICHER LES PODCASTS
-        function publierPodcast() {
-            let t = document.getElementById("titrePodcast").value.trim();
-            let s = document.getElementById("statutPodcast").value;
-            let c = document.getElementById("codeSecretPodcast").value.trim();
-
-            if(t === "") return alert("Mets un titre !");
-            if(s
+        
+        // Initialisation si Firebase est chargé
+        let database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        } catch(e) {
+            console
