@@ -93,6 +93,8 @@
                 <button id="boutonEcouterLive" class="BOUTON-PLAY" disabled onclick="declencherEcouteFluxDirect()">▶️ ÉCOUTER LE LIVE</button>
                 <p id="texteAlertePseudo" style="color: #ffcc00; font-size: 12px; margin-top: 8px; font-weight: bold;">⚠️ Crée un compte pseudo ci-dessous pour débloquer le direct</p>
                 
+                <audio id="lecteurAudioIa" loop style="display:none;"></audio>
+
                 <div class="CONTENEUR-VUMETRE" id="vumetrePublicConteneur" style="display:none;">
                     <span class="LABEL-VUMETRE">🎚️ RECEPTION FLUX AUDIO (EN DIRECT) :</span>
                     <div class="RAIL-VUMETRE">
@@ -203,11 +205,19 @@
 
         let iaIntervalleBlagues = null;
         let iaIntervalleAudioVumetre = null;
+
+        // Liste de musiques réelles libres de droits (Tobu & LAKEY INSPIRED)
+        const playlistIA = [
+            { artiste: "Tobu", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+            { artiste: "LAKEY INSPIRED", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+            { artiste: "Idealism", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+        ];
+
         const messagesChatIA = [
-            "🤖 [IA TRANSFR] : Bienvenue sur la fréquence ! J'assure le contrôle automatique.",
-            "🤖 [IA TRANSFR] : Lancement d'une séquence de sons synthétisés en direct.",
-            "🤖 [IA TRANSFR] : Les retours d'écoute sont optimaux.",
-            "🤖 [IA TRANSFR] : Pensez à aller écouter nos podcasts disponibles en bas de la page !"
+            "🤖 [IA TRANSFR] : Bienvenue sur la fréquence ! J'assure le contrôle de la playlist.",
+            "🤖 [IA TRANSFR] : Lancement d'une piste audio d'ambiance.",
+            "🤖 [IA TRANSFR] : Mode Autopilote activé. Tout est OK sur le réseau !",
+            "🤖 [IA TRANSFR] : L'antenne est ouverte ! Laissez vos commentaires."
         ];
 
         function declencherAutorisationAudioInitiale(boutonElement) {
@@ -218,9 +228,6 @@
         function initAudio() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
             }
         }
 
@@ -268,6 +275,7 @@
             if(database && monPseudo) database.ref("appels_micro/" + monPseudo.toLowerCase()).remove();
         }
 
+        function abrirFenetreCode() {} 
         function ouvrirFenetreCode() {
             document.getElementById("popupVerrou").style.display = "flex";
             document.getElementById("champsClavierCache").value = "";
@@ -346,48 +354,48 @@
             document.getElementById("vumetreAdmin").style.width = "0%";
         }
 
-        /* --- FONCTION DE L'IA ENTIÈREMENT CORRIGÉE --- */
         function basculerControleIaTransfr() {
             initAudio();
-            // Au lieu de regarder le badge HTML qui buggait, on regarde directement la variable JS !
             if (statutAntenneActuel !== "ia") {
                 if(database) database.ref("statut_direct").set("ia");
-                let btnIa = document.getElementById("boutonControleIa");
-                btnIa.innerText = "🤖 IA EN CONTRÔLE (CLIQUE POUR ARRÊTER)";
-                btnIa.style.background = "#ff3333";
             } else {
                 couperLAntenneGlobale();
-                let btnIa = document.getElementById("boutonControleIa");
-                btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
-                btnIa.style.background = "#a066ff";
             }
         }
 
-        function executerMoteurIaAudioSimulee() {
-            if (!ecouteEnCours || statutAntenneActuel !== "ia") return;
-            try {
-                initAudio();
-                let osc = audioContext.createOscillator();
-                let gainNode = audioContext.createGain();
-                let gammeFrequences = [293.66, 329.63, 349.23, 392.00, 440.00];
-                let noteChoisie = gammeFrequences[Math.floor(Math.random() * gammeFrequences.length)];
-                
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(noteChoisie, audioContext.currentTime);
-                // Augmentation du son par défaut à 0.15 pour bien l'entendre !
-                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.4);
-                
-                osc.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                osc.start();
-                osc.stop(audioContext.currentTime + 0.4);
-            } catch(e) {}
+        // --- NOUVEAU SYSTÈME DE FLUX AUDIO REEL POUR L'IA ---
+        function gererLectureAudioIa() {
+            let lecteur = document.getElementById("lecteurAudioIa");
+            if (statutAntenneActuel === "ia" && ecouteEnCours) {
+                if (lecteur.paused) {
+                    // Sélectionner une musique aléatoire dans la playlist TRANSFR
+                    let morceau = playlistIA[Math.floor(Math.random() * playlistIA.length)];
+                    lecteur.src = morceau.url;
+                    lecteur.volume = 0.5; // Volume impeccable à 50%
+                    lecteur.play().catch(e => console.log("Attente action utilisateur"));
+                    
+                    // Alerte dans le tchat de la part de l'IA pour annoncer le morceau !
+                    if(database) {
+                        database.ref("commentaires_live").push({
+                            pseudo: "🤖 IA_TRANSFR",
+                            texte: `🎵 Lecture en cours : Musique par [${morceau.artiste}]`,
+                            timestamp: Date.now(),
+                            isIA: true
+                        });
+                    }
+                }
+            } else {
+                lecteur.pause();
+                lecteur.currentTime = 0;
+            }
         }
 
         function timerIA() {
             clearInterval(iaIntervalleBlagues);
             clearInterval(iaIntervalleAudioVumetre);
+
+            // Relancer ou couper la musique
+            gererLectureAudioIa();
 
             iaIntervalleBlagues = setInterval(() => {
                 if(database && statutAntenneActuel === "ia") {
@@ -399,23 +407,24 @@
                         isIA: true
                     });
                 }
-            }, 12000);
+            }, 15000);
 
+            // Faire danser le vumètre de l'auditeur sur la musique
             iaIntervalleAudioVumetre = setInterval(() => {
-                if(statutAntenneActuel === "ia") {
-                    executerMoteurIaAudioSimulee();
+                if(statutAntenneActuel === "ia" && ecouteEnCours) {
                     let barrePublique = document.getElementById("vumetrePublic");
-                    if(barrePublique && ecouteEnCours) {
-                        let volumeAlea = Math.floor(Math.random() * 55) + 15;
+                    if(barrePublique) {
+                        let volumeAlea = Math.floor(Math.random() * 60) + 20; // Danse entre 20% et 80%
                         barrePublique.style.width = volumeAlea + "%";
                     }
                 }
-            }, 1000);
+            }, 150);
         }
 
         function stopIA() {
             clearInterval(iaIntervalleBlagues);
             clearInterval(iaIntervalleAudioVumetre);
+            gererLectureAudioIa();
             let barrePublique = document.getElementById("vumetrePublic");
             if(barrePublique) barrePublique.style.width = "0%";
         }
@@ -440,10 +449,12 @@
                 if(statutAntenneActuel === "humain" || statutAntenneActuel === "ia") {
                     document.getElementById("vumetrePublicConteneur").style.display = "block";
                 }
+                if(statutAntenneActuel === "ia") gererLectureAudioIa();
             } else {
                 ecouteEnCours = false;
                 btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
                 document.getElementById("vumetrePublicConteneur").style.display = "none";
+                gererLectureAudioIa();
                 actualiserDesignBoutonAntenne();
             }
         }
