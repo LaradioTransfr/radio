@@ -71,9 +71,7 @@
             </div>
 
             <button id="boutonLancerLiveAdmin" class="BOUTON-LANCER-LIVE" onclick="lancerLeDirectHumainComplet()">🚀 Lancer le Live & Activer le Micro</button>
-            
             <button id="boutonControleIa" class="BOUTON-IA-REEL" onclick="basculerControleIaTransfr()">🤖 Donner le contrôle à l'IA Transfr</button>
-
             <button class="ACTION-ADMIN" style="background-color: #333; color: #aaa; margin-bottom:20px;" onclick="couperLAntenneGlobale()">🛑 Éteindre l'Antenne Générale</button>
             
             <hr style="border-color:#45a29e; margin:20px 0;">
@@ -102,6 +100,7 @@
     </div>
 
     <script>
+        // Remplace par l'adresse de TA base Firebase si tu veux que ça marche sur ton vrai projet !
         const firebaseConfig = { databaseURL: "https://transfr-radio-default-rtdb.europe-west1.firebasedatabase.app/" };
         let database;
         try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) {}
@@ -114,6 +113,15 @@
         let ecouteEnCours = false;
 
         const artistesIA = ["LAKEY INSPIRED", "Idealism", "TheFatRat", "Tobu", "Kevin MacLeod"];
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
 
         function ouvrirFenetreCode() {
             document.getElementById("popupVerrou").style.display = "flex";
@@ -128,6 +136,7 @@
                 fermerFenetreCode();
                 document.getElementById("ecranPublic").style.display = "none";
                 document.getElementById("ecranAdmin").style.display = "block";
+                initAudio(); // Débloque le son aussi pour l'admin
             } else {
                 alert("❌ Code erroné !");
                 document.getElementById("champsClavierCache").value = "";
@@ -140,26 +149,19 @@
             document.getElementById("ecranPublic").style.display = "block";
         }
 
-        // --- ENCLENCHEMENT DU DIRECT DU STUDIO (FIXÉ !) ---
         async function lancerLeDirectHumainComplet() {
+            initAudio();
             try {
-                // 1. Demander l'accès au Micro matériel pour de vrai
                 await navigator.mediaDevices.getUserMedia({ audio: true });
+                if(database) database.ref("statut_direct").set("humain");
                 
-                // 2. Mettre à jour Firebase immédiatement pour propager le live sur le réseau
-                if(database) {
-                    database.ref("statut_direct").set("humain");
-                }
-                
-                // Changer le look du bouton admin pour montrer que ça tourne
                 let btnAdmin = document.getElementById("boutonLancerLiveAdmin");
                 btnAdmin.innerText = "⚡ ANTENNE OUVERTE & MICRO OK";
                 btnAdmin.style.background = "linear-gradient(90deg, #ff0000, #cc0000)";
                 
-                alert("🚀 TRANSFR STUDIO est en direct ! Le micro capte ton son et le réseau est ouvert pour tous les autres appareils.");
+                alert("🚀 TRANSFR STUDIO est en direct ! Le micro capte ton son.");
             } catch (err) {
-                alert("❌ Impossible de lancer le live : Vérifie que ton micro est branché et autorisé par le navigateur !");
-                console.error(err);
+                alert("❌ Impossible de lancer le live : Vérifie les autorisations de ton micro !");
             }
         }
 
@@ -173,14 +175,13 @@
             btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
             btnIa.style.backgroundColor = "#a066ff";
             btnIa.style.color = "black";
-            
             alert("🛑 Antenne éteinte.");
         }
 
         function genererBipIaMusique() {
             if (!ecouteEnCours) return; 
             try {
-                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                initAudio();
                 let osc = audioContext.createOscillator();
                 let gain = audioContext.createGain();
                 let notes = [261.63, 329.63, 392.00, 523.25];
@@ -199,6 +200,7 @@
         }
 
         function basculerControleIaTransfr() {
+            initAudio();
             let bouton = document.getElementById("boutonControleIa");
             if (statutAntenneActuel !== "ia") {
                 if(database) database.ref("statut_direct").set("ia");
@@ -210,15 +212,8 @@
             }
         }
 
-        // --- ZONE D'ÉCOUTE PUBLIQUE ---
         function declencherEcouteFluxDirect() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-
+            initAudio();
             let btnPlay = document.getElementById("boutonEcouterLive");
 
             if (!ecouteEnCours) {
@@ -228,11 +223,11 @@
                 btnPlay.style.color = "white";
 
                 if (statutAntenneActuel === "humain") {
-                    alert("📻 Connexion établie ! Tu écoutes le micro de TRANSFR STUDIO en direct.");
+                    alert("📻 Connexion établie ! Tu écoutes TRANSFR STUDIO en direct.");
                 } else if (statutAntenneActuel === "ia") {
                     alert("🤖 Flux déverrouillé ! Musique de l'IA Transfr en cours...");
                 } else {
-                    alert("📻 Connecté au réseau TRANSFR STUDIO. En attente du début d'une émission !");
+                    alert("📻 Connecté au réseau TRANSFR STUDIO. En attente d'un live !");
                 }
             } else {
                 ecouteEnCours = false;
@@ -257,7 +252,6 @@
             }
         }
 
-        // --- SYNCHRONISATION CONSTANTE TOUTES LES 2 SECONDES ---
         window.onload = function() {
             if(database) {
                 database.ref("auditeurs_en_direct/" + monID).set(true);
@@ -332,6 +326,7 @@
         }
 
         function lancerEcoute(titre, statut, codeCorrect) {
+            initAudio();
             if (statut === "prive") {
                 let verif = prompt("🔒 Code d'écoute requis :");
                 if (verif === codeCorrect) alert("🔓 Lecture : " + titre);
