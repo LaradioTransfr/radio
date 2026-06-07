@@ -135,7 +135,7 @@
 
             <button id="boutonControleIa" class="BOUTON-IA-REEL" onclick="basculerControleIaTransfr()">🤖 Donner le contrôle à l'IA Transfr</button>
             
-            <h3 style="color:#ffcc00; font-size:14px; margin: 20px 0 5px 0;">🎙️ Faire intervenir un auditeur (Surgit au milieu de son écran) :</h3>
+            <h3 style="color:#ffcc00; font-size:14px; margin: 20px 0 5px 0;">🎙️ Faire intervenir un auditeur :</h3>
             <div style="background: #0b0c10; padding: 15px; border-radius: 10px; border: 1px solid #45a29e; margin-bottom: 20px;">
                 <input type="text" id="pseudoCibleAdmin" class="INPUT-TEXT" style="width:100%; box-sizing:border-box; margin-bottom:10px;" placeholder="Écris le pseudo de l'auditeur connecté...">
                 <button class="ACTION-ADMIN" style="margin-bottom:0; background:#ffcc00; color:#000;" onclick="envoyerDemandeParoleAdmin()">Lancer l'invitation flash</button>
@@ -162,7 +162,6 @@
     <div id="popupPseudo" class="FOND-POPUP" style="display: flex;">
         <div class="BOITE-POPUP">
             <h3 style="color:#66fcf1; margin-top:0; font-size:18px; letter-spacing:1px;">👋 REJOINDRE TRANSFR</h3>
-            <p style="font-size:13px; color:#aaa; margin-bottom:15px; line-height:1.4;">Crée ton compte invité avec un pseudo pour débloquer la console de réception du direct et communiquer !</p>
             <input type="text" id="inputPseudoCompte" class="INPUT-TEXT" style="width:100%; box-sizing:border-box; margin-bottom:20px; text-align:center; font-weight:bold; color:#ffcc00;" placeholder="Choisis ton Pseudo...">
             <button class="ACTION-ADMIN" onclick="creerCompteAuditeur()">VALIDER ET ENTRER</button>
         </div>
@@ -188,40 +187,32 @@
     </div>
 
     <script>
-        // --- INITIALISATION DE LA BASE SÉCURISÉE FIREBASE ---
         const firebaseConfig = { databaseURL: "https://transfr-radio-default-rtdb.europe-west1.firebasedatabase.app/" };
         let database;
-        try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) { console.error("Erreur Firebase unifiée"); }
+        try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) {}
 
-        // --- VARIABLES D'ÉTATS ---
         let monID = "user_" + Math.floor(Math.random() * 100000);
         let monPseudo = "";
         const CODE_STUDIO_VRAI = "1944"; 
         let statutAntenneActuel = "eteint"; 
         
-        // Moteur Audio HTML5
         let audioContext = null;
         let ecouteEnCours = false;
         let analyseurMicro = null;
         let streamMicroGlobal = null;
 
-        // --- MODULE ET INTELLIGENCE DE L'IA TRANSFR ---
         let iaIntervalleBlagues = null;
         let iaIntervalleAudioVumetre = null;
-        const artistesAutorisesIA = ["LAKEY INSPIRED", "Idealism", "TheFatRat", "Tobu", "Kevin MacLeod"];
         const messagesChatIA = [
             "🤖 [IA TRANSFR] : Bienvenue sur la fréquence ! J'assure le contrôle automatique.",
             "🤖 [IA TRANSFR] : Lancement d'une séquence de sons synthétisés en direct.",
-            "🤖 [IA TRANSFR] : Les retours d'écoute sont optimaux. Macéo est actuellement hors-antenne.",
-            "🤖 [IA TRANSFR] : Pensez à aller écouter nos podcasts disponibles en bas de la page !",
-            "🤖 [IA TRANSFR] : Analyse des flux en cours... Tout fonctionne à 100% sur TRANSFR."
+            "🤖 [IA TRANSFR] : Les retours d'écoute sont optimaux.",
+            "🤖 [IA TRANSFR] : Pensez à aller écouter nos podcasts disponibles en bas de la page !"
         ];
 
-        // --- SYSTÈME COMPATIBLE DE DÉBLOCAGE AUDIO POUR APPAREILS MOBILES ---
         function declencherAutorisationAudioInitiale(boutonElement) {
             initAudio();
             boutonElement.style.display = 'none';
-            console.log("AudioContext pré-activé avec succès pour cet appareil.");
         }
 
         function initAudio() {
@@ -233,19 +224,14 @@
             }
         }
 
-        // --- INSCRIPTION DE L'AUDITEUR ET COMPTE UNIQUE ---
         function creerCompteAuditeur() {
             let p = document.getElementById("inputPseudoCompte").value.trim();
             if(p === "") return alert("Erreur : Un pseudo valide est obligatoire !");
-            
             monPseudo = p;
             document.getElementById("popupPseudo").style.display = "none";
             document.getElementById("boutonEcouterLive").disabled = false;
             document.getElementById("texteAlertePseudo").style.display = "none";
-            
-            console.log("Compte créé avec succès. Pseudo enregistré : " + monPseudo);
 
-            // Écoute automatique des invitations de parole envoyées par Macéo (Admin)
             if(database) {
                 database.ref("appels_micro/" + monPseudo.toLowerCase()).on("value", function(snapshot) {
                     if(snapshot.exists() && snapshot.val().actif === true) {
@@ -258,7 +244,6 @@
             }
         }
 
-        // --- ENVOI DE L'APPEL FLASH PAR L'ADMINISTRATEUR ---
         function envoyerDemandeParoleAdmin() {
             let pseudoCible = document.getElementById("pseudoCibleAdmin").value.trim();
             if(pseudoCible === "") return alert("Erreur : Renseigne d'abord le pseudo de l'auditeur cible !");
@@ -269,7 +254,6 @@
             }
         }
 
-        // --- ACCEPTER OU COUPER L'INVITATION MICRO AUDITEUR ---
         async function accepterPriseDeParoleAuditeur() {
             initAudio();
             try {
@@ -277,28 +261,20 @@
                 demarrerMoteurVumetre(streamMicroGlobal, "public");
                 alert("🎤 Connexion établie ! Ton micro transmet en direct sur TRANSFR STUDIO.");
                 refuserPriseDeParoleAuditeur(); 
-            } catch(e) {
-                alert("Erreur de périphérique : Impossible d'accéder au microphone.");
-            }
+            } catch(e) { alert("Erreur de périphérique micro."); }
         }
 
         function refuserPriseDeParoleAuditeur() {
-            if(database && monPseudo) {
-                database.ref("appels_micro/" + monPseudo.toLowerCase()).remove();
-            }
+            if(database && monPseudo) database.ref("appels_micro/" + monPseudo.toLowerCase()).remove();
         }
 
-        // --- COMPORTEMENT ET CONTRÔLE DES FENÊTRES CODES ADMIN ---
         function ouvrirFenetreCode() {
             document.getElementById("popupVerrou").style.display = "flex";
             document.getElementById("champsClavierCache").value = "";
             document.getElementById("ecranSaisieCode").value = "";
             setTimeout(() => { document.getElementById("champsClavierCache").focus(); }, 120);
         }
-
-        function fermerFenetreCode() { 
-            document.getElementById("popupVerrou").style.display = "none"; 
-        }
+        function fermerFenetreCode() { document.getElementById("popupVerrou").style.display = "none"; }
 
         function validerCodeStudio() {
             if (document.getElementById("champsClavierCache").value === CODE_STUDIO_VRAI) {
@@ -308,8 +284,6 @@
                 initAudio();
             } else {
                 alert("❌ Code de sécurité invalide !");
-                document.getElementById("champsClavierCache").value = "";
-                document.getElementById("ecranSaisieCode").value = "";
             }
         }
 
@@ -318,7 +292,6 @@
             document.getElementById("ecranPublic").style.display = "block";
         }
 
-        // --- ARCHITECTURE DU MOTEUR DU VUMÈTRE (STYLE OBS) ---
         function demarrerMoteurVumetre(stream, typeAffichage) {
             initAudio();
             try {
@@ -326,7 +299,6 @@
                 analyseurMicro = audioContext.createAnalyser();
                 analyseurMicro.fftSize = 256;
                 source.connect(analyseurMicro);
-                
                 let length = analyseurMicro.frequencyBinCount;
                 let dataArray = new Uint8Array(length);
 
@@ -334,7 +306,6 @@
                     if(!analyseurMicro) return;
                     requestAnimationFrame(analyserFluxVolume);
                     analyseurMicro.getByteFrequencyData(dataArray);
-                    
                     let somme = 0;
                     for(let i = 0; i < length; i++) { somme += dataArray[i]; }
                     let niveauFinal = (somme / length) * 2.2; 
@@ -349,49 +320,46 @@
                     }
                 }
                 analyserFluxVolume();
-            } catch(err) { console.error("Échec du rendu visuel du vumètre."); }
+            } catch(err) {}
         }
 
-        // --- ACTIONS GESTION DU LIVE REEL DE MACÉO ---
         async function lancerLeDirectHumainComplet() {
             initAudio();
             try {
                 streamMicroGlobal = await navigator.mediaDevices.getUserMedia({ audio: true });
                 demarrerMoteurVumetre(streamMicroGlobal, "admin");
-                
                 if(database) database.ref("statut_direct").set("humain");
                 
                 let btnAdmin = document.getElementById("boutonLancerLiveAdmin");
                 btnAdmin.innerText = "⚡ MICRO EN DIRECT & ANTENNE OUVERTE";
                 btnAdmin.style.background = "linear-gradient(90deg, #ff0000, #cc0000)";
-                console.log("Antenne TRANSFR basculée en mode : HUMAINE.");
-            } catch (err) {
-                alert("❌ Erreur : Impossible d'ouvrir le micro. Autorise l'accès de ton navigateur.");
-            }
+            } catch (err) { alert("❌ Erreur : Impossible d'ouvrir le micro."); }
         }
 
         function couperLAntenneGlobale() {
             if(database) database.ref("statut_direct").set("eteint");
-            
             let btnAdmin = document.getElementById("boutonLancerLiveAdmin");
             btnAdmin.innerText = "🚀 Lancer le Live & Activer mon Micro";
             btnAdmin.style.background = "linear-gradient(90deg, #28a745, #1e7e34)";
-            
-            if(streamMicroGlobal) {
-                streamMicroGlobal.getTracks().forEach(track => track.stop());
-            }
+            if(streamMicroGlobal) streamMicroGlobal.getTracks().forEach(track => track.stop());
             analyseurMicro = null;
             document.getElementById("vumetreAdmin").style.width = "0%";
-            console.log("Antenne TRANSFR éteinte.");
         }
 
-        // --- GESTION ET COMPORTEMENT DE L'IA TRANSFR ---
+        /* --- FONCTION DE L'IA ENTIÈREMENT CORRIGÉE --- */
         function basculerControleIaTransfr() {
             initAudio();
+            // Au lieu de regarder le badge HTML qui buggait, on regarde directement la variable JS !
             if (statutAntenneActuel !== "ia") {
                 if(database) database.ref("statut_direct").set("ia");
+                let btnIa = document.getElementById("boutonControleIa");
+                btnIa.innerText = "🤖 IA EN CONTRÔLE (CLIQUE POUR ARRÊTER)";
+                btnIa.style.background = "#ff3333";
             } else {
                 couperLAntenneGlobale();
+                let btnIa = document.getElementById("boutonControleIa");
+                btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
+                btnIa.style.background = "#a066ff";
             }
         }
 
@@ -401,32 +369,26 @@
                 initAudio();
                 let osc = audioContext.createOscillator();
                 let gainNode = audioContext.createGain();
-                
                 let gammeFrequences = [293.66, 329.63, 349.23, 392.00, 440.00];
                 let noteChoisie = gammeFrequences[Math.floor(Math.random() * gammeFrequences.length)];
                 
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(noteChoisie, audioContext.currentTime);
-                
-                gainNode.gain.setValueAtTime(0.04, audioContext.currentTime);
+                // Augmentation du son par défaut à 0.15 pour bien l'entendre !
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.4);
                 
                 osc.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-                
                 osc.start();
                 osc.stop(audioContext.currentTime + 0.4);
-            } catch(e) { console.log("Erreur synthétiseur IA"); }
+            } catch(e) {}
         }
 
-        function activerIntelligenceAutomatiqueIa() {
-            // Nettoyage préventif des boucles existantes
+        function timerIA() {
             clearInterval(iaIntervalleBlagues);
             clearInterval(iaIntervalleAudioVumetre);
 
-            console.log("Moteur logique de l'IA activé.");
-
-            // Boucle 1 : Envoi de messages automatiques par l'IA dans le tchat de la radio toutes les 15 secondes
             iaIntervalleBlagues = setInterval(() => {
                 if(database && statutAntenneActuel === "ia") {
                     let texteAleatoire = messagesChatIA[Math.floor(Math.random() * messagesChatIA.length)];
@@ -437,58 +399,44 @@
                         isIA: true
                     });
                 }
-            }, 15000);
+            }, 12000);
 
-            // Boucle 2 : Génération du son et animation du Vumètre public toutes les 1.2 secondes
             iaIntervalleAudioVumetre = setInterval(() => {
                 if(statutAntenneActuel === "ia") {
                     executerMoteurIaAudioSimulee();
-                    
-                    // Simuler l'activité du vumètre sur l'écran public de réception
                     let barrePublique = document.getElementById("vumetrePublic");
                     if(barrePublique && ecouteEnCours) {
-                        let volumeAlea = Math.floor(Math.random() * 45) + 15; // Oscille entre 15% et 60%
+                        let volumeAlea = Math.floor(Math.random() * 55) + 15;
                         barrePublique.style.width = volumeAlea + "%";
                     }
                 }
-            }, 1200);
+            }, 1000);
         }
 
-        function désactiverIntelligenceAutomatiqueIa() {
+        function stopIA() {
             clearInterval(iaIntervalleBlagues);
             clearInterval(iaIntervalleAudioVumetre);
             let barrePublique = document.getElementById("vumetrePublic");
             if(barrePublique) barrePublique.style.width = "0%";
-            console.log("Moteur logique de l'IA arrêté.");
         }
 
-        // --- GESTION DES COMMENTAIRES (AUDITEUR) ---
         function envoyerCommentaire() {
             let msg = document.getElementById("inputMessage").value.trim();
-            if(msg === "") return;
-            if(!monPseudo) return alert("Système : Crée un pseudo avant d'envoyer un message !");
-            
+            if(msg === "" || !monPseudo) return;
             if(database) {
-                database.ref("commentaires_live").push({
-                    pseudo: monPseudo,
-                    texte: msg,
-                    timestamp: Date.now()
-                });
+                database.ref("commentaires_live").push({ pseudo: monPseudo, texte: msg, timestamp: Date.now() });
                 document.getElementById("inputMessage").value = "";
             }
         }
 
-        // --- FLUX DE RÉCEPTION ET BOUTON D'ÉCOUTE DU LIVE ---
         function declencherEcouteFluxDirect() {
             initAudio();
             let btnPlay = document.getElementById("boutonEcouterLive");
-            
             if (!ecouteEnCours) {
                 ecouteEnCours = true;
                 btnPlay.innerText = "🛑 ARRÊTER LE SON DU LIVE";
                 btnPlay.style.background = "linear-gradient(90deg, #ff3333, #aa0000)";
                 btnPlay.style.color = "white";
-                
                 if(statutAntenneActuel === "humain" || statutAntenneActuel === "ia") {
                     document.getElementById("vumetrePublicConteneur").style.display = "block";
                 }
@@ -503,23 +451,17 @@
         function actualiserDesignBoutonAntenne() {
             if (ecouteEnCours) return;
             let btnPlay = document.getElementById("boutonEcouterLive");
-            
             if (statutAntenneActuel === "humain") {
-                btnPlay.className = "BOUTON-PLAY actif"; 
-                btnPlay.innerText = "⚡ REJOINDRE LE DIRECT EN COURS";
+                btnPlay.className = "BOUTON-PLAY actif"; btnPlay.innerText = "⚡ REJOINDRE LE DIRECT EN COURS";
             } else if (statutAntenneActuel === "ia") {
-                btnPlay.className = "BOUTON-PLAY ia-actif"; 
-                btnPlay.innerText = "🎵 ÉCOUTER L'IA TRANSFR";
+                btnPlay.className = "BOUTON-PLAY ia-actif"; btnPlay.innerText = "🎵 ÉCOUTER L'IA TRANSFR";
             } else {
-                btnPlay.className = "BOUTON-PLAY"; 
-                btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
+                btnPlay.className = "BOUTON-PLAY"; btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
             }
         }
 
-        // --- INTERCONNEXION EN DIRECT AVEC LA BDD CLOUD ---
         window.onload = function() {
             if(database) {
-                // Gestion du compteur des auditeurs en ligne
                 database.ref("auditeurs_en_direct/" + monID).set(true);
                 database.ref("auditeurs_en_direct/" + monID).onDisconnect().remove();
                 
@@ -528,11 +470,8 @@
                     document.getElementById("vraiCompteur").innerText = "👥 Connectés en direct : " + totalConnectes + (totalConnectes > 1 ? " auditeurs" : " auditeur");
                 });
 
-                // Synchronisation instantanée du tchat de l'émission (Limite à 35 messages)
                 database.ref("commentaires_live").limitToLast(35).on("value", function(snap) {
-                    let boite = document.getElementById("boiteChat");
-                    boite.innerHTML = "";
-                    
+                    let boite = document.getElementById("boiteChat"); boite.innerHTML = "";
                     snap.forEach(function(enfant) {
                         let data = enfant.val();
                         let classeStyleIa = data.isIA ? "MESSAGE msg-ia" : "MESSAGE";
@@ -541,47 +480,47 @@
                     boite.scrollTop = boite.scrollHeight;
                 });
 
-                // Écoute de l'état de l'antenne globale
                 database.ref("statut_direct").on("value", function(snap) {
                     statutAntenneActuel = snap.val() || "eteint";
                     let badgeAppareil = document.getElementById("badgeDirect");
+                    let btnIa = document.getElementById("boutonControleIa");
                     
-                    if (statutAntenneActuel === "humain") {
-                        badgeAppareil.innerText = "🔴 EN DIRECT SUR TOUS LES APPAREILS";
-                        badgeAppareil.className = "STATUT-ANTENNE en-direct";
-                        if(ecouteEnCours) document.getElementById("vumetrePublicConteneur").style.display = "block";
-                        désactiverIntelligenceAutomatiqueIa();
-                        actualiserDesignBoutonAntenne();
-                    } else if (statutAntenneActuel === "ia") {
+                    if (statutAntenneActuel === "ia") {
                         badgeAppareil.innerText = "🤖 IA TRANSFR EN CONTRÔLE AUTOPILOTE";
                         badgeAppareil.className = "STATUT-ANTENNE ia-direct";
                         if(ecouteEnCours) document.getElementById("vumetrePublicConteneur").style.display = "block";
-                        activerIntelligenceAutomatiqueIa();
-                        actualiserDesignBoutonAntenne();
+                        btnIa.innerText = "🤖 IA EN CONTRÔLE (CLIQUE POUR ARRÊTER)";
+                        btnIa.style.background = "#ff3333";
+                        timerIA();
+                    } else if (statutAntenneActuel === "humain") {
+                        badgeAppareil.innerText = "🔴 EN DIRECT SUR TOUS LES APPAREILS";
+                        badgeAppareil.className = "STATUT-ANTENNE en-direct";
+                        if(ecouteEnCours) document.getElementById("vumetrePublicConteneur").style.display = "block";
+                        btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
+                        btnIa.style.background = "#a066ff";
+                        stopIA();
                     } else {
                         badgeAppareil.innerText = "⚫ ANTENNE HORS-LIGNE";
                         badgeAppareil.className = "STATUT-ANTENNE";
                         document.getElementById("vumetrePublicConteneur").style.display = "none";
-                        désactiverIntelligenceAutomatiqueIa();
-                        actualiserDesignBoutonAntenne();
+                        btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
+                        btnIa.style.background = "#a066ff";
+                        stopIA();
                     }
+                    actualiserDesignBoutonAntenne();
                 });
 
-                // Synchronisation réseau et affichage stable de la base des Podcasts
                 database.ref("podcasts_partages").on("value", function(snapshot) {
                     let conteneurPodcasts = document.getElementById("espacePodcastsPublic");
                     conteneurPodcasts.innerHTML = ""; 
-                    
                     if(!snapshot.exists()) {
                         conteneurPodcasts.innerHTML = "<p style='color:#aaa; font-size:12px; font-style:italic;'>Aucune rediffusion disponible pour le moment.</p>";
                         return;
                     }
-
                     snapshot.forEach(function(enfant) {
                         let p = enfant.val();
                         let typeBadge = p.statut === 'prive' ? '🔒 Privé' : '🌐 Public';
                         let couleurBadge = p.statut === 'prive' ? '#ffcc00' : '#66fcf1';
-                        
                         let htmlItem = `
                             <div class="BOX-PODCAST">
                                 <div style="text-align: left;">
@@ -590,45 +529,31 @@
                                 </div>
                                 <button onclick="lancerEcoutePodcastStocke('${p.titre.replace(/'/g, "\\'")}', '${p.statut}', '${p.code}')" style="background:#66fcf1; border:none; padding:9px 15px; cursor:pointer; font-weight:bold; border-radius:6px; color:black; font-size:12px;">Écouter</button>
                             </div>`;
-                        
                         conteneurPodcasts.insertAdjacentHTML('afterbegin', htmlItem);
                     });
                 });
             }
         };
 
-        // --- LOGIQUE ADMIN DE TÉLÉVERSEMENT DES EMISSIONS ---
         function uploaderPodcast() {
             let titreSaisi = document.getElementById("titrePod").value.trim();
             let statutSelectionne = document.getElementById("statutPod").value;
             let codeSaisi = document.getElementById("codeSecretPod").value.trim();
-            
-            if(titreSaisi === "") return alert("Erreur administrative : Indique le nom de ton émission !");
-            
+            if(titreSaisi === "") return alert("Erreur : Indique le nom de ton émission !");
             if(database) {
-                database.ref("podcasts_partages").push({
-                    titre: titreSaisi,
-                    statut: statutSelectionne,
-                    code: (statutSelectionne === "prive" ? codeSaisi : "")
-                });
+                database.ref("podcasts_partages").push({ titre: titreSaisi, statut: statutSelectionne, code: (statutSelectionne === "prive" ? codeSaisi : "") });
                 document.getElementById("titrePod").value = "";
-                alert("🚀 Podcast synchronisé et envoyé avec succès sur le réseau TRANSFR !");
+                alert("🚀 Podcast synchronisé !");
             }
         }
 
-        // --- LECTURE SECURISEE DES ARCHIVES PODCASTS ---
         function lancerEcoutePodcastStocke(titre, statut, codeAttendu) {
             initAudio();
             if (statut === "prive") {
-                let verificationCode = prompt("🔒 Clé secrète requise pour déverrouiller ce podcast :");
-                if (verificationCode === codeAttendu) {
-                    alert("🔓 Clé acceptée ! Lancement de la rediffusion : " + titre);
-                } else {
-                    alert("❌ Clé incorrecte. Accès refusé.");
-                }
-            } else { 
-                alert("▶️ Lancement de la lecture audio pour l'émission : " + titre); 
-            }
+                let verificationCode = prompt("🔒 Clé secrète requise :");
+                if (verificationCode === codeAttendu) alert("🔓 Clé acceptée ! Lancement : " + titre);
+                else alert("❌ Clé incorrecte.");
+            } else { alert("▶️ Lancement de l'émission : " + titre); }
         }
     </script>
 </body>
