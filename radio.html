@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfr Radio - Network Premium</title>
+    <title>TRANSFR STUDIO - Live Network</title>
     <style>
         body { background-color: #0b0c10; color: #ffffff; font-family: sans-serif; margin: 0; padding: 0; }
         .BARRE-HAUT { background-color: #1f2833; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #66fcf1; }
-        .TITRE-RADIO { font-size: 26px; font-weight: bold; }
+        .TITRE-RADIO { font-size: 26px; font-weight: bold; letter-spacing: 1px; }
         .TITRE-RADIO span { color: #66fcf1; }
         .BOUTON-JAUNE-ADMIN { background-color: #ffcc00; color: #0b0c10; border: 2px solid #ffffff; padding: 12px 24px; font-weight: bold; border-radius: 25px; cursor: pointer; text-transform: uppercase; }
         .CONTENEUR { padding: 25px; max-width: 550px; margin: 0 auto; }
@@ -16,21 +16,21 @@
         .STATUT-ANTENNE.en-direct { background: #ff0000; color: white; border-color: #ff6666; animation: flash 1.5s infinite; }
         .STATUT-ANTENNE.ia-direct { background: #a066ff; color: black; border-color: #fff; font-weight: 900; animation: flash 1s infinite; }
         .COMPTEUR-REEL { background-color: #0b0c10; color: #66fcf1; padding: 12px; border-radius: 10px; font-size: 18px; font-weight: bold; margin: 20px 0; border: 1px solid #45a29e; text-align: center; }
-        .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; width: 100%; max-width: 300px; margin: 0 auto; text-transform: uppercase; }
+        .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; width: 100%; max-width: 300px; margin: 0 auto; text-transform: uppercase; transition: all 0.3s; }
         .BOUTON-PLAY.actif { background: linear-gradient(90deg, #ff0000, #ff6600); color: white; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
         .BOUTON-PLAY.ia-actif { background: linear-gradient(90deg, #a066ff, #66fcf1); color: black; box-shadow: 0 0 15px rgba(160, 102, 255, 0.8); }
         .CHAT-LIVE { background: #0b0c10; border: 1px solid #333; height: 110px; overflow-y: auto; border-radius: 10px; margin-top: 20px; padding: 12px; text-align: left; font-size: 13px; }
         .SECTION-PODCASTS { margin-top: 30px; border-top: 1px solid #45a29e; padding-top: 20px; text-align: left; }
         .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; }
         
-        /* CONSOLE ADMIN */
+        /* CONSOLE TRANSFR STUDIO ADMIN */
         .CARTE-ADMIN { display: none; background: #1f2833; border: 2px solid #ffcc00; border-radius: 20px; padding: 30px; text-align: left; margin-top: 20px; }
         input, select, .ACTION-ADMIN { width: 100%; padding: 14px; margin-bottom: 15px; background: #0b0c10; color: white; border: 1px solid #45a29e; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
         .ACTION-ADMIN { background: #66fcf1; color: #0b0c10; font-weight: bold; cursor: pointer; border: none; border-radius: 50px; text-transform: uppercase; }
-        .BOUTON-MICRO { background-color: #ff3333; color: white; font-size: 15px; font-weight: bold; padding: 15px; border-radius: 10px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; }
+        .BOUTON-LANCER-LIVE { background: linear-gradient(90deg, #28a745, #1e7e34); color: white; font-size: 16px; font-weight: bold; padding: 16px; border-radius: 50px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
         .BOUTON-IA-REEL { background-color: #a066ff; color: black; font-size: 15px; font-weight: bold; padding: 15px; border-radius: 10px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 20px; }
         
-        /* CLAVIER CODE STUDIO 1944 */
+        /* POPUP SÉCURITÉ CODE 1944 */
         .FOND-POPUP { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 99999; }
         .BOITE-POPUP { background: #1f2833; padding: 25px; border-radius: 15px; border: 2px solid #ffcc00; text-align: center; width: 280px; }
         .ECRAN-CODE { width: 100%; padding: 12px; font-size: 22px; text-align: center; background: #0b0c10; color: #ffcc00; border: 1px solid #45a29e; border-radius: 8px; margin-bottom: 15px; letter-spacing: 5px; font-weight: bold; }
@@ -55,7 +55,7 @@
                 
                 <button id="boutonEcouterLive" class="BOUTON-PLAY" onclick="declencherEcouteFluxDirect()">▶️ ÉCOUTER LE LIVE</button>
                 
-                <div id="boiteChat" class="CHAT-LIVE"><p style="margin:0; color:#666;">Salon Transfr en ligne...</p></div>
+                <div id="boiteChat" class="CHAT-LIVE"><p style="margin:0; color:#666;">Salon TRANSFR STUDIO connecté...</p></div>
                 
                 <div class="SECTION-PODCASTS">
                     <h3 style="color:#66fcf1; margin:0 0 15px 0;">🎙️ Émissions & Podcasts Récents</h3>
@@ -70,11 +70,11 @@
                 <button onclick="fermerLeStudio()" style="background:#ff3333; color:white; border:none; padding:8px 14px; cursor:pointer; font-weight:bold; border-radius: 5px;">Quitter</button>
             </div>
 
-            <button class="BOUTON-MICRO" onclick="demanderMicroEtLancerPodcast()">🎙️ Activer mon Micro</button>
+            <button id="boutonLancerLiveAdmin" class="BOUTON-LANCER-LIVE" onclick="lancerLeDirectHumainComplet()">🚀 Lancer le Live & Activer le Micro</button>
+            
             <button id="boutonControleIa" class="BOUTON-IA-REEL" onclick="basculerControleIaTransfr()">🤖 Donner le contrôle à l'IA Transfr</button>
 
-            <button class="ACTION-ADMIN" style="background-color: #28a745; color: white; margin-bottom:10px;" onclick="changerStatutDirectAntenne('humain')">🚀 Ouvrir l'Antenne (Moi au Micro)</button>
-            <button class="ACTION-ADMIN" style="background-color: #333; color: #aaa; margin-bottom:20px;" onclick="changerStatutDirectAntenne('eteint')">🛑 Éteindre l'Antenne</button>
+            <button class="ACTION-ADMIN" style="background-color: #333; color: #aaa; margin-bottom:20px;" onclick="couperLAntenneGlobale()">🛑 Éteindre l'Antenne Générale</button>
             
             <hr style="border-color:#45a29e; margin:20px 0;">
             
@@ -111,6 +111,7 @@
         let statutAntenneActuel = "eteint"; 
         let audioContext = null;
         let iaBoucleAudio = null;
+        let ecouteEnCours = false;
 
         const artistesIA = ["LAKEY INSPIRED", "Idealism", "TheFatRat", "Tobu", "Kevin MacLeod"];
 
@@ -120,10 +121,7 @@
             document.getElementById("ecranSaisieCode").value = "";
             setTimeout(() => { document.getElementById("champsClavierCache").focus(); }, 100);
         }
-        
-        function fermerFenetreCode() { 
-            document.getElementById("popupVerrou").style.display = "none"; 
-        }
+        function fermerFenetreCode() { document.getElementById("popupVerrou").style.display = "none"; }
 
         function validerCodeStudio() {
             if (document.getElementById("champsClavierCache").value === CODE_STUDIO_VRAI) {
@@ -142,16 +140,45 @@
             document.getElementById("ecranPublic").style.display = "block";
         }
 
-        async function demanderMicroEtLancerPodcast() {
+        // --- ENCLENCHEMENT DU DIRECT DU STUDIO (FIXÉ !) ---
+        async function lancerLeDirectHumainComplet() {
             try {
+                // 1. Demander l'accès au Micro matériel pour de vrai
                 await navigator.mediaDevices.getUserMedia({ audio: true });
-                alert("🎙️ Micro branché et autorisé ! Prêt pour l'antenne.");
+                
+                // 2. Mettre à jour Firebase immédiatement pour propager le live sur le réseau
+                if(database) {
+                    database.ref("statut_direct").set("humain");
+                }
+                
+                // Changer le look du bouton admin pour montrer que ça tourne
+                let btnAdmin = document.getElementById("boutonLancerLiveAdmin");
+                btnAdmin.innerText = "⚡ ANTENNE OUVERTE & MICRO OK";
+                btnAdmin.style.background = "linear-gradient(90deg, #ff0000, #cc0000)";
+                
+                alert("🚀 TRANSFR STUDIO est en direct ! Le micro capte ton son et le réseau est ouvert pour tous les autres appareils.");
             } catch (err) {
-                alert("❌ Micro introuvable ou accès bloqué.");
+                alert("❌ Impossible de lancer le live : Vérifie que ton micro est branché et autorisé par le navigateur !");
+                console.error(err);
             }
         }
 
+        function couperLAntenneGlobale() {
+            if(database) database.ref("statut_direct").set("eteint");
+            let btnAdmin = document.getElementById("boutonLancerLiveAdmin");
+            btnAdmin.innerText = "🚀 Lancer le Live & Activer le Micro";
+            btnAdmin.style.background = "linear-gradient(90deg, #28a745, #1e7e34)";
+            
+            let btnIa = document.getElementById("boutonControleIa");
+            btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
+            btnIa.style.backgroundColor = "#a066ff";
+            btnIa.style.color = "black";
+            
+            alert("🛑 Antenne éteinte.");
+        }
+
         function genererBipIaMusique() {
+            if (!ecouteEnCours) return; 
             try {
                 if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 let osc = audioContext.createOscillator();
@@ -161,32 +188,76 @@
                 
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(frequenceChoisie, audioContext.currentTime);
-                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
                 
                 osc.connect(gain);
                 gain.connect(audioContext.destination);
                 osc.start();
-                osc.stop(audioContext.currentTime + 0.4);
+                osc.stop(audioContext.currentTime + 0.5);
             } catch(e) {}
         }
 
         function basculerControleIaTransfr() {
             let bouton = document.getElementById("boutonControleIa");
             if (statutAntenneActuel !== "ia") {
-                changerStatutDirectAntenne("ia");
-                bouton.innerText = "🛑 Reprendre les commandes";
+                if(database) database.ref("statut_direct").set("ia");
+                bouton.innerText = "🛑 Reprendre les commandes (Stopper l'IA)";
                 bouton.style.backgroundColor = "red";
                 bouton.style.color = "white";
             } else {
-                changerStatutDirectAntenne("eteint");
-                bouton.innerText = "🤖 Donner le contrôle à l'IA Transfr";
-                bouton.style.backgroundColor = "#a066ff";
-                bouton.style.color = "black";
+                couperLAntenneGlobale();
             }
         }
 
-        // --- SYNCHRONISATION EN TEMPS RÉEL (VÉRIFICATIONS CONSTANTES) ---
+        // --- ZONE D'ÉCOUTE PUBLIQUE ---
+        function declencherEcouteFluxDirect() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            let btnPlay = document.getElementById("boutonEcouterLive");
+
+            if (!ecouteEnCours) {
+                ecouteEnCours = true;
+                btnPlay.innerText = "🛑 COUPER LE SON DU LIVE";
+                btnPlay.style.background = "linear-gradient(90deg, #ff3333, #aa0000)";
+                btnPlay.style.color = "white";
+
+                if (statutAntenneActuel === "humain") {
+                    alert("📻 Connexion établie ! Tu écoutes le micro de TRANSFR STUDIO en direct.");
+                } else if (statutAntenneActuel === "ia") {
+                    alert("🤖 Flux déverrouillé ! Musique de l'IA Transfr en cours...");
+                } else {
+                    alert("📻 Connecté au réseau TRANSFR STUDIO. En attente du début d'une émission !");
+                }
+            } else {
+                ecouteEnCours = false;
+                btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
+                actualiserDesignBouton();
+                alert("🔈 Flux mis en pause.");
+            }
+        }
+
+        function actualiserDesignBouton() {
+            if (ecouteEnCours) return;
+            let btnPlay = document.getElementById("boutonEcouterLive");
+            if (statutAntenneActuel === "humain") {
+                btnPlay.className = "BOUTON-PLAY actif";
+                btnPlay.innerText = "⚡ REJOINDRE LE DIRECT EN COURS";
+            } else if (statutAntenneActuel === "ia") {
+                btnPlay.className = "BOUTON-PLAY ia-actif";
+                btnPlay.innerText = "🎵 ÉCOUTER LE LIVE DE L'IA";
+            } else {
+                btnPlay.className = "BOUTON-PLAY";
+                btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
+            }
+        }
+
+        // --- SYNCHRONISATION CONSTANTE TOUTES LES 2 SECONDES ---
         window.onload = function() {
             if(database) {
                 database.ref("auditeurs_en_direct/" + monID).set(true);
@@ -200,7 +271,6 @@
                 database.ref("statut_direct").on("value", function(s) {
                     statutAntenneActuel = s.val() || "eteint";
                     let b = document.getElementById("badgeDirect");
-                    let btnPlay = document.getElementById("boutonEcouterLive");
                     let chat = document.getElementById("boiteChat");
 
                     clearInterval(iaBoucleAudio);
@@ -208,26 +278,23 @@
                     if (statutAntenneActuel === "humain") {
                         b.innerText = "🔴 EN DIRECT SUR TOUS LES APPAREILS";
                         b.className = "STATUT-ANTENNE en-direct";
-                        btnPlay.innerText = "⚡ REJOINDRE LE DIRECT EN COURS";
-                        btnPlay.className = "BOUTON-PLAY actif";
+                        actualiserDesignBouton();
                     } 
                     else if (statutAntenneActuel === "ia") {
                         b.innerText = "🤖 IA TRANSFR EN CONTRÔLE";
                         b.className = "STATUT-ANTENNE ia-direct";
-                        btnPlay.innerText = "🎵 ÉCOUTER LE LIVE DE L'IA";
-                        btnPlay.className = "BOUTON-PLAY ia-actif";
+                        actualiserDesignBouton();
                         
                         iaBoucleAudio = setInterval(() => {
                             let art = artistesIA[Math.floor(Math.random() * artistesIA.length)];
                             chat.innerHTML = `<p style='color:#a066ff; margin:0;'><b>[🤖 TRANSFR IA]</b> : Diffusion d'un morceau de <b>${art}</b>...</p>`;
-                            genererBipIaMusique();
+                            if (ecouteEnCours) genererBipIaMusique();
                         }, 2000);
                     } 
                     else {
                         b.innerText = "⚫ ANTENNE HORS-LIGNE (PAS DE DIRECT)";
                         b.className = "STATUT-ANTENNE";
-                        btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
-                        btnPlay.className = "BOUTON-PLAY";
+                        actualiserDesignBouton();
                     }
                 });
 
@@ -252,10 +319,6 @@
             }
         };
 
-        function changerStatutDirectAntenne(statut) {
-            if(database) database.ref("statut_direct").set(statut);
-        }
-
         function uploaderPodcast() {
             let t = document.getElementById("titrePod").value.trim();
             let s = document.getElementById("statutPod").value;
@@ -264,17 +327,7 @@
             if(database) {
                 database.ref("podcasts_partages").push({ titre: t, statut: s, code: (s === "prive" ? c : "") });
                 document.getElementById("titrePod").value = "";
-                alert("🚀 Podcast envoyé ! Il apparaît partout instantanément.");
-            }
-        }
-
-        function declencherEcouteFluxDirect() {
-            if (statutAntenneActuel === "humain") {
-                alert("📻 Connecté au direct de Macéo !");
-            } else if (statutAntenneActuel === "ia") {
-                alert("🤖 Synchronisation avec la musique de l'IA Transfr !");
-            } else {
-                alert("📻 L'antenne est vide pour le moment.");
+                alert("🚀 Podcast envoyé sur TRANSFR STUDIO !");
             }
         }
 
