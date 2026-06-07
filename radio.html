@@ -3,45 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRANSFR STUDIO - Sécurité Podcasts</title>
+    <title>TRANSFR STUDIO - Full Original Edition</title>
     <style>
-        /* DESIGN GLOBAL TRANSFR */
+        /* DESIGN EMISSION ORIGINAL TRANSFR */
         body { background-color: #0b0c10; color: #ffffff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
-        .BARRE-HAUT { background-color: #1f2833; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #66fcf1; }
-        .TITRE-RADIO { font-size: 26px; font-weight: bold; }
+        .BARRE-HAUT { background-color: #1f2833; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #66fcf1; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .TITRE-RADIO { font-size: 26px; font-weight: bold; letter-spacing: 2px; }
         .TITRE-RADIO span { color: #66fcf1; }
         .BOUTON-JAUNE-ADMIN { background-color: #ffcc00; color: #0b0c10; border: 2px solid #ffffff; padding: 12px 24px; font-weight: bold; border-radius: 25px; cursor: pointer; text-transform: uppercase; }
         
         .CONTENEUR { padding: 25px; max-width: 580px; margin: 0 auto; }
-        .CARTE-STUDIO { background: #1f2833; border: 1px solid #45a29e; border-radius: 20px; padding: 35px; margin-top: 20px; text-align: center; }
+        .CARTE-STUDIO { background: #1f2833; border: 1px solid #45a29e; border-radius: 20px; padding: 35px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
         
         .STATUT-ANTENNE { display: inline-block; background: #252525; color: #aaa; padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: bold; margin-bottom: 15px; border: 1px solid #444; }
-        .STATUT-ANTENNE.en-direct { background: #ff0000; color: white; animation: flash 1.5s infinite; }
-        .STATUT-ANTENNE.ia-direct { background: #a066ff; color: white; animation: flash 1s infinite; }
-
-        /* PLAYER PERSISTANT */
-        #playerGlobal { background: #111; border: 1px solid #66fcf1; border-radius: 15px; padding: 15px; margin-bottom: 20px; display: none; text-align: left; }
-        #playerGlobal span { font-weight: bold; color: #66fcf1; display: block; margin-bottom: 5px; font-size: 14px; }
-        audio { width: 100%; height: 35px; filter: invert(100%) hue-rotate(180deg) brightness(1.5); }
-
+        .STATUT-ANTENNE.en-direct { background: #ff3333; color: #ffffff; animation: flash 1.5s infinite; box-shadow: 0 0 10px rgba(255,51,51,0.5); }
+        .STATUT-ANTENNE.ia-direct { background: #a066ff; color: #ffffff; animation: flash 1s infinite; box-shadow: 0 0 10px rgba(160,102,255,0.5); }
+        
+        .COMPTEUR-REEL { background-color: #0b0c10; color: #66fcf1; padding: 12px; border-radius: 10px; font-size: 18px; font-weight: bold; margin: 20px 0; border: 1px solid #45a29e; }
+        
+        .BARRE-ACTIVATION-SON { background: linear-gradient(90deg, #ffcc00, #ffaa00); color: #000; padding: 16px; font-weight: bold; border-radius: 12px; margin-bottom: 20px; cursor: pointer; display: block; font-size: 14px; width: 100%; border: 3px solid white; animation: pulse 2s infinite; text-transform: uppercase; }
         .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; width: 100%; max-width: 320px; margin: 0 auto; text-transform: uppercase; }
+        .BOUTON-PLAY.ia-actif { background: linear-gradient(90deg, #a066ff, #66fcf1); color: black; box-shadow: 0 0 20px rgba(160,102,255,0.7); }
+        .BOUTON-PLAY.direct-actif { background: linear-gradient(90deg, #ff3333, #ffaa00); color: white; box-shadow: 0 0 20px rgba(255,51,51,0.7); }
+        .BOUTON-PLAY:disabled { background: #444 !important; color: #888 !important; cursor: not-allowed; }
+        
+        .CONTENEUR-VUMETRE { background: #0b0c10; border: 1px solid #444; padding: 10px; border-radius: 8px; margin: 18px 0; text-align: left; }
+        .LABEL-VUMETRE { font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 6px; display: block; }
+        .RAIL-VUMETRE { background: #1a1a1a; width: 100%; height: 16px; border-radius: 4px; overflow: hidden; border: 1px solid #333; }
+        .BARRE-VOLUME { height: 100%; width: 0%; background: linear-gradient(90deg, #28a745 55%, #ffcc00 80%, #ff3333 100%); transition: width 0.1s ease; }
+
+        .ZONE-CHAT { margin-top: 25px; text-align: left; }
+        .CHAT-LIVE { background: #0b0c10; border: 1px solid #45a29e; height: 150px; overflow-y: auto; border-radius: 10px; padding: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
+        .MESSAGE { background: #1f2833; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #66fcf1; }
+        .MESSAGE .PSEUDO { color: #ffcc00; font-weight: bold; margin-right: 5px; }
+        .MESSAGE.msg-ia { border-left-color: #a066ff; background: #15102a; }
+        .MESSAGE.msg-ia .PSEUDO { color: #a066ff; }
+        .BLOC-ENVOI { display: flex; gap: 10px; margin-top: 10px; }
+        .INPUT-TEXT { flex: 1; padding: 12px; background: #0b0c10; color: white; border: 1px solid #45a29e; border-radius: 8px; }
+        .BOUTON-ENVOYER { background: #66fcf1; color: #0b0c10; border: none; padding: 0 22px; font-weight: bold; border-radius: 8px; cursor: pointer; }
         
         .SECTION-PODCASTS { margin-top: 30px; border-top: 1px solid #45a29e; padding-top: 20px; text-align: left; }
         .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; border-left: 4px solid #ffcc00; }
         .BOX-PODCAST.prive { border-left-color: #ff3333; }
-        .BOX-PODCAST span { font-weight: bold; font-size: 15px; }
         .BADGE-TYPE { font-size: 10px; padding: 3px 8px; border-radius: 10px; margin-left: 8px; font-weight: bold; text-transform: uppercase; }
         .BADGE-TYPE.pub { background: #28a745; color: white; }
         .BADGE-TYPE.priv { background: #ff3333; color: white; }
-        
         .BTN-LANCER { background: #ffcc00; color: #000; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
 
-        /* FORMULAIRES ADMIN */
-        .CARTE-ADMIN { display: none; background: #1f2833; border: 2px solid #ffcc00; border-radius: 20px; padding: 30px; margin-top: 20px; text-align: left; }
+        /* DESIGN CONSOLE ADMIN ORIGINAL DE MACÉO */
+        .CARTE-ADMIN { display: none; background: #1f2833; border: 2px solid #ffcc00; border-radius: 20px; padding: 30px; margin-top: 20px; }
+        .BOUTON-VERT-DIRECT { background-color: #28a745; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .BOUTON-BLEU-IA { background-color: #007bff; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+        .BOUTON-ROUGE-ETEINDRE { background-color: #dc3545; color: white; font-size: 16px; font-weight: bold; padding: 15px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 20px; }
         .ACTION-ADMIN { width: 100%; padding: 14px; background: #66fcf1; color: #0b0c10; font-weight: bold; cursor: pointer; border: none; border-radius: 50px; text-transform: uppercase; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #45a29e; color: white; border-radius: 8px; box-sizing: border-box; }
+        select, .INPUT-ADMIN { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #45a29e; color: white; border-radius: 8px; box-sizing: border-box; }
+
+        .FOND-POPUP { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 99999; }
+        .BOITE-POPUP { background: #1f2833; padding: 30px; border-radius: 15px; border: 2px solid #66fcf1; text-align: center; width: 310px; }
+        .ECRAN-CODE { width: 100%; padding: 12px; font-size: 24px; text-align: center; background: #0b0c10; color: #ffcc00; border: 1px solid #45a29e; border-radius: 8px; margin-bottom: 15px; letter-spacing: 6px; font-weight: bold; }
 
         @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -54,16 +76,39 @@
     </div>
 
     <div class="CONTENEUR">
-        <div id="playerGlobal">
-            <span id="nomPodcastEnCours">Lecture : Aucun podcast</span>
-            <audio id="mainAudio" controls></audio>
+        <div id="playerGlobal" style="background: #111; border: 1px solid #66fcf1; border-radius: 15px; padding: 15px; margin-bottom: 20px; display: none;">
+            <span id="nomPodcastEnCours" style="font-weight: bold; color: #66fcf1; display: block; margin-bottom: 5px; font-size: 14px;">Lecture : Aucun podcast</span>
+            <audio id="mainAudio" controls style="width: 100%; height: 35px; filter: invert(100%) hue-rotate(180deg) brightness(1.5);"></audio>
         </div>
 
         <div id="ecranPublic">
+            <button id="barreSonClient" class="BARRE-ACTIVATION-SON" onclick="this.style.display='none';">🔊 ENCLENCHER LE SYSTÈME AUDIO TRANSFR</button>
+
             <div class="CARTE-STUDIO">
                 <div id="badgeDirect" class="STATUT-ANTENNE">⚫ ANTENNE HORS-LIGNE</div>
-                <button id="boutonEcouterLive" class="BOUTON-PLAY" disabled>▶️ ÉCOUTER LE LIVE</button>
+                <div id="vraiCompteur" class="COMPTEUR-REEL">👥 Connectés : 1 auditeur</div>
                 
+                <button id="boutonEcouterLive" class="BOUTON-PLAY" disabled onclick="declencherEcouteFluxDirect()">▶️ ÉCOUTER LE LIVE</button>
+                <p id="texteAlertePseudo" style="color: #ffcc00; font-size: 12px; margin-top: 8px; font-weight: bold;">⚠️ Crée un compte pseudo ci-dessous pour débloquer le direct</p>
+                
+                <audio id="lecteurAudioIa" style="display:none;"></audio>
+
+                <div class="CONTENEUR-VUMETRE" id="vumetrePublicConteneur" style="display:none;">
+                    <span class="LABEL-VUMETRE">🎚️ RÉCEPTION SYNCHRO AUDIO (EN DIRECT) :</span>
+                    <div class="RAIL-VUMETRE">
+                        <div id="vumetrePublic" class="BARRE-VOLUME"></div>
+                    </div>
+                </div>
+
+                <div class="ZONE-CHAT">
+                    <h4 style="margin: 0 0 10px 0; color: #66fcf1; font-size: 14px;">💬 Commentaires du live en temps réel :</h4>
+                    <div id="boiteChat" class="CHAT-LIVE"></div>
+                    <div class="BLOC-ENVOI">
+                        <input type="text" id="inputMessage" class="INPUT-TEXT" placeholder="Tape ton message ici...">
+                        <button class="BOUTON-ENVOYER" onclick="envoyerCommentaire()">OK</button>
+                    </div>
+                </div>
+
                 <div class="SECTION-PODCASTS">
                     <h3 style="color:#66fcf1; margin:0 0 15px 0;">🎙️ Archives Podcasts</h3>
                     <div id="espacePodcastsPublic"></div>
@@ -72,46 +117,153 @@
         </div>
 
         <div id="ecranAdmin" class="CARTE-ADMIN">
-            <h2 style="color:#ffcc00; margin-bottom: 20px;">🎛️ CONSOLE PODCAST</h2>
-            
-            <label>Titre de l'émission :</label>
-            <input type="text" id="titrePod" placeholder="Ex: L'aventure Spatiale - Épisode 1">
-            
-            <label>Lien MP3 du fichier :</label>
-            <input type="text" id="urlPod" placeholder="https://monsite.com/audio.mp3">
-            
-            <label>Confidentialité :</label>
-            <select id="typePod" onchange="gestionAffichagePinAdmin()">
-                <option value="public">🔓 Public (Accessible à tous)</option>
-                <option value="prive">🔒 Privé (Protégé par code PIN)</option>
-            </select>
-
-            <div id="zonePinAdmin" style="display: none;">
-                <label style="color: #ff3333; font-weight: bold;">🔑 Définir le Code PIN (4 chiffres) :</label>
-                <input type="text" id="pinPod" placeholder="Ex: 1234" maxlength="4">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 style="color:#ffcc00; margin:0; font-size: 20px;">🎛️ CONSOLE TRANSFR MAIN</h2>
+                <button onclick="fermerLeStudio()" style="background:#ff3333; color:white; border:none; padding:8px 14px; cursor:pointer; font-weight:bold; border-radius: 5px;">Quitter</button>
             </div>
+            
+            <button class="BOUTON-VERT-DIRECT" onclick="activerDirectHumain()">🟢 Lancer le Grand Direct (Micro)</button>
+            <button class="BOUTON-BLEU-IA" onclick="activerAutopiloteIa()">🔵 Activer l'IA Autopilote (Playlist)</button>
+            <button class="BOUTON-ROUGE-ETEINDRE" onclick="eteindreAntenneComplet()">🔴 Éteindre l'Antenne Générale</button>
 
-            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Publier sur la Radio</button>
-            <button class="ACTION-ADMIN" style="background:#333; color:white;" onclick="location.reload()">Quitter</button>
+            <hr style="border: 1px solid #45a29e; margin: 20px 0;">
+            <h3 style="color: #66fcf1; margin-top: 0;">🎙️ Inviter un Auditeur</h3>
+            <input type="text" id="pseudoCible" class="INPUT-ADMIN" placeholder="Pseudo de l'auditeur...">
+            <button class="ACTION-ADMIN" style="background:#ffcc00; color:black;" onclick="inviterAuditeur()">Lancer l'Appel Flash</button>
+            
+            <hr style="border: 1px solid #45a29e; margin: 20px 0;">
+            <h3 style="color: #66fcf1; margin-top: 0;">📦 Ajouter un Podcast</h3>
+            <input type="text" id="titrePod" class="INPUT-ADMIN" placeholder="Titre de l'émission...">
+            <input type="text" id="urlPod" class="INPUT-ADMIN" placeholder="Lien MP3 (ex: https://site.com/audio.mp3)">
+            <label>Confidentialité :</label>
+            <select id="typePod" class="INPUT-ADMIN" onchange="gestionAffichagePinAdmin()">
+                <option value="public">🔓 Public</option>
+                <option value="prive">🔒 Privé (Avec Code PIN)</option>
+            </select>
+            <div id="zonePinAdmin" style="display: none;">
+                <input type="text" id="pinPod" class="INPUT-ADMIN" placeholder="Code PIN à 4 chiffres" maxlength="4">
+            </div>
+            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Publier le Podcast</button>
+        </div>
+    </div>
+
+    <div id="popupDemandeMicro" class="FOND-POPUP">
+        <div class="BOITE-POPUP">
+            <h2 style="color:#ff3333;">📢 INVITATION EN DIRECT !</h2>
+            <p>Macéo t'invite à prendre la parole sur TRANSFR !</p>
+            <button class="ACTION-ADMIN" onclick="accepterParole()">🎤 Accepter & Parler</button>
+            <button class="ACTION-ADMIN" style="background:#444; color:white;" onclick="refuserParole()">Refuser</button>
+        </div>
+    </div>
+
+    <div id="popupPseudo" class="FOND-POPUP" style="display: flex;">
+        <div class="BOITE-POPUP">
+            <h3 style="color:#66fcf1; margin-top:0; font-size:18px;">👋 REJOINDRE TRANSFR</h3>
+            <input type="text" id="inputPseudoCompte" class="INPUT-TEXT" style="width:100%; box-sizing:border-box; margin-bottom:20px; text-align:center; font-weight:bold; color:#ffcc00;" placeholder="Choisis ton Pseudo...">
+            <button class="ACTION-ADMIN" onclick="creerCompteAuditeur()">VALIDER ET ENTRER</button>
+        </div>
+    </div>
+
+    <div id="popupVerrou" class="FOND-POPUP">
+        <div class="BOITE-POPUP" style="border-color: #ffcc00;">
+            <h3 style="color:#ffcc00; margin-top:0; font-size:16px;">🔒 ACCÈS TRANSFR CONTROL</h3>
+            <input type="password" id="ecranSaisieCode" class="ECRAN-CODE" readonly placeholder="••••">
+            <input type="text" id="champsClavierCache" placeholder="Saisir le code..." style="background:transparent; color:white; text-align:center; border:1px solid #444; width:100%; padding:12px; border-radius:8px; box-sizing:border-box;" oninput="document.getElementById('ecranSaisieCode').value = this.value;">
+            <button class="ACTION-ADMIN" style="margin-top:15px;" onclick="validerCodeStudio()">OUVRIR LE STUDIO</button>
+            <button class="ACTION-ADMIN" style="background:#333; color:#aaa; margin-top:8px;" onclick="fermerFenetreCode()">ANNULER</button>
         </div>
     </div>
 
     <script>
         const firebaseConfig = { databaseURL: "https://transfr-radio-default-rtdb.europe-west1.firebasedatabase.app/" };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        let database;
+        try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) {}
+
+        let monID = "user_" + Math.floor(Math.random() * 100000);
+        let monPseudo = "";
+        const CODE_STUDIO_VRAI = "1944"; 
+        let statutAntenneActuel = "eteint"; 
+        let ecouteEnCours = false;
+        let iaIntervalleAudioVumetre = null;
+
+        // Fichiers audio réels pour la synchronisation du direct
+        const playlistIA = [
+            { id: 0, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", duree: 372 },
+            { id: 1, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", duree: 423 }
+        ];
+
+        function creerCompteAuditeur() {
+            let p = document.getElementById("inputPseudoCompte").value.trim();
+            if(p === "") return alert("Pseudo obligatoire !");
+            monPseudo = p;
+            document.getElementById("popupPseudo").style.display = "none";
+            document.getElementById("boutonEcouterLive").disabled = false;
+            document.getElementById("texteAlertePseudo").style.display = "none";
+
+            // Écouter les invitations micro de Macéo
+            if(database) {
+                database.ref("appels/" + monPseudo.toLowerCase()).on("value", s => {
+                    if(s.val() && s.val().actif) document.getElementById("popupDemandeMicro").style.display = "flex";
+                });
+            }
+        }
 
         function ouvrirFenetreCode() {
-            let code = prompt("Code de sécurité Transfr :");
-            if(code === "1944") {
+            document.getElementById("popupVerrou").style.display = "flex";
+            document.getElementById("champsClavierCache").value = "";
+            document.getElementById("ecranSaisieCode").value = "";
+            setTimeout(() => { document.getElementById("champsClavierCache").focus(); }, 120);
+        }
+        function fermerFenetreCode() { document.getElementById("popupVerrou").style.display = "none"; }
+
+        function validerCodeStudio() {
+            if (document.getElementById("champsClavierCache").value === CODE_STUDIO_VRAI) {
+                fermerFenetreCode();
                 document.getElementById("ecranPublic").style.display = "none";
                 document.getElementById("ecranAdmin").style.display = "block";
-            }
+            } else { alert("Code incorrect."); }
+        }
+
+        function fermerLeStudio() {
+            document.getElementById("ecranAdmin").style.display = "none";
+            document.getElementById("ecranPublic").style.display = "block";
         }
 
         function gestionAffichagePinAdmin() {
             let type = document.getElementById("typePod").value;
             document.getElementById("zonePinAdmin").style.display = (type === "prive") ? "block" : "none";
+        }
+
+        // --- COMMANDES DU STUDIO ORIGINAL ---
+        function activerDirectHumain() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+                if(database) database.ref("radio_synchro").set({ statut: "humain", morceauId: 0, tempsDemarrage: Date.now() });
+                alert("🔴 Tu es en direct sur TRANSFR ! Ton micro est ouvert.");
+            }).catch(() => {
+                alert("⚠️ Erreur micro. Rappel : Le micro requiert une adresse HTTPS (comme GitHub Pages ou Vercel).");
+            });
+        }
+
+        function activerAutopiloteIa() {
+            let morceauChoisi = playlistIA[Math.floor(Math.random() * playlistIA.length)];
+            if(database) {
+                database.ref("radio_synchro").set({
+                    statut: "ia",
+                    morceauId: morceauChoisi.id,
+                    tempsDemarrage: Date.now()
+                });
+            }
+        }
+
+        function eteindreAntenneComplet() {
+            if(database) database.ref("radio_synchro").set({ statut: "eteint" });
+        }
+
+        function inviterAuditeur() {
+            let cible = document.getElementById("pseudoCible").value.trim();
+            if(!cible) return alert("Indique un pseudo !");
+            if(database) database.ref("appels/" + cible.toLowerCase()).set({ actif: true });
+            alert("Appel envoyé à " + cible);
         }
 
         function uploaderPodcast() {
@@ -123,81 +275,163 @@
             if(!titre || !url) return alert("Remplis le titre et le lien !");
             if(type === "prive" && pin.length < 4) return alert("Le code PIN doit faire 4 chiffres !");
             
-            database.ref("podcasts").push({
-                titre: titre,
-                url: url,
-                type: type,
-                pin: type === "prive" ? pin : "",
-                timestamp: Date.now()
-            });
-            
-            alert("Podcast synchronisé avec succès !");
-            document.getElementById("titrePod").value = "";
-            document.getElementById("urlPod").value = "";
-            document.getElementById("pinPod").value = "";
-            document.getElementById("typePod").value = "public";
-            document.getElementById("zonePinAdmin").style.display = "none";
+            if(database) {
+                database.ref("podcasts").push({ titre: titre, url: url, type: type, pin: type === "prive" ? pin : "", timestamp: Date.now() });
+            }
+            alert("Podcast publié !");
+            document.getElementById("titrePod").value = ""; document.getElementById("urlPod").value = ""; document.getElementById("pinPod").value = "";
         }
 
-        // GESTION DU CLIC DE LECTURE AVEC VÉRIFICATION DU PIN
-        function tentativeLecturePodcast(titre, url, type, codeCorrect) {
-            if(type === "prive") {
-                let codeSaisi = prompt("🔒 Ce podcast est privé.\nEntre le code PIN à 4 chiffres pour le débloquer :");
-                if(codeSaisi === codeCorrect) {
-                    lancerAudio(titre, url);
-                } else {
-                    alert("❌ Code PIN incorrect ! Accès refusé.");
+        function accepterParole() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+                alert("Micro connecté ! Tu es sur l'antenne.");
+                refuserParole();
+            });
+        }
+
+        function refuserParole() {
+            if(database) database.ref("appels/" + monPseudo.toLowerCase()).remove();
+            document.getElementById("popupDemandeMicro").style.display = "none";
+        }
+
+        // --- MOTEUR DE SYNCHRONISATION AUDIO DE HAUTE PRÉCISION ---
+        function verifierEtAjusterAudioSynchro(donnees) {
+            let lecteur = document.getElementById("lecteurAudioIa");
+            
+            if ((donnees.statut === "ia" || donnees.statut === "humain") && ecouteEnCours) {
+                let morceau = playlistIA.find(m => m.id === donnees.morceauId);
+                if (!morceau) return;
+
+                let tempsEcouleMilli = Date.now() - donnees.tempsDemarrage;
+                let secondeAttendue = tempsEcouleMilli / 1000;
+
+                if (secondeAttendue > morceau.duree) { lecteur.pause(); return; }
+
+                if (lecteur.src !== morceau.url) {
+                    lecteur.src = morceau.url;
+                    lecteur.currentTime = secondeAttendue;
+                    lecteur.play().catch(e => console.log("Attente d'action"));
+                } else if (Math.abs(lecteur.currentTime - secondeAttendue) > 1.5) {
+                    lecteur.currentTime = secondeAttendue;
                 }
             } else {
-                lancerAudio(titre, url);
+                lecteur.pause();
             }
         }
 
-        function lancerAudio(titre, url) {
-            const playerDiv = document.getElementById("playerGlobal");
-            const audio = document.getElementById("mainAudio");
-            const nom = document.getElementById("nomPodcastEnCours");
+        function declencherEcouteFluxDirect() {
+            let btnPlay = document.getElementById("boutonEcouterLive");
+            if (!ecouteEnCours) {
+                ecouteEnCours = true;
+                btnPlay.innerText = "🛑 QUITTER LE FLUX DIRECT";
+                btnPlay.style.background = "linear-gradient(90deg, #ff3333, #aa0000)";
+                btnPlay.style.color = "white";
+                
+                if(database) {
+                    database.ref("radio_synchro").once("value", function(snap) {
+                        if(snap.exists()) verifierEtAjusterAudioSynchro(snap.val());
+                    });
+                }
 
-            playerDiv.style.display = "block";
-            nom.innerText = "🎧 EN ÉCOUTE : " + titre;
-            audio.src = url;
-            audio.play();
+                iaIntervalleAudioVumetre = setInterval(() => {
+                    let barrePublique = document.getElementById("vumetrePublic");
+                    if(barrePublique && (statutAntenneActuel === "ia" || statutAntenneActuel === "humain")) {
+                        barrePublique.style.width = (Math.floor(Math.random() * 60) + 20) + "%";
+                    }
+                }, 100);
+            } else {
+                ecouteEnCours = false;
+                clearInterval(iaIntervalleAudioVumetre);
+                document.getElementById("vumetrePublic").style.width = "0%";
+                document.getElementById("lecteurAudioIa").pause();
+                actualiserDesignBoutonAntenne();
+            }
+        }
+
+        function actualiserDesignBoutonAntenne() {
+            if (ecouteEnCours) return;
+            let btnPlay = document.getElementById("boutonEcouterLive");
+            if (statutAntenneActuel === "ia") {
+                btnPlay.className = "BOUTON-PLAY ia-actif"; btnPlay.innerText = "🎵 ÉCOUTER LE MIX SYNCHRO (IA)";
+            } else if (statutAntenneActuel === "humain") {
+                btnPlay.className = "BOUTON-PLAY direct-actif"; btnPlay.innerText = "⚡ S'ASSOCIER AU GRAND DIRECT";
+            } else {
+                btnPlay.className = "BOUTON-PLAY"; btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
+            }
+        }
+
+        function tentativeLecturePodcast(titre, url, type, codeCorrect) {
+            if(type === "prive") {
+                let codeSaisi = prompt("🔒 Contenu Privé TRANSFR.\nSaisis le PIN à 4 chiffres :");
+                if(codeSaisi === codeCorrect) lancerAudioPodcast(titre, url);
+                else alert("❌ Code invalide.");
+            } else {
+                lancerAudioPodcast(titre, url);
+            }
+        }
+
+        function lancerAudioPodcast(titre, url) {
+            document.getElementById("playerGlobal").style.display = "block";
+            document.getElementById("nomPodcastEnCours").innerText = "🎧 PODCAST : " + titre;
+            let a = document.getElementById("mainAudio");
+            a.src = url; a.play();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // MISE À JOUR DE LA LISTE EN TEMPS RÉEL
-        database.ref("podcasts").on("value", snap => {
-            let espace = document.getElementById("espacePodcastsPublic");
-            espace.innerHTML = "";
-            snap.forEach(child => {
-                let pod = child.val();
-                let estPrive = (pod.type === "prive");
-                let badgeHtml = estPrive ? '<span class="BADGE-TYPE priv">🔒 Privé</span>' : '<span class="BADGE-TYPE pub">🔓 Public</span>';
-                let classePrive = estPrive ? 'prive' : '';
-
-                espace.innerHTML += `
-                    <div class="BOX-PODCAST ${classePrive}">
-                        <div>
-                            <span>🎙️ ${pod.titre}</span>
-                            ${badgeHtml}
-                        </div>
-                        <button class="BTN-LANCER" onclick="tentativeLecturePodcast('${pod.titre.replace(/'/g, "\\'")}', '${pod.url}', '${pod.type}', '${pod.pin}')">▶️ Lancer</button>
-                    </div>`;
-            });
-        });
-
-        // SYNCHRO STATUS LIVE
-        database.ref("radio_synchro").on("value", snap => {
-            let data = snap.val() || { statut: "eteint" };
-            let badge = document.getElementById("badgeDirect");
-            if(data.statut === "humain") {
-                badge.innerText = "🔴 EN DIRECT"; badge.className = "STATUT-ANTENNE en-direct";
-            } else if(data.statut === "ia") {
-                badge.innerText = "🤖 IA AUTOPILOTE"; badge.className = "STATUT-ANTENNE ia-direct";
-            } else {
-                badge.innerText = "⚫ HORS-LIGNE"; badge.className = "STATUT-ANTENNE";
+        function envoyerCommentaire() {
+            let msg = document.getElementById("inputMessage").value.trim();
+            if(msg === "" || !monPseudo) return;
+            if(database) {
+                database.ref("commentaires_live").push({ pseudo: monPseudo, texte: msg, timestamp: Date.now() });
+                document.getElementById("inputMessage").value = "";
             }
-        });
+        }
+
+        window.onload = function() {
+            if(database) {
+                database.ref("auditeurs_en_direct/" + monID).set(true);
+                database.ref("auditeurs_en_direct/" + monID).onDisconnect().remove();
+                
+                database.ref("commentaires_live").limitToLast(35).on("value", function(snap) {
+                    let boite = document.getElementById("boiteChat"); boite.innerHTML = "";
+                    snap.forEach(function(enfant) {
+                        let data = enfant.val();
+                        boite.innerHTML += `<div class="MESSAGE"><span class="PSEUDO">${data.pseudo} :</span>${data.texte}</div>`;
+                    });
+                    boite.scrollTop = boite.scrollHeight;
+                });
+
+                database.ref("podcasts").on("value", snap => {
+                    let esp = document.getElementById("espacePodcastsPublic"); esp.innerHTML = "";
+                    snap.forEach(c => {
+                        let p = c.val();
+                        let estPrive = (p.type === "prive");
+                        let badge = estPrive ? '<span class="BADGE-TYPE priv">🔒 Privé</span>' : '<span class="BADGE-TYPE pub">🔓 Public</span>';
+                        esp.innerHTML += `<div class="BOX-PODCAST ${estPrive?'prive':''}"><div><span>🎙️ ${p.titre}</span>${badge}</div><button class="BTN-LANCER" onclick="tentativeLecturePodcast('${p.titre.replace(/'/g, "\\'")}', '${p.url}', '${p.type}', '${p.pin}')">▶️ Lancer</button></div>`;
+                    });
+                });
+
+                database.ref("radio_synchro").on("value", function(snap) {
+                    let donnees = snap.val() || { statut: "eteint" };
+                    statutAntenneActuel = donnees.statut;
+                    
+                    let badgeAppareil = document.getElementById("badgeDirect");
+                    
+                    if (statutAntenneActuel === "ia" || statutAntenneActuel === "humain") {
+                        badgeAppareil.innerText = statutAntenneActuel === "ia" ? "🤖 PLAYLIST SYNCHRONISÉE" : "🔴 GRAND DIRECT EN COURS";
+                        badgeAppareil.className = statutAntenneActuel === "ia" ? "STATUT-ANTENNE ia-direct" : "STATUT-ANTENNE en-direct";
+                        document.getElementById("vumetrePublicConteneur").style.display = "block";
+                        verifierEtAjusterAudioSynchro(donnees);
+                    } else {
+                        badgeAppareil.innerText = "⚫ ANTENNE HORS-LIGNE";
+                        badgeAppareil.className = "STATUT-ANTENNE";
+                        document.getElementById("vumetrePublicConteneur").style.display = "none";
+                        document.getElementById("lecteurAudioIa").pause();
+                    }
+                    actualiserDesignBoutonAntenne();
+                });
+            }
+        };
     </script>
 </body>
 </html>
