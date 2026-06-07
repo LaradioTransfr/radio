@@ -18,6 +18,7 @@
         .STATUT-ANTENNE { display: inline-block; background: #252525; color: #aaa; padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: bold; margin-bottom: 15px; border: 1px solid #444; }
         .STATUT-ANTENNE.en-direct { background: #ff3333; color: #ffffff; animation: flash 1.5s infinite; box-shadow: 0 0 10px rgba(255,51,51,0.5); }
         .STATUT-ANTENNE.ia-direct { background: #a066ff; color: #ffffff; animation: flash 1s infinite; box-shadow: 0 0 10px rgba(160,102,255,0.5); }
+        .STATUT-ANTENNE.pod-direct { background: #ffcc00; color: #0b0c10; animation: flash 1.2s infinite; box-shadow: 0 0 10px rgba(255,204,0,0.5); }
         
         .COMPTEUR-REEL { background-color: #0b0c10; color: #66fcf1; padding: 12px; border-radius: 10px; font-size: 18px; font-weight: bold; margin: 20px 0; border: 1px solid #45a29e; }
         
@@ -25,6 +26,7 @@
         .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; width: 100%; max-width: 320px; margin: 0 auto; text-transform: uppercase; }
         .BOUTON-PLAY.ia-actif { background: linear-gradient(90deg, #a066ff, #66fcf1); color: black; box-shadow: 0 0 20px rgba(160,102,255,0.7); }
         .BOUTON-PLAY.direct-actif { background: linear-gradient(90deg, #ff3333, #ffaa00); color: white; box-shadow: 0 0 20px rgba(255,51,51,0.7); }
+        .BOUTON-PLAY.pod-actif { background: linear-gradient(90deg, #ffcc00, #45a29e); color: black; box-shadow: 0 0 20px rgba(255,204,0,0.7); }
         .BOUTON-PLAY:disabled { background: #444 !important; color: #888 !important; cursor: not-allowed; }
         
         .CONTENEUR-VUMETRE { background: #0b0c10; border: 1px solid #444; padding: 10px; border-radius: 8px; margin: 18px 0; text-align: left; }
@@ -35,12 +37,6 @@
         .ZONE-CHAT { margin-top: 25px; text-align: left; }
         .CHAT-LIVE { background: #0b0c10; border: 1px solid #45a29e; height: 150px; overflow-y: auto; border-radius: 10px; padding: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
         .MESSAGE { background: #1f2833; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #66fcf1; }
-        .MESSAGE .PSEUDO { color: #ffcc00; font-weight: bold; margin-right: 5px; }
-        .MESSAGE.msg-ia { border-left-color: #a066ff; background: #15102a; }
-        .MESSAGE.msg-ia .PSEUDO { color: #a066ff; }
-        .BLOC-ENVOI { display: flex; gap: 10px; margin-top: 10px; }
-        .INPUT-TEXT { flex: 1; padding: 12px; background: #0b0c10; color: white; border: 1px solid #45a29e; border-radius: 8px; }
-        .BOUTON-ENVOYER { background: #66fcf1; color: #0b0c10; border: none; padding: 0 22px; font-weight: bold; border-radius: 8px; cursor: pointer; }
         
         .SECTION-PODCASTS { margin-top: 30px; border-top: 1px solid #45a29e; padding-top: 20px; text-align: left; }
         .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; border-left: 4px solid #ffcc00; }
@@ -52,11 +48,14 @@
 
         /* DESIGN CONSOLE ADMIN ORIGINAL DE MACÉO */
         .CARTE-ADMIN { display: none; background: #1f2833; border: 2px solid #ffcc00; border-radius: 20px; padding: 30px; margin-top: 20px; }
-        .BOUTON-VERT-DIRECT { background-color: #28a745; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
-        .BOUTON-BLEU-IA { background-color: #007bff; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+        .BOUTON-VERT-DIRECT { background-color: #28a745; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; }
+        .BOUTON-BLEU-IA { background-color: #007bff; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; }
         .BOUTON-ROUGE-ETEINDRE { background-color: #dc3545; color: white; font-size: 16px; font-weight: bold; padding: 15px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 20px; }
         .ACTION-ADMIN { width: 100%; padding: 14px; background: #66fcf1; color: #0b0c10; font-weight: bold; cursor: pointer; border: none; border-radius: 50px; text-transform: uppercase; margin-bottom: 15px; }
         select, .INPUT-ADMIN { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #45a29e; color: white; border-radius: 8px; box-sizing: border-box; }
+
+        .BOX-ADMIN-PODCAST { background: #0b0c10; padding: 10px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #444; }
+        .BTN-DIFFUSER-LIVE { background: #ffcc00; color: black; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; }
 
         .FOND-POPUP { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 99999; }
         .BOITE-POPUP { background: #1f2833; padding: 30px; border-radius: 15px; border: 2px solid #66fcf1; text-align: center; width: 310px; }
@@ -127,12 +126,18 @@
             <button class="BOUTON-ROUGE-ETEINDRE" onclick="eteindreAntenneComplet()">🔴 Éteindre l'Antenne Générale</button>
 
             <hr style="border: 1px solid #45a29e; margin: 20px 0;">
-            <h3 style="color: #66fcf1; margin-top: 0;">🎙️ Inviter un Auditeur</h3>
+            <h3 style="color: #66fcf1; margin-top: 0; font-size: 16px;">📻 Lancer un podcast sur le direct</h3>
+            <div id="listePodcastsAdmin" style="background:#0b0c10; padding:10px; border-radius:8px; max-height:150px; overflow-y:auto; margin-bottom:15px;">
+                <p style="color:#aaa; font-size:12px; margin:0;">Aucun podcast disponible</p>
+            </div>
+
+            <hr style="border: 1px solid #45a29e; margin: 20px 0;">
+            <h3 style="color: #66fcf1; margin-top: 0; font-size:16px;">🎙️ Inviter un Auditeur</h3>
             <input type="text" id="pseudoCible" class="INPUT-ADMIN" placeholder="Pseudo de l'auditeur...">
             <button class="ACTION-ADMIN" style="background:#ffcc00; color:black;" onclick="inviterAuditeur()">Lancer l'Appel Flash</button>
             
             <hr style="border: 1px solid #45a29e; margin: 20px 0;">
-            <h3 style="color: #66fcf1; margin-top: 0;">📦 Ajouter un Podcast</h3>
+            <h3 style="color: #66fcf1; margin-top: 0; font-size:16px;">📦 Ajouter un Nouveau Podcast</h3>
             <input type="text" id="titrePod" class="INPUT-ADMIN" placeholder="Titre de l'émission...">
             <input type="text" id="urlPod" class="INPUT-ADMIN" placeholder="Lien MP3 (ex: https://site.com/audio.mp3)">
             <label>Confidentialité :</label>
@@ -186,7 +191,6 @@
         let ecouteEnCours = false;
         let iaIntervalleAudioVumetre = null;
 
-        // Fichiers audio réels pour la synchronisation du direct
         const playlistIA = [
             { id: 0, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", duree: 372 },
             { id: 1, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", duree: 423 }
@@ -200,7 +204,6 @@
             document.getElementById("boutonEcouterLive").disabled = false;
             document.getElementById("texteAlertePseudo").style.display = "none";
 
-            // Écouter les invitations micro de Macéo
             if(database) {
                 database.ref("appels/" + monPseudo.toLowerCase()).on("value", s => {
                     if(s.val() && s.val().actif) document.getElementById("popupDemandeMicro").style.display = "flex";
@@ -234,14 +237,12 @@
             document.getElementById("zonePinAdmin").style.display = (type === "prive") ? "block" : "none";
         }
 
-        // --- COMMANDES DU STUDIO ORIGINAL ---
+        // --- COMMANDES DU STUDIO ---
         function activerDirectHumain() {
             navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
-                if(database) database.ref("radio_synchro").set({ statut: "humain", morceauId: 0, tempsDemarrage: Date.now() });
-                alert("🔴 Tu es en direct sur TRANSFR ! Ton micro est ouvert.");
-            }).catch(() => {
-                alert("⚠️ Erreur micro. Rappel : Le micro requiert une adresse HTTPS (comme GitHub Pages ou Vercel).");
-            });
+                if(database) database.ref("radio_synchro").set({ statut: "humain", morceauId: 0, urlCustom: "", tempsDemarrage: Date.now() });
+                alert("🔴 Tu es en direct sur TRANSFR !");
+            }).catch(() => { alert("⚠️ Erreur micro."); });
         }
 
         function activerAutopiloteIa() {
@@ -250,9 +251,24 @@
                 database.ref("radio_synchro").set({
                     statut: "ia",
                     morceauId: morceauChoisi.id,
+                    urlCustom: "",
                     tempsDemarrage: Date.now()
                 });
             }
+        }
+
+        // NOUVELLE FONCTION DE LANCEMENT DE PODCAST GENERALE SUR L'ANTENNE !
+        function diffuserPodcastSurAntenne(titre, url) {
+            if(database) {
+                database.ref("radio_synchro").set({
+                    statut: "podcast_live",
+                    morceauId: -1,
+                    urlCustom: url,
+                    titreCustom: titre,
+                    tempsDemarrage: Date.now()
+                });
+            }
+            alert(`🚀 Le podcast "${titre}" est maintenant lancé en direct pour tous les auditeurs !`);
         }
 
         function eteindreAntenneComplet() {
@@ -294,21 +310,27 @@
             document.getElementById("popupDemandeMicro").style.display = "none";
         }
 
-        // --- MOTEUR DE SYNCHRONISATION AUDIO DE HAUTE PRÉCISION ---
+        // --- MOTEUR DE SYNCHRONISATION AUDIO EN DIRECT ---
         function verifierEtAjusterAudioSynchro(donnees) {
             let lecteur = document.getElementById("lecteurAudioIa");
             
-            if ((donnees.statut === "ia" || donnees.statut === "humain") && ecouteEnCours) {
-                let morceau = playlistIA.find(m => m.id === donnees.morceauId);
-                if (!morceau) return;
+            if ((donnees.statut === "ia" || donnees.statut === "humain" || donnees.statut === "podcast_live") && ecouteEnCours) {
+                let urlA_Lire = "";
+                
+                if (donnees.statut === "podcast_live") {
+                    urlA_Lire = donnees.urlCustom;
+                } else {
+                    let morceau = playlistIA.find(m => m.id === donnees.morceauId);
+                    if (morceau) urlA_Lire = morceau.url;
+                }
+
+                if (!urlA_Lire) return;
 
                 let tempsEcouleMilli = Date.now() - donnees.tempsDemarrage;
                 let secondeAttendue = tempsEcouleMilli / 1000;
 
-                if (secondeAttendue > morceau.duree) { lecteur.pause(); return; }
-
-                if (lecteur.src !== morceau.url) {
-                    lecteur.src = morceau.url;
+                if (lecteur.src !== urlA_Lire) {
+                    lecteur.src = urlA_Lire;
                     lecteur.currentTime = secondeAttendue;
                     lecteur.play().catch(e => console.log("Attente d'action"));
                 } else if (Math.abs(lecteur.currentTime - secondeAttendue) > 1.5) {
@@ -335,7 +357,7 @@
 
                 iaIntervalleAudioVumetre = setInterval(() => {
                     let barrePublique = document.getElementById("vumetrePublic");
-                    if(barrePublique && (statutAntenneActuel === "ia" || statutAntenneActuel === "humain")) {
+                    if(barrePublique && (statutAntenneActuel !== "eteint")) {
                         barrePublique.style.width = (Math.floor(Math.random() * 60) + 20) + "%";
                     }
                 }, 100);
@@ -355,6 +377,8 @@
                 btnPlay.className = "BOUTON-PLAY ia-actif"; btnPlay.innerText = "🎵 ÉCOUTER LE MIX SYNCHRO (IA)";
             } else if (statutAntenneActuel === "humain") {
                 btnPlay.className = "BOUTON-PLAY direct-actif"; btnPlay.innerText = "⚡ S'ASSOCIER AU GRAND DIRECT";
+            } else if (statutAntenneActuel === "podcast_live") {
+                btnPlay.className = "BOUTON-PLAY pod-actif"; btnPlay.innerText = "🎙️ ÉCOUTER LE PODCAST EN DIRECT";
             } else {
                 btnPlay.className = "BOUTON-PLAY"; btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
             }
@@ -401,14 +425,35 @@
                     boite.scrollTop = boite.scrollHeight;
                 });
 
+                // RECEPTION DE LA LISTE DES PODCASTS (COTE PUBLIC ET COTE ADMIN)
                 database.ref("podcasts").on("value", snap => {
-                    let esp = document.getElementById("espacePodcastsPublic"); esp.innerHTML = "";
+                    let esp = document.getElementById("espacePodcastsPublic"); 
+                    let espAdmin = document.getElementById("listePodcastsAdmin");
+                    esp.innerHTML = ""; 
+                    espAdmin.innerHTML = "";
+                    
+                    let aDesPodcasts = false;
+
                     snap.forEach(c => {
                         let p = c.val();
+                        aDesPodcasts = true;
                         let estPrive = (p.type === "prive");
                         let badge = estPrive ? '<span class="BADGE-TYPE priv">🔒 Privé</span>' : '<span class="BADGE-TYPE pub">🔓 Public</span>';
+                        
+                        // Remplir l'espace public
                         esp.innerHTML += `<div class="BOX-PODCAST ${estPrive?'prive':''}"><div><span>🎙️ ${p.titre}</span>${badge}</div><button class="BTN-LANCER" onclick="tentativeLecturePodcast('${p.titre.replace(/'/g, "\\'")}', '${p.url}', '${p.type}', '${p.pin}')">▶️ Lancer</button></div>`;
+                        
+                        // Remplir la console d'administration
+                        espAdmin.innerHTML += `
+                            <div class="BOX-ADMIN-PODCAST">
+                                <span style="font-size:12px; font-weight:bold; color:white;">📻 ${p.titre}</span>
+                                <button class="BTN-DIFFUSER-LIVE" onclick="diffuserPodcastSurAntenne('${p.titre.replace(/'/g, "\\'")}', '${p.url}')">🚀 Diffuser sur le Live</button>
+                            </div>`;
                     });
+
+                    if(!aDesPodcasts) {
+                        espAdmin.innerHTML = '<p style="color:#aaa; font-size:12px; margin:0;">Aucun podcast créé pour le moment</p>';
+                    }
                 });
 
                 database.ref("radio_synchro").on("value", function(snap) {
@@ -417,9 +462,12 @@
                     
                     let badgeAppareil = document.getElementById("badgeDirect");
                     
-                    if (statutAntenneActuel === "ia" || statutAntenneActuel === "humain") {
-                        badgeAppareil.innerText = statutAntenneActuel === "ia" ? "🤖 PLAYLIST SYNCHRONISÉE" : "🔴 GRAND DIRECT EN COURS";
-                        badgeAppareil.className = statutAntenneActuel === "ia" ? "STATUT-ANTENNE ia-direct" : "STATUT-ANTENNE en-direct";
+                    if (statutAntenneActuel === "ia" || statutAntenneActuel === "humain" || statutAntenneActuel === "podcast_live") {
+                        if(statutAntenneActuel === "ia") badgeAppareil.innerText = "🤖 PLAYLIST SYNCHRONISÉE";
+                        else if(statutAntenneActuel === "humain") badgeAppareil.innerText = "🔴 GRAND DIRECT EN COURS";
+                        else badgeAppareil.innerText = "🎙️ DIFFUSION PODCAST : " + (donnees.titreCustom || "En cours");
+
+                        badgeAppareil.className = statutAntenneActuel === "ia" ? "STATUT-ANTENNE ia-direct" : (statutAntenneActuel === "humain" ? "STATUT-ANTENNE en-direct" : "STATUT-ANTENNE pod-direct");
                         document.getElementById("vumetrePublicConteneur").style.display = "block";
                         verifierEtAjusterAudioSynchro(donnees);
                     } else {
