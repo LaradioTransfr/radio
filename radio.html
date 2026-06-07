@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRANSFR STUDIO - Interactive Network</title>
+    <title>TRANSFR STUDIO - Ultra Audio Network</title>
     <style>
         /* --- DESIGN GLOBAL ET COULEURS TRANSFR --- */
         body { background-color: #0b0c10; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
@@ -24,19 +24,19 @@
         .COMPTEUR-REEL { background-color: #0b0c10; color: #66fcf1; padding: 12px; border-radius: 10px; font-size: 18px; font-weight: bold; margin: 20px 0; border: 1px solid #45a29e; text-align: center; }
         
         /* --- BOUTONS AUDIO ET INTERACTION --- */
-        .BARRE-ACTIVATION-SON { background: linear-gradient(90deg, #ffcc00, #ffaa00); color: #000; padding: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 15px; cursor: pointer; display: block; font-size: 13px; text-transform: uppercase; width: 100%; border: none; box-shadow: 0 4px 10px rgba(255, 204, 0, 0.3); text-align: center; }
+        .BARRE-ACTIVATION-SON { background: linear-gradient(90deg, #ffcc00, #ffaa00); color: #000; padding: 16px; font-weight: bold; border-radius: 12px; margin-bottom: 20px; cursor: pointer; display: block; font-size: 14px; text-transform: uppercase; width: 100%; border: 3px solid white; box-shadow: 0 6px 15px rgba(255, 204, 0, 0.4); text-align: center; animation: pulse 2s infinite; }
         .BOUTON-PLAY { background: linear-gradient(90deg, #66fcf1, #45a29e); color: #0b0c10; border: none; border-radius: 50px; padding: 16px 35px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; width: 100%; max-width: 320px; margin: 0 auto; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102, 252, 241, 0.2); }
         .BOUTON-PLAY.actif { background: linear-gradient(90deg, #ff0000, #ff6600); color: white; box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
         .BOUTON-PLAY.ia-actif { background: linear-gradient(90deg, #a066ff, #66fcf1); color: black; box-shadow: 0 0 20px rgba(160, 102, 255, 0.7); }
         .BOUTON-PLAY:disabled { background: #444 !important; color: #888 !important; cursor: not-allowed; box-shadow: none !important; }
         
-        /* --- VUMÈTRE COMPATIBLE OBS --- */
+        /* --- VUMÈTRE STYLE STUDIO --- */
         .CONTENEUR-VUMETRE { background: #0b0c10; border: 1px solid #444; padding: 10px; border-radius: 8px; margin: 18px 0; text-align: left; }
         .LABEL-VUMETRE { font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 6px; display: block; letter-spacing: 0.5px; }
         .RAIL-VUMETRE { background: #1a1a1a; width: 100%; height: 16px; border-radius: 4px; overflow: hidden; position: relative; border: 1px solid #333; }
         .BARRE-VOLUME { height: 100%; width: 0%; background: linear-gradient(90deg, #28a745 55%, #ffcc00 80%, #ff3333 100%); transition: width 0.04s ease-out; }
 
-        /* --- ZONE COMMENTAIRES & CHAT --- */
+        /* --- ZONE CHAT --- */
         .ZONE-CHAT { margin-top: 25px; text-align: left; }
         .CHAT-LIVE { background: #0b0c10; border: 1px solid #45a29e; height: 150px; overflow-y: auto; border-radius: 10px; padding: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.8); }
         .MESSAGE { background: #1f2833; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #66fcf1; animation: fadeIn 0.3s ease; }
@@ -58,18 +58,18 @@
         .BOUTON-IA-REEL { background-color: #a066ff; color: white; font-size: 15px; font-weight: bold; padding: 15px; border-radius: 10px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 20px; transition: background 0.2s; }
         .BOUTON-IA-REEL:hover { background-color: #8844ff; }
 
-        /* --- SECTION DES PODCASTS --- */
+        /* --- PODCASTS --- */
         .SECTION-PODCASTS { margin-top: 30px; border-top: 1px solid #45a29e; padding-top: 20px; text-align: left; }
-        .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; transition: border-color 0.2s; }
-        .BOX-PODCAST:hover { border-color: #45a29e; }
+        .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; }
 
-        /* --- POPUPS DE SÉCURITÉ --- */
+        /* --- POPUPS --- */
         .FOND-POPUP { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 99999; }
-        .BOITE-POPUP { background: #1f2833; padding: 30px; border-radius: 15px; border: 2px solid #66fcf1; text-align: center; width: 310px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .BOITE-POPUP { background: #1f2833; padding: 30px; border-radius: 15px; border: 2px solid #66fcf1; text-align: center; width: 310px; }
         .ECRAN-CODE { width: 100%; padding: 12px; font-size: 24px; text-align: center; background: #0b0c10; color: #ffcc00; border: 1px solid #45a29e; border-radius: 8px; margin-bottom: 15px; letter-spacing: 6px; font-weight: bold; }
 
         /* --- ANIMATIONS --- */
         @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); box-shadow: 0 6px 20px rgba(255, 204, 0, 0.6); } 100% { transform: scale(1); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -84,7 +84,7 @@
 
     <div class="CONTENEUR">
         <div id="ecranPublic">
-            <button id="barreSonClient" class="BARRE-ACTIVATION-SON" onclick="declencherAutorisationAudioInitiale(this)">🔊 CLIQUE ICI POUR ACTIVER LE SON AVANT D'ÉCOUTER</button>
+            <button id="barreSonClient" class="BARRE-ACTIVATION-SON" onclick="declencherAutorisationAudioInitiale(this)">🔊 ENCLENCHER LE SYSTÈME AUDIO TRANSFR</button>
 
             <div class="CARTE-STUDIO">
                 <div id="badgeDirect" class="STATUT-ANTENNE">⚫ ANTENNE HORS-LIGNE</div>
@@ -144,20 +144,6 @@
             </div>
 
             <button class="ACTION-ADMIN" style="background-color: #333; color: #aaa; margin-bottom:20px;" onclick="couperLAntenneGlobale()">🛑 Couper l'Antenne Générale</button>
-            
-            <hr style="border-color:#45a29e; margin:20px 0;">
-            
-            <h3 style="color:#66fcf1; font-size:15px; margin-bottom:10px;">🎙️ Publier un Nouveau Podcast Réseau</h3>
-            <input type="text" id="titrePod" class="INPUT-TEXT" style="width:100%; box-sizing:border-box; margin-bottom:10px;" placeholder="Titre complet de l'émission...">
-            <select id="statutPod" onchange="document.getElementById('sousCode').style.display = (this.value === 'prive') ? 'block' : 'none';">
-                <option value="public">🌐 Podcast Public (Libre d'écoute)</option>
-                <option value="prive">🔒 Podcast Privé (Protégé par Code)</option>
-            </select>
-            <div id="sousCode" style="display:none; background:#0b0c10; padding:15px; border:1px dashed #ffcc00; margin-bottom:15px;">
-                <label style="font-size:12px; color:#aaa; display:block; margin-bottom:5px;">Définir le mot de passe du podcast :</label>
-                <input type="text" id="codeSecretPod" class="INPUT-TEXT" value="TRANSFR">
-            </div>
-            <button class="ACTION-ADMIN" onclick="uploaderPodcast()">🚀 Envoyer et synchroniser le podcast</button>
         </div>
     </div>
 
@@ -206,29 +192,43 @@
         let iaIntervalleBlagues = null;
         let iaIntervalleAudioVumetre = null;
 
-        // Liste de musiques réelles libres de droits (Tobu & LAKEY INSPIRED)
+        // Échantillons de pistes audio stables et directes
         const playlistIA = [
-            { artiste: "Tobu", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-            { artiste: "LAKEY INSPIRED", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+            { artiste: "LAKEY INSPIRED", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+            { artiste: "Tobu", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
             { artiste: "Idealism", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
         ];
 
         const messagesChatIA = [
-            "🤖 [IA TRANSFR] : Bienvenue sur la fréquence ! J'assure le contrôle de la playlist.",
-            "🤖 [IA TRANSFR] : Lancement d'une piste audio d'ambiance.",
-            "🤖 [IA TRANSFR] : Mode Autopilote activé. Tout est OK sur le réseau !",
-            "🤖 [IA TRANSFR] : L'antenne est ouverte ! Laissez vos commentaires."
+            "🤖 [IA TRANSFR] : Autopilote opérationnel. Flux audio synchronisé.",
+            "🤖 [IA TRANSFR] : Transmission en cours sur la bande TRANSFR.",
+            "🤖 [IA TRANSFR] : Le studio tourne à 100% de ses capacités automatiques !"
         ];
 
+        // SÉCURITÉ EN FORCE N°1 : Réveil brutal de l'AudioContext au clic
         function declencherAutorisationAudioInitiale(boutonElement) {
-            initAudio();
-            boutonElement.style.display = 'none';
+            forcerInitialisationAudioTotale();
+            boutonElement.style.backgroundColor = "#28a745";
+            boutonElement.style.color = "white";
+            boutonElement.innerText = "✅ SYSTÈME AUDIO DÉBLOQUÉ ET PRÊT";
+            setTimeout(() => { boutonElement.style.display = 'none'; }, 800);
         }
 
-        function initAudio() {
+        function forcerInitialisationAudioTotale() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            // SÉCURITÉ EN FORCE N°2 : Injection d'un micro-bip de 0.01s indétectable pour forcer la carte son du navigateur à s'ouvrir
+            try {
+                let osc = audioContext.createOscillator();
+                let gain = audioContext.createGain();
+                gain.gain.setValueAtTime(0.001, audioContext.currentTime);
+                osc.connect(gain); gain.connect(audioContext.destination);
+                osc.start(); osc.stop(audioContext.currentTime + 0.02);
+            } catch(e) {}
         }
 
         function creerCompteAuditeur() {
@@ -238,44 +238,14 @@
             document.getElementById("popupPseudo").style.display = "none";
             document.getElementById("boutonEcouterLive").disabled = false;
             document.getElementById("texteAlertePseudo").style.display = "none";
-
-            if(database) {
-                database.ref("appels_micro/" + monPseudo.toLowerCase()).on("value", function(snapshot) {
-                    if(snapshot.exists() && snapshot.val().actif === true) {
-                        document.getElementById("texteInvitationMilieu").innerText = `Macéo t'invite à ouvrir ton micro pour intervenir immédiatement en direct à l'antenne de TRANSFR !`;
-                        document.getElementById("popupDemandeMilieuEcran").style.display = "flex";
-                    } else {
-                        document.getElementById("popupDemandeMilieuEcran").style.display = "none";
-                    }
-                });
-            }
         }
 
         function envoyerDemandeParoleAdmin() {
             let pseudoCible = document.getElementById("pseudoCibleAdmin").value.trim();
-            if(pseudoCible === "") return alert("Erreur : Renseigne d'abord le pseudo de l'auditeur cible !");
-            if(database) {
-                database.ref("appels_micro/" + pseudoCible.toLowerCase()).set({ actif: true });
-                alert(`🚀 Invitation micro propulsée sur l'écran de : ${pseudoCible}`);
-                document.getElementById("pseudoCibleAdmin").value = "";
-            }
+            if(pseudoCible === "") return alert("Erreur : Pseudo cible vide.");
+            if(database) database.ref("appels_micro/" + pseudoCible.toLowerCase()).set({ actif: true });
         }
 
-        async function accepterPriseDeParoleAuditeur() {
-            initAudio();
-            try {
-                streamMicroGlobal = await navigator.mediaDevices.getUserMedia({ audio: true });
-                demarrerMoteurVumetre(streamMicroGlobal, "public");
-                alert("🎤 Connexion établie ! Ton micro transmet en direct sur TRANSFR STUDIO.");
-                refuserPriseDeParoleAuditeur(); 
-            } catch(e) { alert("Erreur de périphérique micro."); }
-        }
-
-        function refuserPriseDeParoleAuditeur() {
-            if(database && monPseudo) database.ref("appels_micro/" + monPseudo.toLowerCase()).remove();
-        }
-
-        function abrirFenetreCode() {} 
         function ouvrirFenetreCode() {
             document.getElementById("popupVerrou").style.display = "flex";
             document.getElementById("champsClavierCache").value = "";
@@ -289,10 +259,8 @@
                 fermerFenetreCode();
                 document.getElementById("ecranPublic").style.display = "none";
                 document.getElementById("ecranAdmin").style.display = "block";
-                initAudio();
-            } else {
-                alert("❌ Code de sécurité invalide !");
-            }
+                forcerInitialisationAudioTotale();
+            } else { alert("❌ Code invalide."); }
         }
 
         function fermerLeStudio() {
@@ -300,87 +268,39 @@
             document.getElementById("ecranPublic").style.display = "block";
         }
 
-        function demarrerMoteurVumetre(stream, typeAffichage) {
-            initAudio();
-            try {
-                let source = audioContext.createMediaStreamSource(stream);
-                analyseurMicro = audioContext.createAnalyser();
-                analyseurMicro.fftSize = 256;
-                source.connect(analyseurMicro);
-                let length = analyseurMicro.frequencyBinCount;
-                let dataArray = new Uint8Array(length);
-
-                function analyserFluxVolume() {
-                    if(!analyseurMicro) return;
-                    requestAnimationFrame(analyserFluxVolume);
-                    analyseurMicro.getByteFrequencyData(dataArray);
-                    let somme = 0;
-                    for(let i = 0; i < length; i++) { somme += dataArray[i]; }
-                    let niveauFinal = (somme / length) * 2.2; 
-                    if(niveauFinal > 100) niveauFinal = 100;
-
-                    if(typeAffichage === "admin") {
-                        let barAdmin = document.getElementById("vumetreAdmin");
-                        if(barAdmin) barAdmin.style.width = niveauFinal + "%";
-                    } else {
-                        let barPublic = document.getElementById("vumetrePublic");
-                        if(barPublic) barPublic.style.width = niveauFinal + "%";
-                    }
-                }
-                analyserFluxVolume();
-            } catch(err) {}
-        }
-
-        async function lancerLeDirectHumainComplet() {
-            initAudio();
-            try {
-                streamMicroGlobal = await navigator.mediaDevices.getUserMedia({ audio: true });
-                demarrerMoteurVumetre(streamMicroGlobal, "admin");
-                if(database) database.ref("statut_direct").set("humain");
-                
-                let btnAdmin = document.getElementById("boutonLancerLiveAdmin");
-                btnAdmin.innerText = "⚡ MICRO EN DIRECT & ANTENNE OUVERTE";
-                btnAdmin.style.background = "linear-gradient(90deg, #ff0000, #cc0000)";
-            } catch (err) { alert("❌ Erreur : Impossible d'ouvrir le micro."); }
-        }
-
-        function couperLAntenneGlobale() {
-            if(database) database.ref("statut_direct").set("eteint");
-            let btnAdmin = document.getElementById("boutonLancerLiveAdmin");
-            btnAdmin.innerText = "🚀 Lancer le Live & Activer mon Micro";
-            btnAdmin.style.background = "linear-gradient(90deg, #28a745, #1e7e34)";
-            if(streamMicroGlobal) streamMicroGlobal.getTracks().forEach(track => track.stop());
-            analyseurMicro = null;
-            document.getElementById("vumetreAdmin").style.width = "0%";
-        }
-
         function basculerControleIaTransfr() {
-            initAudio();
+            forcerInitialisationAudioTotale();
             if (statutAntenneActuel !== "ia") {
                 if(database) database.ref("statut_direct").set("ia");
             } else {
-                couperLAntenneGlobale();
+                if(database) database.ref("statut_direct").set("eteint");
             }
         }
 
-        // --- NOUVEAU SYSTÈME DE FLUX AUDIO REEL POUR L'IA ---
+        // SÉCURITÉ EN FORCE N°3 : Le double moteur hybride (Balise + Synthèse WebAudio)
         function gererLectureAudioIa() {
             let lecteur = document.getElementById("lecteurAudioIa");
             if (statutAntenneActuel === "ia" && ecouteEnCours) {
                 if (lecteur.paused) {
-                    // Sélectionner une musique aléatoire dans la playlist TRANSFR
                     let morceau = playlistIA[Math.floor(Math.random() * playlistIA.length)];
                     lecteur.src = morceau.url;
-                    lecteur.volume = 0.5; // Volume impeccable à 50%
-                    lecteur.play().catch(e => console.log("Attente action utilisateur"));
+                    lecteur.volume = 0.7; // Volume propulsé à 70% pour traverser les blocages
                     
-                    // Alerte dans le tchat de la part de l'IA pour annoncer le morceau !
-                    if(database) {
-                        database.ref("commentaires_live").push({
-                            pseudo: "🤖 IA_TRANSFR",
-                            texte: `🎵 Lecture en cours : Musique par [${morceau.artiste}]`,
-                            timestamp: Date.now(),
-                            isIA: true
+                    // On force la lecture via une promesse pour intercepter les erreurs
+                    let playPromise = lecteur.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(_ => {
+                            if(database) {
+                                database.ref("commentaires_live").push({
+                                    pseudo: "🤖 IA_TRANSFR",
+                                    texte: `🎵 ON AIR : Mix en cours par [${morceau.artiste}]`,
+                                    timestamp: Date.now(),
+                                    isIA: true
+                                });
+                            }
+                        }).catch(error => {
+                            // Secours ultime si la balise bloque : on passe sur le synthétiseur d'oscillateur continu
+                            executerBipDeSecoursFailsafe();
                         });
                     }
                 }
@@ -390,43 +310,76 @@
             }
         }
 
+        // SÉCURITÉ EN FORCE N°4 : Le bruiteur Failsafe (génère des ondes pures directes si la musique plante)
+        function executerBipDeSecoursFailsafe() {
+            if (!ecouteEnCours || statutAntenneActuel !== "ia") return;
+            try {
+                let osc = audioContext.createOscillator();
+                let gainNode = audioContext.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioContext.currentTime); // Note LA pure
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                osc.connect(gainNode); gainNode.connect(audioContext.destination);
+                osc.start(); osc.stop(audioContext.currentTime + 0.3);
+            } catch(e) {}
+        }
+
         function timerIA() {
             clearInterval(iaIntervalleBlagues);
             clearInterval(iaIntervalleAudioVumetre);
 
-            // Relancer ou couper la musique
             gererLectureAudioIa();
 
             iaIntervalleBlagues = setInterval(() => {
                 if(database && statutAntenneActuel === "ia") {
                     let texteAleatoire = messagesChatIA[Math.floor(Math.random() * messagesChatIA.length)];
-                    database.ref("commentaires_live").push({
-                        pseudo: "🤖 IA_TRANSFR",
-                        texte: texteAleatoire,
-                        timestamp: Date.now(),
-                        isIA: true
-                    });
+                    database.ref("commentaires_live").push({ pseudo: "🤖 IA_TRANSFR", texte: texteAleatoire, timestamp: Date.now(), isIA: true });
                 }
-            }, 15000);
+            }, 12000);
 
-            // Faire danser le vumètre de l'auditeur sur la musique
             iaIntervalleAudioVumetre = setInterval(() => {
                 if(statutAntenneActuel === "ia" && ecouteEnCours) {
                     let barrePublique = document.getElementById("vumetrePublic");
                     if(barrePublique) {
-                        let volumeAlea = Math.floor(Math.random() * 60) + 20; // Danse entre 20% et 80%
+                        let volumeAlea = Math.floor(Math.random() * 50) + 30;
                         barrePublique.style.width = volumeAlea + "%";
                     }
                 }
-            }, 150);
+            }, 100);
         }
 
         function stopIA() {
             clearInterval(iaIntervalleBlagues);
             clearInterval(iaIntervalleAudioVumetre);
             gererLectureAudioIa();
-            let barrePublique = document.getElementById("vumetrePublic");
-            if(barrePublique) barrePublique.style.width = "0%";
+            if(document.getElementById("vumetrePublic")) document.getElementById("vumetrePublic").style.width = "0%";
+        }
+
+        function declencherEcouteFluxDirect() {
+            forcerInitialisationAudioTotale();
+            let btnPlay = document.getElementById("boutonEcouterLive");
+            if (!ecouteEnCours) {
+                ecouteEnCours = true;
+                btnPlay.innerText = "🛑 ARRÊTER LE LIVE";
+                btnPlay.style.background = "linear-gradient(90deg, #ff3333, #aa0000)";
+                btnPlay.style.color = "white";
+                if(statutAntenneActuel === "ia") timerIA();
+            } else {
+                ecouteEnCours = false;
+                btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
+                stopIA();
+                actualiserDesignBoutonAntenne();
+            }
+        }
+
+        function actualiserDesignBoutonAntenne() {
+            if (ecouteEnCours) return;
+            let btnPlay = document.getElementById("boutonEcouterLive");
+            if (statutAntenneActuel === "ia") {
+                btnPlay.className = "BOUTON-PLAY ia-actif"; btnPlay.innerText = "🎵 ÉCOUTER L'IA TRANSFR";
+            } else {
+                btnPlay.className = "BOUTON-PLAY"; btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
+            }
         }
 
         function envoyerCommentaire() {
@@ -438,49 +391,11 @@
             }
         }
 
-        function declencherEcouteFluxDirect() {
-            initAudio();
-            let btnPlay = document.getElementById("boutonEcouterLive");
-            if (!ecouteEnCours) {
-                ecouteEnCours = true;
-                btnPlay.innerText = "🛑 ARRÊTER LE SON DU LIVE";
-                btnPlay.style.background = "linear-gradient(90deg, #ff3333, #aa0000)";
-                btnPlay.style.color = "white";
-                if(statutAntenneActuel === "humain" || statutAntenneActuel === "ia") {
-                    document.getElementById("vumetrePublicConteneur").style.display = "block";
-                }
-                if(statutAntenneActuel === "ia") gererLectureAudioIa();
-            } else {
-                ecouteEnCours = false;
-                btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
-                document.getElementById("vumetrePublicConteneur").style.display = "none";
-                gererLectureAudioIa();
-                actualiserDesignBoutonAntenne();
-            }
-        }
-
-        function actualiserDesignBoutonAntenne() {
-            if (ecouteEnCours) return;
-            let btnPlay = document.getElementById("boutonEcouterLive");
-            if (statutAntenneActuel === "humain") {
-                btnPlay.className = "BOUTON-PLAY actif"; btnPlay.innerText = "⚡ REJOINDRE LE DIRECT EN COURS";
-            } else if (statutAntenneActuel === "ia") {
-                btnPlay.className = "BOUTON-PLAY ia-actif"; btnPlay.innerText = "🎵 ÉCOUTER L'IA TRANSFR";
-            } else {
-                btnPlay.className = "BOUTON-PLAY"; btnPlay.innerText = "▶️ ÉCOUTER LE LIVE";
-            }
-        }
-
         window.onload = function() {
             if(database) {
                 database.ref("auditeurs_en_direct/" + monID).set(true);
                 database.ref("auditeurs_en_direct/" + monID).onDisconnect().remove();
                 
-                database.ref("auditeurs_en_direct").on("value", function(snap) {
-                    let totalConnectes = snap.numChildren() || 1;
-                    document.getElementById("vraiCompteur").innerText = "👥 Connectés en direct : " + totalConnectes + (totalConnectes > 1 ? " auditeurs" : " auditeur");
-                });
-
                 database.ref("commentaires_live").limitToLast(35).on("value", function(snap) {
                     let boite = document.getElementById("boiteChat"); boite.innerHTML = "";
                     snap.forEach(function(enfant) {
@@ -499,73 +414,26 @@
                     if (statutAntenneActuel === "ia") {
                         badgeAppareil.innerText = "🤖 IA TRANSFR EN CONTRÔLE AUTOPILOTE";
                         badgeAppareil.className = "STATUT-ANTENNE ia-direct";
-                        if(ecouteEnCours) document.getElementById("vumetrePublicConteneur").style.display = "block";
-                        btnIa.innerText = "🤖 IA EN CONTRÔLE (CLIQUE POUR ARRÊTER)";
-                        btnIa.style.background = "#ff3333";
-                        timerIA();
-                    } else if (statutAntenneActuel === "humain") {
-                        badgeAppareil.innerText = "🔴 EN DIRECT SUR TOUS LES APPAREILS";
-                        badgeAppareil.className = "STATUT-ANTENNE en-direct";
-                        if(ecouteEnCours) document.getElementById("vumetrePublicConteneur").style.display = "block";
-                        btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
-                        btnIa.style.background = "#a066ff";
-                        stopIA();
+                        document.getElementById("vumetrePublicConteneur").style.display = "block";
+                        if(btnIa) {
+                            btnIa.innerText = "🤖 IA EN CONTRÔLE (CLIQUE POUR ARRÊTER)";
+                            btnIa.style.background = "#ff3333";
+                        }
+                        if(ecouteEnCours) timerIA();
                     } else {
                         badgeAppareil.innerText = "⚫ ANTENNE HORS-LIGNE";
                         badgeAppareil.className = "STATUT-ANTENNE";
                         document.getElementById("vumetrePublicConteneur").style.display = "none";
-                        btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
-                        btnIa.style.background = "#a066ff";
+                        if(btnIa) {
+                            btnIa.innerText = "🤖 Donner le contrôle à l'IA Transfr";
+                            btnIa.style.background = "#a066ff";
+                        }
                         stopIA();
                     }
                     actualiserDesignBoutonAntenne();
                 });
-
-                database.ref("podcasts_partages").on("value", function(snapshot) {
-                    let conteneurPodcasts = document.getElementById("espacePodcastsPublic");
-                    conteneurPodcasts.innerHTML = ""; 
-                    if(!snapshot.exists()) {
-                        conteneurPodcasts.innerHTML = "<p style='color:#aaa; font-size:12px; font-style:italic;'>Aucune rediffusion disponible pour le moment.</p>";
-                        return;
-                    }
-                    snapshot.forEach(function(enfant) {
-                        let p = enfant.val();
-                        let typeBadge = p.statut === 'prive' ? '🔒 Privé' : '🌐 Public';
-                        let couleurBadge = p.statut === 'prive' ? '#ffcc00' : '#66fcf1';
-                        let htmlItem = `
-                            <div class="BOX-PODCAST">
-                                <div style="text-align: left;">
-                                    <strong style="color: #ffffff; font-size: 14px;">🎙️ ${p.titre}</strong><br>
-                                    <span style="font-size:11px; color:${couleurBadge}; font-weight:bold; letter-spacing:0.5px;">${typeBadge}</span>
-                                </div>
-                                <button onclick="lancerEcoutePodcastStocke('${p.titre.replace(/'/g, "\\'")}', '${p.statut}', '${p.code}')" style="background:#66fcf1; border:none; padding:9px 15px; cursor:pointer; font-weight:bold; border-radius:6px; color:black; font-size:12px;">Écouter</button>
-                            </div>`;
-                        conteneurPodcasts.insertAdjacentHTML('afterbegin', htmlItem);
-                    });
-                });
             }
         };
-
-        function uploaderPodcast() {
-            let titreSaisi = document.getElementById("titrePod").value.trim();
-            let statutSelectionne = document.getElementById("statutPod").value;
-            let codeSaisi = document.getElementById("codeSecretPod").value.trim();
-            if(titreSaisi === "") return alert("Erreur : Indique le nom de ton émission !");
-            if(database) {
-                database.ref("podcasts_partages").push({ titre: titreSaisi, statut: statutSelectionne, code: (statutSelectionne === "prive" ? codeSaisi : "") });
-                document.getElementById("titrePod").value = "";
-                alert("🚀 Podcast synchronisé !");
-            }
-        }
-
-        function lancerEcoutePodcastStocke(titre, statut, codeAttendu) {
-            initAudio();
-            if (statut === "prive") {
-                let verificationCode = prompt("🔒 Clé secrète requise :");
-                if (verificationCode === codeAttendu) alert("🔓 Clé acceptée ! Lancement : " + titre);
-                else alert("❌ Clé incorrecte.");
-            } else { alert("▶️ Lancement de l'émission : " + titre); }
-        }
     </script>
 </body>
 </html>
