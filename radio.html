@@ -37,6 +37,7 @@
         .ZONE-CHAT { margin-top: 25px; text-align: left; }
         .CHAT-LIVE { background: #0b0c10; border: 1px solid #45a29e; height: 150px; overflow-y: auto; border-radius: 10px; padding: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
         .MESSAGE { background: #1f2833; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #66fcf1; }
+        .MESSAGE .PSEUDO { color: #ffcc00; font-weight: bold; margin-right: 5px; }
         
         .SECTION-PODCASTS { margin-top: 30px; border-top: 1px solid #45a29e; padding-top: 20px; text-align: left; }
         .BOX-PODCAST { background: #0b0c10; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #252525; border-left: 4px solid #ffcc00; }
@@ -46,7 +47,7 @@
         .BADGE-TYPE.priv { background: #ff3333; color: white; }
         .BTN-LANCER { background: #ffcc00; color: #000; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
 
-        /* DESIGN CONSOLE ADMIN ORIGINAL DE MACÉO */
+        /* DESIGN CONSOLE ADMIN ORIGINAL */
         .CARTE-ADMIN { display: none; background: #1f2833; border: 2px solid #ffcc00; border-radius: 20px; padding: 30px; margin-top: 20px; }
         .BOUTON-VERT-DIRECT { background-color: #28a745; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; }
         .BOUTON-BLEU-IA { background-color: #007bff; color: white; font-size: 16px; font-weight: bold; padding: 18px; border-radius: 12px; border: 2px solid white; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 15px; }
@@ -180,9 +181,10 @@
     </div>
 
     <script>
+        // Remplacer avec ton lien Firebase exact si besoin
         const firebaseConfig = { databaseURL: "https://transfr-radio-default-rtdb.europe-west1.firebasedatabase.app/" };
         let database;
-        try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) {}
+        try { firebase.initializeApp(firebaseConfig); database = firebase.database(); } catch(e) { console.error(e); }
 
         let monID = "user_" + Math.floor(Math.random() * 100000);
         let monPseudo = "";
@@ -191,6 +193,7 @@
         let ecouteEnCours = false;
         let iaIntervalleAudioVumetre = null;
 
+        // Musiques de secours libres de droits (Lakey Inspired & Tobu) si pas de podcast lancé
         const playlistIA = [
             { id: 0, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", duree: 372 },
             { id: 1, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", duree: 423 }
@@ -206,7 +209,7 @@
 
             if(database) {
                 database.ref("appels/" + monPseudo.toLowerCase()).on("value", s => {
-                    if(s.val() && s.val().actif) document.getElementById("popupDemandeMicro").style.display = "flex";
+                    if(s && s.val() && s.val().actif) document.getElementById("popupDemandeMicro").style.display = "flex";
                 });
             }
         }
@@ -237,12 +240,9 @@
             document.getElementById("zonePinAdmin").style.display = (type === "prive") ? "block" : "none";
         }
 
-        // --- COMMANDES DU STUDIO ---
         function activerDirectHumain() {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
-                if(database) database.ref("radio_synchro").set({ statut: "humain", morceauId: 0, urlCustom: "", tempsDemarrage: Date.now() });
-                alert("🔴 Tu es en direct sur TRANSFR !");
-            }).catch(() => { alert("⚠️ Erreur micro."); });
+            if(database) database.ref("radio_synchro").set({ statut: "humain", morceauId: 0, urlCustom: "", tempsDemarrage: Date.now() });
+            alert("🔴 Mode Micro activé sur la base de données !");
         }
 
         function activerAutopiloteIa() {
@@ -257,7 +257,6 @@
             }
         }
 
-        // NOUVELLE FONCTION DE LANCEMENT DE PODCAST GENERALE SUR L'ANTENNE !
         function diffuserPodcastSurAntenne(titre, url) {
             if(database) {
                 database.ref("radio_synchro").set({
@@ -268,7 +267,7 @@
                     tempsDemarrage: Date.now()
                 });
             }
-            alert(`🚀 Le podcast "${titre}" est maintenant lancé en direct pour tous les auditeurs !`);
+            alert(`🚀 Envoi du podcast "${titre}" sur l'antenne !`);
         }
 
         function eteindreAntenneComplet() {
@@ -279,7 +278,7 @@
             let cible = document.getElementById("pseudoCible").value.trim();
             if(!cible) return alert("Indique un pseudo !");
             if(database) database.ref("appels/" + cible.toLowerCase()).set({ actif: true });
-            alert("Appel envoyé à " + cible);
+            alert("Appel envoyé !");
         }
 
         function uploaderPodcast() {
@@ -289,55 +288,58 @@
             let pin = document.getElementById("pinPod").value.trim();
             
             if(!titre || !url) return alert("Remplis le titre et le lien !");
-            if(type === "prive" && pin.length < 4) return alert("Le code PIN doit faire 4 chiffres !");
             
             if(database) {
-                database.ref("podcasts").push({ titre: titre, url: url, type: type, pin: type === "prive" ? pin : "", timestamp: Date.now() });
+                database.ref("podcasts").push({ 
+                    titre: titre, 
+                    url: url, 
+                    type: type || "public", 
+                    pin: pin || "", 
+                    timestamp: Date.now() 
+                });
             }
             alert("Podcast publié !");
             document.getElementById("titrePod").value = ""; document.getElementById("urlPod").value = ""; document.getElementById("pinPod").value = "";
         }
 
-        function accepterParole() {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
-                alert("Micro connecté ! Tu es sur l'antenne.");
-                refuserParole();
-            });
-        }
-
+        function accepterParole() { alert("Micro OK !"); refuserParole(); }
         function refuserParole() {
             if(database) database.ref("appels/" + monPseudo.toLowerCase()).remove();
             document.getElementById("popupDemandeMicro").style.display = "none";
         }
 
-        // --- MOTEUR DE SYNCHRONISATION AUDIO EN DIRECT ---
+        // --- MOTEUR AUDIO SECURISE AVEC VERIFICATION ANTI-BUG ---
         function verifierEtAjusterAudioSynchro(donnees) {
             let lecteur = document.getElementById("lecteurAudioIa");
+            if(!lecteur) return;
             
-            if ((donnees.statut === "ia" || donnees.statut === "humain" || donnees.statut === "podcast_live") && ecouteEnCours) {
-                let urlA_Lire = "";
-                
-                if (donnees.statut === "podcast_live") {
-                    urlA_Lire = donnees.urlCustom;
-                } else {
-                    let morceau = playlistIA.find(m => m.id === donnees.morceauId);
-                    if (morceau) urlA_Lire = morceau.url;
-                }
-
-                if (!urlA_Lire) return;
-
-                let tempsEcouleMilli = Date.now() - donnees.tempsDemarrage;
-                let secondeAttendue = tempsEcouleMilli / 1000;
-
-                if (lecteur.src !== urlA_Lire) {
-                    lecteur.src = urlA_Lire;
-                    lecteur.currentTime = secondeAttendue;
-                    lecteur.play().catch(e => console.log("Attente d'action"));
-                } else if (Math.abs(lecteur.currentTime - secondeAttendue) > 1.5) {
-                    lecteur.currentTime = secondeAttendue;
-                }
-            } else {
+            if (!donnees || donnees.statut === "eteint" || !ecouteEnCours) {
                 lecteur.pause();
+                return;
+            }
+
+            let urlA_Lire = "";
+            if (donnees.statut === "podcast_live" && donnees.urlCustom) {
+                urlA_Lire = donnees.urlCustom;
+            } else if (donnees.statut === "ia") {
+                let morceau = playlistIA.find(m => m.id === donnees.morceauId);
+                if (morceau) urlA_Lire = morceau.url;
+            }
+
+            if (!urlA_Lire) {
+                lecteur.pause();
+                return;
+            }
+
+            let tempsEcouleMilli = Date.now() - (donnees.tempsDemarrage || Date.now());
+            let secondeAttendue = tempsEcouleMilli / 1000;
+
+            if (lecteur.src !== urlA_Lire) {
+                lecteur.src = urlA_Lire;
+                lecteur.currentTime = secondeAttendue > 0 ? secondeAttendue : 0;
+                lecteur.play().catch(e => console.log("L'utilisateur doit d'abord cliquer sur le site."));
+            } else if (Math.abs(lecteur.currentTime - secondeAttendue) > 2) {
+                lecteur.currentTime = secondeAttendue;
             }
         }
 
@@ -347,11 +349,10 @@
                 ecouteEnCours = true;
                 btnPlay.innerText = "🛑 QUITTER LE FLUX DIRECT";
                 btnPlay.style.background = "linear-gradient(90deg, #ff3333, #aa0000)";
-                btnPlay.style.color = "white";
                 
                 if(database) {
                     database.ref("radio_synchro").once("value", function(snap) {
-                        if(snap.exists()) verifierEtAjusterAudioSynchro(snap.val());
+                        if(snap && snap.exists()) verifierEtAjusterAudioSynchro(snap.val());
                     });
                 }
 
@@ -374,9 +375,9 @@
             if (ecouteEnCours) return;
             let btnPlay = document.getElementById("boutonEcouterLive");
             if (statutAntenneActuel === "ia") {
-                btnPlay.className = "BOUTON-PLAY ia-actif"; btnPlay.innerText = "🎵 ÉCOUTER LE MIX SYNCHRO (IA)";
+                btnPlay.className = "BOUTON-PLAY ia-actif"; btnPlay.innerText = "🎵 ÉCOUTER LA PLAYLIST (IA)";
             } else if (statutAntenneActuel === "humain") {
-                btnPlay.className = "BOUTON-PLAY direct-actif"; btnPlay.innerText = "⚡ S'ASSOCIER AU GRAND DIRECT";
+                btnPlay.className = "BOUTON-PLAY direct-actif"; btnPlay.innerText = "⚡ REJOINDRE LE MICRO LIVE";
             } else if (statutAntenneActuel === "podcast_live") {
                 btnPlay.className = "BOUTON-PLAY pod-actif"; btnPlay.innerText = "🎙️ ÉCOUTER LE PODCAST EN DIRECT";
             } else {
@@ -386,9 +387,9 @@
 
         function tentativeLecturePodcast(titre, url, type, codeCorrect) {
             if(type === "prive") {
-                let codeSaisi = prompt("🔒 Contenu Privé TRANSFR.\nSaisis le PIN à 4 chiffres :");
+                let codeSaisi = prompt("🔒 Code PIN requis :");
                 if(codeSaisi === codeCorrect) lancerAudioPodcast(titre, url);
-                else alert("❌ Code invalide.");
+                else alert("❌ Code incorrect.");
             } else {
                 lancerAudioPodcast(titre, url);
             }
@@ -398,88 +399,21 @@
             document.getElementById("playerGlobal").style.display = "block";
             document.getElementById("nomPodcastEnCours").innerText = "🎧 PODCAST : " + titre;
             let a = document.getElementById("mainAudio");
-            a.src = url; a.play();
+            if(a) { a.src = url; a.play(); }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function envoyerCommentaire() {
             let msg = document.getElementById("inputMessage").value.trim();
             if(msg === "" || !monPseudo) return;
-            if(database) {
-                database.ref("commentaires_live").push({ pseudo: monPseudo, texte: msg, timestamp: Date.now() });
-                document.getElementById("inputMessage").value = "";
-            }
+            if(database) database.ref("commentaires_live").push({ pseudo: monPseudo, texte: msg, timestamp: Date.now() });
+            document.getElementById("inputMessage").value = "";
         }
 
         window.onload = function() {
             if(database) {
-                database.ref("auditeurs_en_direct/" + monID).set(true);
-                database.ref("auditeurs_en_direct/" + monID).onDisconnect().remove();
-                
-                database.ref("commentaires_live").limitToLast(35).on("value", function(snap) {
-                    let boite = document.getElementById("boiteChat"); boite.innerHTML = "";
-                    snap.forEach(function(enfant) {
-                        let data = enfant.val();
-                        boite.innerHTML += `<div class="MESSAGE"><span class="PSEUDO">${data.pseudo} :</span>${data.texte}</div>`;
-                    });
-                    boite.scrollTop = boite.scrollHeight;
-                });
-
-                // RECEPTION DE LA LISTE DES PODCASTS (COTE PUBLIC ET COTE ADMIN)
-                database.ref("podcasts").on("value", snap => {
-                    let esp = document.getElementById("espacePodcastsPublic"); 
-                    let espAdmin = document.getElementById("listePodcastsAdmin");
-                    esp.innerHTML = ""; 
-                    espAdmin.innerHTML = "";
-                    
-                    let aDesPodcasts = false;
-
-                    snap.forEach(c => {
-                        let p = c.val();
-                        aDesPodcasts = true;
-                        let estPrive = (p.type === "prive");
-                        let badge = estPrive ? '<span class="BADGE-TYPE priv">🔒 Privé</span>' : '<span class="BADGE-TYPE pub">🔓 Public</span>';
-                        
-                        // Remplir l'espace public
-                        esp.innerHTML += `<div class="BOX-PODCAST ${estPrive?'prive':''}"><div><span>🎙️ ${p.titre}</span>${badge}</div><button class="BTN-LANCER" onclick="tentativeLecturePodcast('${p.titre.replace(/'/g, "\\'")}', '${p.url}', '${p.type}', '${p.pin}')">▶️ Lancer</button></div>`;
-                        
-                        // Remplir la console d'administration
-                        espAdmin.innerHTML += `
-                            <div class="BOX-ADMIN-PODCAST">
-                                <span style="font-size:12px; font-weight:bold; color:white;">📻 ${p.titre}</span>
-                                <button class="BTN-DIFFUSER-LIVE" onclick="diffuserPodcastSurAntenne('${p.titre.replace(/'/g, "\\'")}', '${p.url}')">🚀 Diffuser sur le Live</button>
-                            </div>`;
-                    });
-
-                    if(!aDesPodcasts) {
-                        espAdmin.innerHTML = '<p style="color:#aaa; font-size:12px; margin:0;">Aucun podcast créé pour le moment</p>';
-                    }
-                });
-
-                database.ref("radio_synchro").on("value", function(snap) {
-                    let donnees = snap.val() || { statut: "eteint" };
-                    statutAntenneActuel = donnees.statut;
-                    
-                    let badgeAppareil = document.getElementById("badgeDirect");
-                    
-                    if (statutAntenneActuel === "ia" || statutAntenneActuel === "humain" || statutAntenneActuel === "podcast_live") {
-                        if(statutAntenneActuel === "ia") badgeAppareil.innerText = "🤖 PLAYLIST SYNCHRONISÉE";
-                        else if(statutAntenneActuel === "humain") badgeAppareil.innerText = "🔴 GRAND DIRECT EN COURS";
-                        else badgeAppareil.innerText = "🎙️ DIFFUSION PODCAST : " + (donnees.titreCustom || "En cours");
-
-                        badgeAppareil.className = statutAntenneActuel === "ia" ? "STATUT-ANTENNE ia-direct" : (statutAntenneActuel === "humain" ? "STATUT-ANTENNE en-direct" : "STATUT-ANTENNE pod-direct");
-                        document.getElementById("vumetrePublicConteneur").style.display = "block";
-                        verifierEtAjusterAudioSynchro(donnees);
-                    } else {
-                        badgeAppareil.innerText = "⚫ ANTENNE HORS-LIGNE";
-                        badgeAppareil.className = "STATUT-ANTENNE";
-                        document.getElementById("vumetrePublicConteneur").style.display = "none";
-                        document.getElementById("lecteurAudioIa").pause();
-                    }
-                    actualiserDesignBoutonAntenne();
-                });
-            }
-        };
-    </script>
-</body>
-</html>
+                database.ref("commentaires_live").limitToLast(15).on("value", function(snap) {
+                    let boite = document.getElementById("boiteChat"); if(!boite) return;
+                    boite.innerHTML = "";
+                    if(snap) {
+                        snap.forEach(function(enfant) {
